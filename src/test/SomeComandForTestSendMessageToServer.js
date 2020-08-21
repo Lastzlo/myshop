@@ -28,3 +28,4 @@ fetch(
 
 // DELETE existing
 fetch('/product/2', { method: 'DELETE' }).then(result => console.log(result))
+
