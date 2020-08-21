@@ -45,12 +45,12 @@ public class ProductController {
     @RequestMapping("create")
     @PostMapping
     private Map<String, String> create(
-            /*@RequestPart("file")MultipartFile file,*/
-            /*@RequestPart("product") Map<String, String> product*/
-            @RequestBody Map<String, String> product
+            @RequestPart("file")MultipartFile file,
+            @RequestPart("product") Map<String, String> product
+            //@RequestBody Map<String, String> product
             ){
         product.put ("id", String.valueOf (count++));
-        /*product.put ("ProductPicture", file.getOriginalFilename ());*/
+        product.put ("productPicture", file.getOriginalFilename ());
         products.add (product);
 
         return product;

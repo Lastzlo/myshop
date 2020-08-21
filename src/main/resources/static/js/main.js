@@ -14,7 +14,8 @@ Vue.component('message-form', {
     props: ['messages'],
     data: function() {
         return {
-            text: ''
+            text: '',   //переменная для текста
+            file :'' //переменная для файла
         }
     },
     template:
@@ -22,20 +23,41 @@ Vue.component('message-form', {
     // v-on:click="save" запускает анонимную функцию записаную в save
         '<div>\n' +
         '           <input type="text" placeholder="Write something" v-model="text"/>\n' +
+        '           <input type="file" @change="fileSelected" />\n' +
         '           <input type="button" value="Save" v-on:click="save"/>\n' +
         '</div>',
     methods: {
         save: function () {
-            var message = { name: this.text};
 
-            messageApi.saveProduct({}, message).then(
+            let message = {name: this.text};
+            let formData = new FormData();
+
+            formData.append('file',this.file)
+            formData.append(
+                'product',
+                new Blob(
+                    [JSON.stringify(message)
+                    ],
+                    {
+                        type: "application/json"
+                    }
+                )
+            )
+
+            //saveProduction имеет кастомную ссылку 'product/create'
+            messageApi.saveProduct({}, formData).then(
                 result =>
                     result.json().then(data => {
                         this.messages.push(data);
                         this.text = '';
                     })
             )
+        },
+
+        fileSelected:function($event){
+            this.file =$event.target.files[0]
         }
+
     }
 });
 
@@ -44,7 +66,7 @@ Vue.component(
     'message-row',
     {
         props: ['message'],
-        template: '<div><i>({{ message.id }})</i> {{ message.name }}</div>',
+        template: '<div><i>({{ message.id }})</i> Name: {{ message.name }} picture: {{ message.productPicture }}</div>',
     }
 )
 
@@ -55,8 +77,8 @@ Vue.component('messages-list', {    //название компонента
     //:message="message" предает параметр message в message-row
     template:
         '<div>' +
-            '<message-form :messages="messages" />'+
-            '<message-row v-for="message in messages" :message="message" :key="message.id" ></message-row>' +
+        '<message-form :messages="messages" />'+
+        '<message-row v-for="message in messages" :message="message" :key="message.id" ></message-row>' +
         '</div>',
     //created - это хук который срабатывает перед рендером
     created: function () {
