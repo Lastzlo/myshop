@@ -1,4 +1,6 @@
-//комопонент отвечат за вивод одного сообщеня
+var messageApi = Vue.resource('product{/id}')
+
+//комопонент отвечат за вивод одного сообщения
 Vue.component(
     'message-row',
     {

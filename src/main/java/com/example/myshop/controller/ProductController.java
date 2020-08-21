@@ -25,45 +25,54 @@ public class ProductController {
         }});
     }};
 
-    @RequestMapping("add")
-    @PostMapping
-    private void add(
-            @RequestPart("file")MultipartFile file,
-            @RequestPart("product") Map<String, String> product
-            ){
-        product.put ("id", String.valueOf (count++));
-        product.put ("ProductPicture", file.getOriginalFilename ());
-
-        products.add (product);
+    @GetMapping
+    public List<Map<String,String>> list(){
+        return products;
     }
 
-    /*
-    fetch(
-  '/product/getOne',
-  {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: 1 })
-  }).then(result => result.json().then(console.log))
-    * */
-
-    @PostMapping("getOne")
-    public Map<String, String> getOne(@RequestBody Map<String, String> product ){
-        return getMessage (product.get ("id"));       //обработка случая когда не найдено сообщение
+    @GetMapping("{id}")
+    public Map<String, String> getOne(@PathVariable String id){
+        return getProduct (id);
     }
 
-    private Map<String, String> getMessage (String id) {
+    private Map<String, String> getProduct (String id) {
         return products.stream ()
                 .filter (products -> products.get ("id").equals (id))
                 .findFirst ()
-                .orElseThrow (NotFoundExeption::new);
+                .orElseThrow (NotFoundExeption::new);   //обработка случая когда не найдено продукт
+    }
+
+    @RequestMapping("create")
+    @PostMapping
+    private Map<String, String> create(
+            /*@RequestPart("file")MultipartFile file,*/
+            /*@RequestPart("product") Map<String, String> product*/
+            @RequestBody Map<String, String> product
+            ){
+        product.put ("id", String.valueOf (count++));
+        /*product.put ("ProductPicture", file.getOriginalFilename ());*/
+        products.add (product);
+
+        return product;
+    }
+
+    @PutMapping("{id}")
+    public Map<String, String> update(@PathVariable String id, @RequestBody Map<String, String> product){
+        Map<String, String> productFromDb = getProduct (id);
+
+        productFromDb.putAll (product);
+        productFromDb.put ("id", id);
+
+        return productFromDb;
+    }
+
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable String id){
+        Map<String, String> product = getProduct (id);
+
+        products.remove (product);
     }
 
 
-
-    @GetMapping
-    private List<Map<String,String>> list(){
-        return products;
-    }
 
 }
