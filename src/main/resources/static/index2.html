@@ -1,0 +1,47 @@
+<html>
+<head>
+	<script>
+		function onSubmit(){
+
+			let formData = new FormData();
+
+			formData.append("file", document.forms["productForm"].file.files[0]);
+			formData.append(
+					'product',
+					new Blob(
+							[JSON.stringify(
+									{
+										"Name": document.getElementById("name").value
+									})
+							],
+							{
+								type: "application/json"
+							}
+					)
+			)
+
+			fetch('/product/add', {
+				method: 'post',
+				body: formData
+			}).then(function(response){
+				if (response.status !== 200) {
+					alert("There was an error!")
+				} else {
+					alert("Request successful")
+				}
+			}).catch(function(err) {
+				alert("There was an error!")
+			})
+		}
+	</script>
+
+</head>
+<body>
+<form name="productForm">
+	<label> Picture : </label>  <br/><input name="file" type="file" accept="image/jpeg,image/png"><br/>
+	<label> Name : </label> <br/><input id="name" name="name"/><br/>
+	<input type="button" value="Submit" id="submit" onclick="onSubmit(); return false;"/>
+</form>
+
+</body>
+</html>
