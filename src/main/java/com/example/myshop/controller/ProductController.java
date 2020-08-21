@@ -4,10 +4,7 @@ import com.example.myshop.exeptions.NotFoundExeption;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("product")
@@ -17,11 +14,11 @@ public class ProductController {
     private ArrayList<Map<String, String>> products = new ArrayList<> () {{
         add (new HashMap<> () {{
             put ("id", "1");
-            put ("name", "Razer mouse");
+            put ("text", "Razer mouse");
         }});
         add (new HashMap<> () {{
             put ("id", "2");
-            put ("name", "Stilseries mouse");
+            put ("text", "Stilseries mouse");
         }});
     }};
 
@@ -45,22 +42,35 @@ public class ProductController {
     @RequestMapping("create")
     @PostMapping
     private Map<String, String> create(
-            @RequestPart("file")MultipartFile file,
-            @RequestPart("product") Map<String, String> product
-            //@RequestBody Map<String, String> product
-            ){
+            @RequestPart(value = "file") Optional<MultipartFile> file,
+            @RequestPart(value = "product") Map<String, String> product
+    ){
         product.put ("id", String.valueOf (count++));
-        product.put ("productPicture", file.getOriginalFilename ());
+
+
+        if (file.isPresent()) {
+            product.put ("file", file.get().getOriginalFilename ());
+        }
+
         products.add (product);
 
         return product;
     }
 
     @PutMapping("{id}")
-    public Map<String, String> update(@PathVariable String id, @RequestBody Map<String, String> product){
+    public Map<String, String> update(
+            @PathVariable String id,
+            @RequestPart(value = "file") Optional<MultipartFile> file,
+            @RequestPart(value = "product") Map<String, String> product
+    ){
         Map<String, String> productFromDb = getProduct (id);
 
         productFromDb.putAll (product);
+
+        if (file.isPresent()) {
+            productFromDb.put ("file", file.get().getOriginalFilename ());
+        }
+
         productFromDb.put ("id", id);
 
         return productFromDb;
