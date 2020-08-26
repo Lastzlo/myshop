@@ -7,8 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 
 @RestController
-@RequestMapping("product")
+@RequestMapping("product2")
 public class ProductController {
+
+
+
     private int count = 3;
 
     private ArrayList<Map<String, String>> products = new ArrayList<> () {{
@@ -21,6 +24,8 @@ public class ProductController {
             put ("text", "Stilseries mouse");
         }});
     }};
+
+
 
     @GetMapping
     public List<Map<String,String>> list(){
