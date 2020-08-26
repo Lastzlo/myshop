@@ -10,7 +10,7 @@ function getIndex(list, id) {
 
 //добавляем кастомную ссылку для сохранения сообщения
 /*https://github.com/pagekit/vue-resource/blob/develop/docs/resource.md*/
-var messageApi = Vue.resource(
+var productApi = Vue.resource(
     'product{/id}',
     {},
     {
@@ -19,40 +19,40 @@ var messageApi = Vue.resource(
 
 //компонент в который буду записиваться данные
 Vue.component('message-form', {
-    props: ['messages', 'messageAttr'],
+    props: ['products', 'productAttr'],
     data: function() {
         return {
             id: '',
-            text: '',   //переменная для текста
+            productName: '',   //переменная для текста
             file:'' //переменная для файла
         }
     },
     watch: {
-        messageAttr: function (newVal, oldVal) {
-            this.text = newVal.text;
+        productAttr: function (newVal, oldVal) {
+            this.productName = newVal.productName;
             this.id = newVal.id;
 
         }
     },
     template:
-    // v-model="text" записывает весь пользовательский ввод в переменную text
+    // v-model="productName" записывает весь пользовательский ввод в переменную productName
     // v-on:click="save" запускает анонимную функцию записаную в save
         '<div>\n' +
-        '           <input type="text" placeholder="Write something" v-model="text"/>\n' +
+        '           <input type="text" placeholder="Write something" v-model="productName"/>\n' +
         '           <input type="file" ref="fileupload" @change="fileSelected" />\n' +
         '           <input type="button" value="Save" v-on:click="save"/>\n' +     // обработчик нажатия на кнопку v-on:click="save"
         '</div>',
     methods: {
         save: function () {
 
-            let message = {text: this.text};
+            let product = {productName: this.productName};
             let formData = new FormData();
 
             formData.append('file',this.file)
             formData.append(
                 'product',
                 new Blob(
-                    [JSON.stringify(message)
+                    [JSON.stringify(product)
                     ],
                     {
                         type: "application/json"
@@ -61,11 +61,11 @@ Vue.component('message-form', {
             )
 
             if(this.id){
-                messageApi.update({id: this.id}, formData).then(result =>
+                productApi.update({id: this.id}, formData).then(result =>
                     result.json().then(data => {
-                        var index = getIndex(this.messages, data.id)
-                        this.messages.splice(index, 1, data)
-                        this.text = ''
+                        var index = getIndex(this.products, data.id)
+                        this.products.splice(index, 1, data)
+                        this.productName = ''
                         this.id = ''
 
                         this.file = ''
@@ -76,11 +76,11 @@ Vue.component('message-form', {
             }
             else {
                 //saveProduction имеет кастомную ссылку 'product/create'
-                messageApi.saveProduct({}, formData).then(
+                productApi.saveProduct({}, formData).then(
                     result =>
                         result.json().then(data => {
-                            this.messages.push(data);
-                            this.text = '';
+                            this.products.push(data);
+                            this.productName = '';
 
 
                             this.file = ''
@@ -98,9 +98,9 @@ Vue.component('message-form', {
 
 //выносим в отдельный компонент message-row
 Vue.component('message-row', {
-    props: ['message', 'editMethod', 'messages'],
+    props: ['product', 'editMethod', 'products'],
     template: '<div>'+
-        '<i>({{ message.id }})</i> {{ message.text }}  {{ message.file }}'+
+        '<i>({{ product.id }})</i> {{ product.productName }}  {{ product.file }}'+
         '<span style="position: absolute; right: 0">'+
         // обработчик нажатия на кнопку @click="edit" работает как v-on:click="edit"
         '<input type="button" value="Edit" @click="edit"/>'+
@@ -109,12 +109,12 @@ Vue.component('message-row', {
         '</div>',
     methods: {
         edit: function () {
-            this.editMethod(this.message);
+            this.editMethod(this.product);
         },
         del: function () {
-            messageApi.remove({id: this.message.id}).then(result => {
+            productApi.remove({id: this.product.id}).then(result => {
                 if (result.ok) {
-                    this.messages.slice(this.messages.indexOf(this.message), 1)
+                    this.products.splice(this.products.indexOf(this.product), 1)
                 }
             })
         }
@@ -123,39 +123,39 @@ Vue.component('message-row', {
 
 
 //компонент который выводит все что связано с сообщениями
-// Определяем новый компонент под именем messages-list
-Vue.component('messages-list', {    //название компонента
+// Определяем новый компонент под именем products-list
+Vue.component('products-list', {    //название компонента
     //список значений котоорые ожидает компонент
-    props: ['messages'],
-    //:message="message" предает параметр message в message-row
+    props: ['products'],
+    //:product="product" предает параметр product в message-row
     data: function () {
         return{
-            message: null
+            product: null
         }
     },
     template:
         '<div style="position: relative; width: 300px">'+
-        '<message-form :messages="messages" :messageAttr="message" />'+
-        //в message-row отправляем :message="message" :key="message.id" :editMethod="editMethod"
-        '<message-row v-for="message in messages" :key="message.id" :message="message" '+
-        ':editMethod="editMethod" :messages="messages" />'+
+        '<message-form :products="products" :productAttr="product" />'+
+        //в message-row отправляем :product="product" :key="product.id" :editMethod="editMethod"
+        '<message-row v-for="product in products" :key="product.id" :product="product" '+
+        ':editMethod="editMethod" :products="products" />'+
         '</div>',
     //ХУКИ жизненого цикла //обычная анонимная функция, Например, хук created можно использовать для выполнения кода после создания экземпляра:
     created: function () {
         //запрос на сервер
-        messageApi.get().then(result =>
+        productApi.get().then(result =>
             /*console.log(result)*/
             result.json().then(data =>
                 //вывести данные в консоль
                 /*console.log(data),*/
-                //записать данные в messages
-                data.forEach(message => this.messages.push(message))
+                //записать данные в products
+                data.forEach(product => this.products.push(product))
             )
         )
     },
     methods: {
-        editMethod: function (message) {
-            this.message = message;
+        editMethod: function (product) {
+            this.product = product;
         }
     }
 });
@@ -163,12 +163,12 @@ Vue.component('messages-list', {    //название компонента
 var app = new Vue({
     el: '#app',
     //чтобы использовать компонент добавлем его в template
-    // :messages="messages" параметр который мы передаем в message-list
-    template: '<messages-list :messages="messages"/>',
+    // :products="products" параметр который мы передаем в message-list
+    template: '<products-list :products="products"/>',
     data: {
-        messages: [
-            /*{id: '123', text:'Wow'},
-            {id: '124', text:'hey'},*/
+        products: [
+            /*{id: '123', productName:'Wow'},
+            {id: '124', productName:'hey'},*/
         ]
     }
 })

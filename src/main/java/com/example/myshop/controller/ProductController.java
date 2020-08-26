@@ -1,91 +1,73 @@
 package com.example.myshop.controller;
 
+import com.example.myshop.domain.Product;
 import com.example.myshop.exeptions.NotFoundExeption;
+import com.example.myshop.repos.ProductRepo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
 @RestController
-@RequestMapping("product2")
+@RequestMapping("product")
 public class ProductController {
+    private final ProductRepo productRepo;
 
 
-
-    private int count = 3;
-
-    private ArrayList<Map<String, String>> products = new ArrayList<> () {{
-        add (new HashMap<> () {{
-            put ("id", "1");
-            put ("text", "Razer mouse");
-        }});
-        add (new HashMap<> () {{
-            put ("id", "2");
-            put ("text", "Stilseries mouse");
-        }});
-    }};
-
-
+    @Autowired
+    public ProductController(ProductRepo productRepo) {
+        this.productRepo = productRepo;
+    }
 
     @GetMapping
-    public List<Map<String,String>> list(){
-        return products;
+    public List<Product> list(){
+        return productRepo.findAll();
     }
 
     @GetMapping("{id}")
-    public Map<String, String> getOne(@PathVariable String id){
-        return getProduct (id);
+    public Product getOne(@PathVariable String id){
+        return productRepo.getOne(Long.valueOf(id));
     }
 
-    private Map<String, String> getProduct (String id) {
-        return products.stream ()
-                .filter (products -> products.get ("id").equals (id))
-                .findFirst ()
-                .orElseThrow (NotFoundExeption::new);   //обработка случая когда не найдено продукт
-    }
 
     @RequestMapping("create")
     @PostMapping
-    private Map<String, String> create(
+    private Product create(
             @RequestPart(value = "file") Optional<MultipartFile> file,
-            @RequestPart(value = "product") Map<String, String> product
+            @RequestPart(value = "product") Product product
     ){
-        product.put ("id", String.valueOf (count++));
-
-
         if (file.isPresent()) {
-            product.put ("file", file.get().getOriginalFilename ());
+            //на случай когда будут приходить картинки
+            System.out.println("fileName = "+file.get().getOriginalFilename());
         }
 
-        products.add (product);
-
-        return product;
+        return productRepo.save(product);
     }
 
+
     @PutMapping("{id}")
-    public Map<String, String> update(
+    public Product update(
             @PathVariable String id,
             @RequestPart(value = "file") Optional<MultipartFile> file,
-            @RequestPart(value = "product") Map<String, String> product
+            @RequestPart(value = "product") Product product
     ){
-        Map<String, String> productFromDb = getProduct (id);
-
-        productFromDb.putAll (product);
-
         if (file.isPresent()) {
-            productFromDb.put ("file", file.get().getOriginalFilename ());
+            //на случай когда будут приходить картинки
+            System.out.println("newFileName = "+file.get().getOriginalFilename());
         }
 
-        productFromDb.put ("id", id);
+        Product productfromDb = productRepo.findById(Long.valueOf(id)).get();
 
-        return productFromDb;
+        BeanUtils.copyProperties (product, productfromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
+        Product updatedProduct = productRepo.save (productfromDb);
+        return updatedProduct;
     }
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){
-        Map<String, String> product = getProduct (id);
-
-        products.remove (product);
+        productRepo.deleteById(Long.valueOf(id));
     }
 
 
