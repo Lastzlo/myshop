@@ -31,7 +31,6 @@ public class ProductController {
         return productRepo.getOne(Long.valueOf(id));
     }
 
-
     @PostMapping
     private Product create(
             @RequestPart(value = "file") Optional<MultipartFile> file,
