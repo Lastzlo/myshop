@@ -132,19 +132,6 @@ Vue.component('products-list', {    //название компонента
         '<message-row v-for="product in products" :key="product.id" :product="product" '+
         ':editMethod="editMethod" :products="products" />'+
         '</div>',
-    //ХУКИ жизненого цикла //обычная анонимная функция, Например, хук created можно использовать для выполнения кода после создания экземпляра:
-    created: function () {
-        //запрос на сервер
-        productApi.get().then(result =>
-            /*console.log(result)*/
-            result.json().then(data =>
-                //вывести данные в консоль
-                /*console.log(data),*/
-                //записать данные в products
-                data.forEach(product => this.products.push(product))
-            )
-        )
-    },
     methods: {
         editMethod: function (product) {
             this.product = product;
@@ -158,11 +145,19 @@ var app = new Vue({
     // :products="products" параметр который мы передаем в message-list
     template: '<products-list :products="products"/>',
     data: {
-        products: [
-            /*{id: '123', productName:'Wow'},
-            {id: '124', productName:'hey'},*/
-        ]
-    }
+        products:[]
+    },
+    //можем вызывать ведь нету автроизации, в примере sarafan там вынесено в frontendData
+    //перенесли сюда
+    //ХУКИ жизненого цикла
+    // обычная анонимная функция, Например, хук created можно использовать для выполнения кода после создания экземпляра:
+    created: function () {
+        //запрос на сервер
+        productApi.get().then(result =>
+            result.json().then(data =>
+                //записать данные в products
+                data.forEach(product => this.products.push(product))
+            )
+        )
+    },
 })
-
-
