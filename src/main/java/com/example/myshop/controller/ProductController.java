@@ -32,7 +32,6 @@ public class ProductController {
     }
 
 
-    @RequestMapping("create")
     @PostMapping
     private Product create(
             @RequestPart(value = "file") Optional<MultipartFile> file,

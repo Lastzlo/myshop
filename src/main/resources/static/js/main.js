@@ -8,14 +8,7 @@ function getIndex(list, id) {
     return -1;
 }
 
-//добавляем кастомную ссылку для сохранения сообщения
-/*https://github.com/pagekit/vue-resource/blob/develop/docs/resource.md*/
-var productApi = Vue.resource(
-    'product{/id}',
-    {},
-    {
-        saveProduct: {method: 'POST', url: 'product/create'}
-    })
+var productApi = Vue.resource('/product{/id}')
 
 //компонент в который буду записиваться данные
 Vue.component('message-form', {
@@ -76,12 +69,11 @@ Vue.component('message-form', {
             }
             else {
                 //saveProduction имеет кастомную ссылку 'product/create'
-                productApi.saveProduct({}, formData).then(
+                productApi.save({}, formData).then(
                     result =>
                         result.json().then(data => {
                             this.products.push(data);
                             this.productName = '';
-
 
                             this.file = ''
                             this.$refs.fileupload.value=null;
