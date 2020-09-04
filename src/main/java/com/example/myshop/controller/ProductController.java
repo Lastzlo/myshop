@@ -38,7 +38,9 @@ public class ProductController {
     ){
         if (file.isPresent()) {
             //на случай когда будут приходить картинки
-            System.out.println("fileName = "+file.get().getOriginalFilename());
+            String fileName = file.get ().getOriginalFilename ();
+            System.out.println("fileName = "+fileName);
+            product.setProductFile (fileName);
         }
 
         return productRepo.save(product);
@@ -53,7 +55,9 @@ public class ProductController {
     ){
         if (file.isPresent()) {
             //на случай когда будут приходить картинки
-            System.out.println("newFileName = "+file.get().getOriginalFilename());
+            String newFileName = file.get ().getOriginalFilename ();
+            System.out.println("newFileName = "+newFileName);
+            product.setProductFile (newFileName);
         }
 
         Product productfromDb = productRepo.findById(Long.valueOf(id)).get();

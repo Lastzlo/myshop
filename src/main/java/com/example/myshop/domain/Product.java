@@ -10,6 +10,8 @@ public class Product {
 
     private String productName;
 
+    private String productFile;
+
     public Product() {
     }
 
@@ -27,5 +29,13 @@ public class Product {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getProductFile () {
+        return productFile;
+    }
+
+    public void setProductFile (String productFile) {
+        this.productFile = productFile;
     }
 }

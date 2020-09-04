@@ -32,9 +32,8 @@
         },
         watch: {
             productAttr: function (newVal, oldVal) {
-                this.productName = newVal.productName;
-                this.id = newVal.id;
-
+                this.productName = newVal.productName
+                this.id = newVal.id
             }
         },
         methods: {

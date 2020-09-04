@@ -5,8 +5,8 @@
         <product-row v-for="product in products"
                      :key="product.id"
                      :product="product"
-                     :editMethod="editMethod"
-                     :products="products" />
+                     :editProduct="editProduct"
+                     :deleteProduct="deleteProduct" />
     </div>
 </template>
 
@@ -27,8 +27,15 @@
             }
         },
         methods: {
-            editMethod: function (product) {
-                this.product = product;
+            editProduct(product) {
+                this.product = product
+            },
+            deleteProduct(product) {
+                this.$resource('/product{/id}').remove({id: product.id}).then(result => {
+                    if (result.ok) {
+                        this.products.splice(this.products.indexOf(product), 1)
+                    }
+                })
             }
         }
     }
