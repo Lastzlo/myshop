@@ -1,18 +1,27 @@
 <template>
-    <div>
-        <h4>Categories</h4>
-        <div>
-            <categories-list :categories="categories"/>
-        </div>
-        <h4>Brands</h4>
-        <div>
-            <brands-list :brands="brands"/>
-        </div>
-        <h4>Рroducts</h4>
-        <div>
-            <products-list :products="products"/>
-        </div>
-    </div>
+    <v-app>
+        <v-app-bar>
+            <v-toolbar-title>My Shop</v-toolbar-title>
+        </v-app-bar>
+        <v-main>
+            <v-container style="height: 1500px;">
+                <div>
+                    <h4>Categories</h4>
+                    <div>
+                        <categories-list :categories="categories"/>
+                    </div>
+                    <h4>Brands</h4>
+                    <div>
+                        <brands-list :brands="brands"/>
+                    </div>
+                    <h4>Рroducts</h4>
+                    <div>
+                        <products-list :products="products"/>
+                    </div>
+                </div>
+            </v-container>
+        </v-main>
+    </v-app>
 
 </template>
 
