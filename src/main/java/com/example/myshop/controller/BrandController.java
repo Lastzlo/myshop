@@ -42,11 +42,10 @@ public class BrandController {
             @PathVariable String id,
             @RequestBody Brand brand
     ){
-        Brand brandfromDb = brandRepo.findById(Long.valueOf(id)).get();
+        Brand brandFromDb = brandRepo.findById(Long.valueOf(id)).get();
 
-        BeanUtils.copyProperties (brand, brandfromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
-        Brand updatedBrand = brandRepo.save (brandfromDb);
-        return updatedBrand;
+        BeanUtils.copyProperties (brand, brandFromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
+        return brandRepo.save (brandFromDb);
     }
 
     @DeleteMapping("{id}")

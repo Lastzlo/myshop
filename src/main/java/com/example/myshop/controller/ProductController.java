@@ -1,20 +1,19 @@
 package com.example.myshop.controller;
 
 import com.example.myshop.domain.Product;
-import com.example.myshop.exeptions.NotFoundExeption;
 import com.example.myshop.repos.ProductRepo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("product")
 public class ProductController {
     private final ProductRepo productRepo;
-
 
     @Autowired
     public ProductController(ProductRepo productRepo) {
@@ -63,8 +62,7 @@ public class ProductController {
         Product productfromDb = productRepo.findById(Long.valueOf(id)).get();
 
         BeanUtils.copyProperties (product, productfromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
-        Product updatedProduct = productRepo.save (productfromDb);
-        return updatedProduct;
+        return productRepo.save (productfromDb);
     }
 
     @DeleteMapping("{id}")

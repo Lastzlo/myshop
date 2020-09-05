@@ -42,11 +42,10 @@ public class CategoryController {
             @PathVariable String id,
             @RequestBody Category category
     ){
-        Category categoryfromDb = categoryRepo.findById(Long.valueOf(id)).get();
+        Category categoryFromDb = categoryRepo.findById(Long.valueOf(id)).get();
 
-        BeanUtils.copyProperties (category, categoryfromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
-        Category updatedCategory = categoryRepo.save (categoryfromDb);
-        return updatedCategory;
+        BeanUtils.copyProperties (category, categoryFromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
+        return categoryRepo.save (categoryFromDb);
     }
 
     @DeleteMapping("{id}")
