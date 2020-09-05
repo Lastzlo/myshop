@@ -1,17 +1,30 @@
 <template>
     <div>
-        <products-list :products="products"/>
+        <h4>Categories</h4>
+        <div>
+            <categories-list :categories="categories"/>
+        </div>
+        <h4>Рroducts</h4>
+        <div>
+            <products-list :products="products"/>
+        </div>
     </div>
+
 </template>
 
 <script>
-    import ProductsList from "components/products/ProductsList.vue";
+    import CategoriesList from "components/categories/CategoriesList.vue"
+    import ProductsList from "components/products/ProductsList.vue"
     export default {
         name: "App.vue",
-        components: {ProductsList},
+        components: {
+            CategoriesList,
+            ProductsList,
+        },
         data() {
             return{
-                products: []
+                products: [],
+                categories: []
             }
         },
         created: function () {
@@ -20,6 +33,13 @@
                 result.json().then(data =>
                     //записать данные в products
                     data.forEach(product => this.products.push(product))
+                )
+            )
+
+            this.$resource('/category{/id}').get().then(result =>
+                result.json().then(data =>
+                    //записать данные в products
+                    data.forEach(category => this.categories.push(category))
                 )
             )
         },
