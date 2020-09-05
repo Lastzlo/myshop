@@ -6,14 +6,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Brend {
+public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    String brendName;
+    String brandName;
 
-    public Brend() {
+    public Brand() {
     }
 
     public Long getId() {
@@ -24,11 +24,11 @@ public class Brend {
         this.id = id;
     }
 
-    public String getBrendName() {
-        return brendName;
+    public String getBrandName() {
+        return brandName;
     }
 
-    public void setBrendName(String brendName) {
-        this.brendName = brendName;
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 }

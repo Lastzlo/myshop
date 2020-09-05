@@ -1,8 +1,8 @@
 <template>
-    <!--v-model="categoryName" записывает весь пользовательский ввод в переменную categoryName
+    <!--v-model="brandName" записывает весь пользовательский ввод в переменную brandName
     v-on:click="save" запускает анонимную функцию записаную в save-->
     <div>
-        <input type="text" placeholder="Write something" v-model="categoryName"/>
+        <input type="text" placeholder="Write something" v-model="brandName"/>
         <!--обработчик нажатия на кнопку v-on:click="save"-->
         <input type="button" value="Save" v-on:click="save"/>
     </div>
@@ -20,42 +20,42 @@
     }
 
     export default {
-        name: "CategoryForm",
-        props: ['categories', 'categoryAttr'],
+        name: "BrandForm",
+        props: ['brands', 'brandAttr'],
         data: function() {
             return {
                 id: '',
-                categoryName: '',   //переменная для текста
+                brandName: '',   //переменная для текста
             }
         },
         watch: {
-            categoryAttr: function (newVal, oldVal) {
-                this.categoryName = newVal.categoryName
+            brandAttr: function (newVal, oldVal) {
+                this.brandName = newVal.brandName
                 this.id = newVal.id
             }
         },
         methods: {
             save: function () {
 
-                let category = {categoryName: this.categoryName};
+                let brand = {brandName: this.brandName};
 
                 if(this.id){
-                    this.$resource('/category{/id}').update({id: this.id}, category).then(result =>
+                    this.$resource('/brand{/id}').update({id: this.id}, brand).then(result =>
                         result.json().then(data => {
-                            var index = getIndex(this.categories, data.id)
-                            this.categories.splice(index, 1, data)
-                            this.categoryName = ''
+                            var index = getIndex(this.brands, data.id)
+                            this.brands.splice(index, 1, data)
+                            this.brandName = ''
                             this.id = ''
                         })
                     )
                 }
                 else {
-                    //saveProduction имеет кастомную ссылку 'category/create'
-                    this.$resource('/category{/id}').save({}, category).then(
+                    //saveProduction имеет кастомную ссылку 'brand/create'
+                    this.$resource('/brand{/id}').save({}, brand).then(
                         result =>
                             result.json().then(data => {
-                                this.categories.push(data)
-                                this.categoryName = ''
+                                this.brands.push(data)
+                                this.brandName = ''
                             })
                     )
                 }
