@@ -4,36 +4,33 @@
             <v-form>
                 <v-container id="categories-playground">
                     <v-combobox
-                            v-model="model"
+                            v-model="category"
                             :filter="filter"
-                            :hide-no-data="!search"
+                            :hide-no-data="!searchCategory"
                             :items="categories"
-                            :search-input.sync="search"
-                            hide-selected
-                            color="blue-grey lighten-2"
-                            label="Select category"
-                            multiple
-                            small-chips
-                            solo
-                    >
+                            item-value="categoryName"
+                            item-text="categoryName"
+                            :search-input.sync="searchCategory"
 
-                        <!--<template v-slot:no-data>
+                            color="blue-grey lighten-2"
+                            label="Select category or create new"
+
+                            clearable
+                    >
+                        <template v-slot:no-data>
                             <v-list-item>
                                 <span class="subheading">Create</span>
                                 <v-chip
                                         label
                                         small
                                 >
-                                    {{ search }}
+                                    {{ searchCategory }}
                                 </v-chip>
                             </v-list-item>
-                        </template>-->
-
-                        <template v-slot:selection="{ attrs, item, parent, selected }">
+                        </template>
+                        <template v-slot:selection="{item}">
                             <v-chip
                                     v-if="item === Object(item)"
-                                    v-bind="attrs"
-                                    :input-value="selected"
                                     label
                                     small
                             >
@@ -42,12 +39,10 @@
                                 </span>
                                 <v-icon
                                         small
-                                        @click="parent.selectItem(item)"
-                                >close</v-icon>
+                                        @click="clearCategory"
+                                >mdi-close</v-icon>
                             </v-chip>
                         </template>
-
-
                         <template v-slot:item="{ index, item }">
                             <v-text-field
                                     v-if="editing === item"
@@ -63,9 +58,90 @@
                                     v-else
                                     dark
                                     label
-                                    small
                             >
                                 {{ item.categoryName }}
+                            </v-chip>
+                            <v-spacer></v-spacer>
+                            <v-list-item-action @click.stop>
+                                <v-btn
+                                        icon
+                                        small
+                                        @click.stop.prevent="edit(index, item)"
+                                >
+                                    <v-icon>{{ editing !== item ? 'mdi-pencil' : 'mdi-check' }}</v-icon>
+                                </v-btn>
+                                <v-btn
+                                        icon
+                                        small
+                                        @click.stop.prevent="delCategory(item)"
+                                >
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
+
+
+                            </v-list-item-action>
+                        </template>
+                    </v-combobox>
+                </v-container>
+
+                <v-container id="brands-playground">
+                    <v-combobox
+                            v-model="brand"
+                            :filter="filter"
+                            :hide-no-data="!searchBrand"
+                            :items="brands"
+                            item-value="brandName"
+                            item-text="brandName"
+                            :search-input.sync="searchBrand"
+                            hide-selected
+                            color="blue-grey lighten-2"
+                            label="Select brand or create new"
+                            clearable
+
+                    >
+                        <template v-slot:no-data>
+                            <v-list-item>
+                                <span class="subheading">Create</span>
+                                <v-chip
+                                        label
+                                        small
+                                >
+                                    {{ searchBrand }}
+                                </v-chip>
+                            </v-list-item>
+                        </template>
+                        <template v-slot:selection="{item}">
+                            <v-chip
+                                    v-if="item === Object(item)"
+                                    label
+                                    small
+                            >
+                                <span class="pr-2">
+                                    {{ item.brandName }}
+                                </span>
+                                <v-icon
+                                        small
+                                        @click="clearBrand"
+                                >mdi-close</v-icon>
+                            </v-chip>
+                        </template>
+                        <template v-slot:item="{ index, item }">
+                            <v-text-field
+                                    v-if="editing === item"
+                                    v-model="editing.brandName"
+                                    autofocus
+                                    flat
+                                    background-color="transparent"
+                                    hide-details
+                                    solo
+                                    @keyup.enter="edit(index, item)"
+                            ></v-text-field>
+                            <v-chip
+                                    v-else
+                                    dark
+                                    label
+                            >
+                                {{ item.brandName }}
                             </v-chip>
                             <v-spacer></v-spacer>
                             <v-list-item-action @click.stop>
@@ -75,42 +151,23 @@
                                 >
                                     <v-icon>{{ editing !== item ? 'mdi-pencil' : 'mdi-check' }}</v-icon>
                                 </v-btn>
+                                <v-btn
+                                        icon
+                                        small
+                                        @click.stop.prevent="delBrand(item)"
+                                >
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
                             </v-list-item-action>
                         </template>
-
-                        <!--<template v-slot:item="data">
-                            <v-list-item-content>
-                                <v-list-item-title v-html="data.item.categoryName"></v-list-item-title>
-
-                            </v-list-item-content>
-                        </template>-->
                     </v-combobox>
                 </v-container>
 
-                <v-container id="brands-playground">
-                    <v-autocomplete
-                            :items="brands"
-                            color="blue-grey lighten-2"
-                            label="Select brand"
-                            item-text="brandName"
-                            item-value="brandName"
-                            v-model="brandName"
-                    >
-                        <template v-slot:item="data">
-
-                            <v-list-item-content>
-                                <v-list-item-title v-html="data.item.brandName"></v-list-item-title>
-
-                            </v-list-item-content>
-                        </template>
-                    </v-autocomplete>
-                </v-container>
-
-                <v-container>
-                <v-text-field
+                <v-container id="product-playground">
+                    <v-text-field
                         v-model="productName"
                         label="Product name"
-                ></v-text-field>
+                    ></v-text-field>
                 </v-container>
             </v-form>
         </v-card-text>
@@ -130,59 +187,98 @@
             return {
                 id: '',
                 productName: '',   //переменная для текста
-                categoryName: '',
-                model: [],
-                brandName: '',
+                category: null,
+                brand: null,
                 editing: null,
-                search: null,
+                searchCategory: null,
+                searchBrand: null,
                 index: -1,
-
             }
         },
 
         watch: {
-            model (val, prev) {
-                if (val.length === prev.length) return
-
-                this.model = val.map(v => {
-                    if (typeof v === 'string') {
-                        v = {
-                            categoryName: v,
-                        }
-
-                        console.log(v)
-                        this.categories.push(v)
+            category (val, prev) {
+                if(val === undefined) return
+                if(typeof val === 'string') {
+                    this.category = {
+                        categoryName: val
                     }
-
-                    return v
-                })
+                }
+                /*console.log("Test watch")
+                console.log(val)
+                console.log(prev)*/
+            },
+            brand (val, prev) {
+                if(val === undefined) return
+                if(typeof val === 'string') {
+                    this.brand = {
+                        brandName: val
+                    }
+                }
+                // if (val.length === prev.length) return
+                //
+                // this.brand = val.map(v => {
+                //     if (typeof v === 'string') {
+                //         v = {
+                //             brandName: v,
+                //         }
+                //
+                //         //нужно еще добавить сохранение на сервер
+                //         this.brands.push(v)
+                //     }
+                //
+                //     return v
+                // })
             },
         },
 
         methods: {
+            clearCategory(){
+                this.category = undefined
+            },
+            clearBrand(){
+                this.brand = undefined
+            },
+            delCategory(item){
+
+                if(item.id){
+                    this.$resource('/category{/id}').remove({id: item.id}).then(result => {
+                        if (result.ok) {
+                            this.categories.splice(this.categories.indexOf(item), 1)
+
+                        }
+                    })
+                }else {
+                    this.categories.splice(this.categories.indexOf(item), 1)
+                }
+
+            },
+            delBrand(item){
+
+                if(item.id){
+                    this.$resource('/brand{/id}').remove({id: item.id}).then(result => {
+                        if (result.ok) {
+                            this.categories.splice(this.categories.indexOf(item), 1)
+
+                        }
+                    })
+                }else {
+                    this.categories.splice(this.categories.indexOf(item), 1)
+                }
+
+            },
+
+
             save() {
 
                 let product = {
                     productName: this.productName,
-                    brandName: this.brandName,
-                    categoryName: this.model
+                    brand: this.brand,
+                    category: this.category
 
                 };
-                // let formData = new FormData();
-                //
-                //
-                // formData.append(
-                //     'product',
-                //     new Blob(
-                //         [JSON.stringify(product)
-                //         ],
-                //         {
-                //             type: "application/json"
-                //         }
-                //     )
-                // )
 
-                //saveProduction имеет кастомную ссылку 'product/create'
+
                 this.$resource('/product{/id}').save({}, product).then(
                     result =>
                         result.json().then(data => {
@@ -194,7 +290,6 @@
                 )
 
             },
-
             edit (index, item) {
                 if (!this.editing) {
                     this.editing = item
