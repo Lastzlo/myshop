@@ -1,5 +1,6 @@
 package com.example.myshop.controller;
 
+import com.example.myshop.domain.Category;
 import com.example.myshop.domain.Product;
 import com.example.myshop.repos.ProductRepo;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +31,7 @@ public class ProductController {
         return productRepo.getOne(Long.valueOf(id));
     }
 
-    @PostMapping
+    /*@PostMapping
     private Product create(
             @RequestPart(value = "file") Optional<MultipartFile> file,
             @RequestPart(value = "product") Product product
@@ -42,6 +43,13 @@ public class ProductController {
             product.setProductFile (fileName);
         }
 
+        return productRepo.save(product);
+    }*/
+
+    @PostMapping
+    private Product create(
+            @RequestBody Product product
+    ){
         return productRepo.save(product);
     }
 

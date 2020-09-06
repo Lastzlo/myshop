@@ -5,7 +5,7 @@
         </v-app-bar>
         <v-main>
             <v-container>
-                <product2-form :categories="categories" :brands="brands"/>
+                <product2-form :categories="categories" :brands="brands" :products="products"/>
             </v-container>
 
             <v-container>
