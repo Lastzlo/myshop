@@ -4,7 +4,11 @@
             <v-toolbar-title>My Shop</v-toolbar-title>
         </v-app-bar>
         <v-main>
-            <v-container style="height: 1500px;">
+            <v-container>
+                <product2-form :categories="categories" :brands="brands"/>
+            </v-container>
+
+            <v-container>
                 <div>
                     <h4>Categories</h4>
                     <div>
@@ -26,12 +30,14 @@
 </template>
 
 <script>
-    import CategoriesList from "components/categories/CategoriesList.vue"
+    import Product2Form from "components/products2/Product2Form.vue";
+    import CategoriesList from "components/categories/CategoriesList.vue";
     import BrandsList from "components/brands/BrandsList.vue";
-    import ProductsList from "components/products/ProductsList.vue"
+    import ProductsList from "components/products/ProductsList.vue";
     export default {
         name: "App.vue",
         components: {
+            Product2Form,
             CategoriesList,
             BrandsList,
             ProductsList,

@@ -34,6 +34,7 @@
                 this.$resource('/category{/id}').remove({id: category.id}).then(result => {
                     if (result.ok) {
                         this.categories.splice(this.categories.indexOf(category), 1)
+
                     }
                 })
             }
