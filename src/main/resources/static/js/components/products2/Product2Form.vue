@@ -19,13 +19,11 @@
                     >
                         <template v-slot:no-data>
                             <v-list-item>
-                                <span class="subheading">Create</span>
-                                <v-chip
-                                        label
-                                        small
-                                >
-                                    {{ searchCategory }}
-                                </v-chip>
+                                <v-list-item-content>
+                                    <v-list-item-title>
+                                        No results matching "<strong>{{ searchCategory }}</strong>". Press <kbd >enter</kbd> to create a new one
+                                    </v-list-item-title>
+                                </v-list-item-content>
                             </v-list-item>
                         </template>
                         <template v-slot:selection="{item}">
@@ -165,9 +163,31 @@
 
                 <v-container id="product-playground">
                     <v-text-field
-                        v-model="productName"
-                        label="Product name"
+                            v-model="productName"
+                            label="Product name"
                     ></v-text-field>
+                    <v-text-field
+                            v-model="price"
+                            label="price(грн)"
+                    ></v-text-field>
+                    <v-text-field
+                            v-model="productDiscription"
+                            label="product Discription"
+                    ></v-text-field>
+
+                </v-container>
+
+                <v-container id="tags-playground">
+                    <v-combobox
+                            v-model="tags"
+                            label="tags"
+                            multiple
+                            :hide-no-data="!searchTag"
+
+                            clearable
+                    >
+
+                    </v-combobox>
                 </v-container>
             </v-form>
         </v-card-text>
@@ -186,13 +206,17 @@
         data: function() {
             return {
                 id: '',
-                productName: '',   //переменная для текста
                 category: null,
                 brand: null,
+                productName: '',
+                price: '',
+                productDiscription: '',
+                tags:null,
                 editing: null,
                 searchCategory: null,
+                searchTag: null,
                 searchBrand: null,
-                index: -1,
+                index: -1
             }
         },
 
@@ -204,9 +228,6 @@
                         categoryName: val
                     }
                 }
-                /*console.log("Test watch")
-                console.log(val)
-                console.log(prev)*/
             },
             brand (val, prev) {
                 if(val === undefined) return
@@ -215,20 +236,6 @@
                         brandName: val
                     }
                 }
-                // if (val.length === prev.length) return
-                //
-                // this.brand = val.map(v => {
-                //     if (typeof v === 'string') {
-                //         v = {
-                //             brandName: v,
-                //         }
-                //
-                //         //нужно еще добавить сохранение на сервер
-                //         this.brands.push(v)
-                //     }
-                //
-                //     return v
-                // })
             },
         },
 
@@ -267,15 +274,15 @@
                 }
 
             },
-
-
             save() {
 
                 let product = {
-                    productName: this.productName,
+                    category: this.category,
                     brand: this.brand,
-                    category: this.category
-
+                    productName: this.productName,
+                    price: this.price,
+                    productDiscription: this.productDiscription,
+                    tags: this.tags,
                 };
 
 
@@ -283,7 +290,14 @@
                     result =>
                         result.json().then(data => {
                             this.products.push(data);
-                            this.productName = '';
+
+                            this.category= null;
+                            this.brand= null;
+                            this.productName= '';
+                            this.price= '';
+                            this.productDiscription= '';
+                            this.tags=null;
+
 
 
                         })

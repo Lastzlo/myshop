@@ -1,7 +1,7 @@
 package com.example.myshop.controller;
 
-import com.example.myshop.domain.Category;
 import com.example.myshop.domain.Product;
+import com.example.myshop.repos.BrandRepo;
 import com.example.myshop.repos.ProductRepo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,12 @@ import java.util.Optional;
 public class ProductController {
     private final ProductRepo productRepo;
 
+    private final BrandRepo brandRepo;
+
     @Autowired
-    public ProductController(ProductRepo productRepo) {
+    public ProductController (ProductRepo productRepo, BrandRepo brandRepo) {
         this.productRepo = productRepo;
+        this.brandRepo = brandRepo;
     }
 
     @GetMapping
@@ -53,8 +56,7 @@ public class ProductController {
         return productRepo.save(product);
     }
 
-
-    @PutMapping("{id}")
+    /*@PutMapping("{id}")
     public Product update(
             @PathVariable String id,
             @RequestPart(value = "file") Optional<MultipartFile> file,
@@ -64,8 +66,20 @@ public class ProductController {
             //на случай когда будут приходить картинки
             String newFileName = file.get ().getOriginalFilename ();
             System.out.println("newFileName = "+newFileName);
-            product.setProductFile (newFileName);
+            //product.setProductFile (newFileName);
         }
+
+        Product productfromDb = productRepo.findById(Long.valueOf(id)).get();
+
+        BeanUtils.copyProperties (product, productfromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
+        return productRepo.save (productfromDb);
+    }*/
+
+    @PostMapping("{id}")
+    private Product update(
+            @PathVariable String id,
+            @RequestBody Product product
+    ){
 
         Product productfromDb = productRepo.findById(Long.valueOf(id)).get();
 

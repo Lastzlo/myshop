@@ -13,6 +13,10 @@ public class Category {
 
     String categoryName;
 
+    //brands
+    //tags
+    //products
+
     public Category() {
     }
 
