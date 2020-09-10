@@ -1,62 +1,74 @@
 package com.example.myshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.IdName.class)
     private Long id;
 
+    @JsonView(Views.IdName.class)
     private String productName;
 
+    //brand
+    // tag
+    // dicription
+    // price
+    // photos
+    @JsonView(Views.FullMessage.class)
+    private String productDiscription;
+
     @ElementCollection
+    @JsonView(Views.FullMessage.class)
     private List<String> photos;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @ElementCollection
-    private List<String> tags;
+    @ManyToMany
+    @JsonView(Views.FullMessage.class)
+    private Set<Tag> tags;
 
+    @JsonView(Views.FullMessage.class)
     private String price;
-
-    private String productDiscription;
-
-    //brand
-    // tag dicription price photos
-
-
-    public Product (String productName, List<String> photos, Brand brand, List<String> tags, String price, String productDiscription) {
-        this.productName = productName;
-        this.photos = photos;
-        this.brand = brand;
-        this.tags = tags;
-        this.price = price;
-        this.productDiscription = productDiscription;
-    }
 
     public Product() {
     }
 
-    public Long getId() {
+    public Long getId () {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId (Long id) {
         this.id = id;
     }
 
-    public String getProductName() {
-        ArrayList<String> strings = new ArrayList<> ();
+    public String getProductName () {
         return productName;
     }
 
-    public void setProductName(String productName) {
+    public void setProductName (String productName) {
         this.productName = productName;
+    }
+
+    public String getProductDiscription () {
+        return productDiscription;
+    }
+
+    public void setProductDiscription (String productDiscription) {
+        this.productDiscription = productDiscription;
     }
 
     public List<String> getPhotos () {
@@ -67,10 +79,13 @@ public class Product {
         this.photos = photos;
     }
 
-    public void addPhotoSrc (String photoSrc){
-        this.photos.add (photoSrc);
+    public Category getCategory () {
+        return category;
     }
 
+    public void setCategory (Category category) {
+        this.category = category;
+    }
 
     public Brand getBrand () {
         return brand;
@@ -80,16 +95,12 @@ public class Product {
         this.brand = brand;
     }
 
-    public List<String> getTags () {
+    public Set<Tag> getTags () {
         return tags;
     }
 
-    public void setTags (List<String> tags) {
+    public void setTags (Set<Tag> tags) {
         this.tags = tags;
-    }
-
-    public void setTag (String tag){
-        this.tags.add (tag);
     }
 
     public String getPrice () {
@@ -98,13 +109,5 @@ public class Product {
 
     public void setPrice (String price) {
         this.price = price;
-    }
-
-    public String getProductDiscription () {
-        return productDiscription;
-    }
-
-    public void setProductDiscription (String productDiscription) {
-        this.productDiscription = productDiscription;
     }
 }

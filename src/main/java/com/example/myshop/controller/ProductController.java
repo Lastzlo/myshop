@@ -1,8 +1,10 @@
 package com.example.myshop.controller;
 
 import com.example.myshop.domain.Product;
+import com.example.myshop.domain.Views;
 import com.example.myshop.repos.BrandRepo;
 import com.example.myshop.repos.ProductRepo;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,7 @@ public class ProductController {
     }
 
     @GetMapping
+    @JsonView(Views.IdName.class)
     public List<Product> list(){
         return productRepo.findAll();
     }

@@ -1,14 +1,33 @@
 <template>
     <v-app>
-        <v-app-bar>
+        <v-app-bar app>
             <v-toolbar-title>My Shop</v-toolbar-title>
         </v-app-bar>
         <v-main>
             <v-container>
-                <product2-form :categories="categories" :brands="brands" :products="products"/>
+                <v-tabs v-model="tabs">
+                    <v-tab>Category</v-tab>
+                    <v-tab>Brand</v-tab>
+                    <v-tab>Product</v-tab>
+                </v-tabs>
+
+                <v-tabs-items v-model="tabs">
+                    <v-tab-item>
+                        <category2-form :categories="categories"/>
+                    </v-tab-item>
+                    <v-tab-item>
+
+                    </v-tab-item>
+                    <v-tab-item>
+                        <!--<product2-form :categories="categories" :brands="brands" :products="products"/>-->
+                    </v-tab-item>
+
+                </v-tabs-items>
+
+
             </v-container>
 
-            <v-container>
+            <!--<v-container>
                 <div>
                     <h4>Categories</h4>
                     <div>
@@ -23,30 +42,33 @@
                         <products-list :products="products"/>
                     </div>
                 </div>
-            </v-container>
+            </v-container>-->
         </v-main>
     </v-app>
 
 </template>
 
 <script>
-    import Product2Form from "components/products2/Product2Form.vue";
+    import Category2Form from "components/categories2/Category2Form.vue";
+    /*import Product2Form from "components/products2/Product2Form.vue";
     import CategoriesList from "components/categories/CategoriesList.vue";
     import BrandsList from "components/brands/BrandsList.vue";
-    import ProductsList from "components/products/ProductsList.vue";
+    import ProductsList from "components/products/ProductsList.vue";*/
     export default {
         name: "App.vue",
         components: {
-            Product2Form,
+            Category2Form,
+            /*Product2Form,
             CategoriesList,
             BrandsList,
-            ProductsList,
+            ProductsList,*/
         },
         data() {
             return{
+                tabs: null,
                 categories: [],
-                brands: [],
-                products: [],
+                /*brands: [],
+                products: [],*/
 
             }
         },
@@ -59,7 +81,7 @@
                 )
             )
 
-            this.$resource('/brand{/id}').get().then(result =>
+            /*this.$resource('/brand{/id}').get().then(result =>
                 result.json().then(data =>
                     //записать данные в products
                     data.forEach(brand => this.brands.push(brand))
@@ -71,7 +93,7 @@
                     //записать данные в products
                     data.forEach(product => this.products.push(product))
                 )
-            )
+            )*/
 
         },
     }

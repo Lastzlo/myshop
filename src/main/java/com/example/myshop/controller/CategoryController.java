@@ -1,7 +1,9 @@
 package com.example.myshop.controller;
 
 import com.example.myshop.domain.Category;
+import com.example.myshop.domain.Views;
 import com.example.myshop.repos.CategoryRepo;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ public class CategoryController {
     }
 
     @GetMapping
+    @JsonView(Views.IdName.class)
     public List<Category> list(){
         return categoryRepo.findAll();
     }

@@ -6,22 +6,23 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-public class Brand {
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonView(Views.IdName.class)
-    Long id;
-    @JsonView(Views.IdName.class)
-    String brandName;
+    private Long id;
 
-    @OneToMany(mappedBy = "brand", orphanRemoval = true)
+    @JsonView(Views.IdName.class)
+    private String tagName;
+
+    @ManyToMany
     private Set<Product> products;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    public Brand() {
+    public Tag () {
     }
 
     public Long getId () {
@@ -32,12 +33,12 @@ public class Brand {
         this.id = id;
     }
 
-    public String getBrandName () {
-        return brandName;
+    public String getTagName () {
+        return tagName;
     }
 
-    public void setBrandName (String brandName) {
-        this.brandName = brandName;
+    public void setTagName (String tagName) {
+        this.tagName = tagName;
     }
 
     public Set<Product> getProducts () {

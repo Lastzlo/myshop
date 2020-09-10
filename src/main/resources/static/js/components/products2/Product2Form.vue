@@ -243,9 +243,6 @@
             clearCategory(){
                 this.category = undefined
             },
-            clearBrand(){
-                this.brand = undefined
-            },
             delCategory(item){
 
                 if(item.id){
@@ -259,6 +256,9 @@
                     this.categories.splice(this.categories.indexOf(item), 1)
                 }
 
+            },
+            clearBrand(){
+                this.brand = undefined
             },
             delBrand(item){
 
