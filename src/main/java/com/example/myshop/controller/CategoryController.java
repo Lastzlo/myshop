@@ -22,7 +22,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    @JsonView(Views.IdName.class)
+    @JsonView(Views.Brands.class)
     public List<Category> list(){
         return categoryRepo.findAll();
     }
@@ -47,9 +47,13 @@ public class CategoryController {
     ){
         Category categoryFromDb = categoryRepo.findById(Long.valueOf(id)).get();
 
-        BeanUtils.copyProperties (category, categoryFromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
+        categoryFromDb.setCategoryName (category.getCategoryName ());
+
+        //BeanUtils.copyProperties (category, categoryFromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
         return categoryRepo.save (categoryFromDb);
     }
+
+
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){

@@ -6,25 +6,24 @@
         <v-main>
             <v-container>
                 <v-tabs v-model="tabs">
-                    <v-tab>Category</v-tab>
-                    <v-tab>Brand</v-tab>
                     <v-tab>Product</v-tab>
+                    <v-tab>Brand</v-tab>
+                    <v-tab>Category</v-tab>
                 </v-tabs>
 
                 <v-tabs-items v-model="tabs">
                     <v-tab-item>
-
+                        <product-list :categories="categories"/>
                     </v-tab-item>
                     <v-tab-item>
-
+                        <brands-list :categories="categories"/>
                     </v-tab-item>
                     <v-tab-item>
-
+                        <categories-list :categories="categories"/>
                     </v-tab-item>
+
 
                 </v-tabs-items>
-
-
             </v-container>
 
         </v-main>
@@ -33,11 +32,16 @@
 </template>
 
 <script>
+    import ProductList from "components/products/ProductList.vue";
+    import BrandsList from "components/brands/BrandsList.vue";
+    import CategoriesList from "components/categories/CategoriesList.vue";
 
     export default {
         name: "App.vue",
         components: {
-
+            ProductList,
+            CategoriesList,
+            BrandsList
         },
         data() {
             return{

@@ -40,7 +40,7 @@ public class BrandController {
     }
 
 
-    @PutMapping("{id}")
+   /* @PutMapping("{id}")
     public Brand update(
             @PathVariable String id,
             @RequestBody Brand brand
@@ -49,7 +49,22 @@ public class BrandController {
 
         BeanUtils.copyProperties (brand, brandFromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
         return brandRepo.save (brandFromDb);
+    }*/
+
+    @PutMapping("{id}")
+    public Brand update(
+            @PathVariable String id,
+            @RequestBody Brand brand
+    ){
+        Brand brandFromDb = brandRepo.findById(Long.valueOf(id)).get();
+//
+//        BeanUtils.copyProperties (brand, brandFromDb, "id");
+//        return brandRepo.save (brandFromDb);
+        return brand;
     }
+
+
+
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){

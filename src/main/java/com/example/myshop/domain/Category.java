@@ -22,6 +22,7 @@ public class Category {
     private Set<Product> products;
 
     @OneToMany(mappedBy = "category", orphanRemoval = true)
+    @JsonView(Views.Brands.class)
     private Set<Brand> brands;
 
     @OneToMany(mappedBy = "category", orphanRemoval = true)
