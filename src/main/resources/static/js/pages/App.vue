@@ -13,13 +13,13 @@
 
                 <v-tabs-items v-model="tabs">
                     <v-tab-item>
-                        <category2-form :categories="categories"/>
+
                     </v-tab-item>
                     <v-tab-item>
 
                     </v-tab-item>
                     <v-tab-item>
-                        <!--<product2-form :categories="categories" :brands="brands" :products="products"/>-->
+
                     </v-tab-item>
 
                 </v-tabs-items>
@@ -27,49 +27,22 @@
 
             </v-container>
 
-            <!--<v-container>
-                <div>
-                    <h4>Categories</h4>
-                    <div>
-                        <categories-list :categories="categories"/>
-                    </div>
-                    <h4>Brands</h4>
-                    <div>
-                        <brands-list :brands="brands"/>
-                    </div>
-                    <h4>Рroducts</h4>
-                    <div>
-                        <products-list :products="products"/>
-                    </div>
-                </div>
-            </v-container>-->
         </v-main>
     </v-app>
 
 </template>
 
 <script>
-    import Category2Form from "components/categories2/Category2Form.vue";
-    /*import Product2Form from "components/products2/Product2Form.vue";
-    import CategoriesList from "components/categories/CategoriesList.vue";
-    import BrandsList from "components/brands/BrandsList.vue";
-    import ProductsList from "components/products/ProductsList.vue";*/
+
     export default {
         name: "App.vue",
         components: {
-            Category2Form,
-            /*Product2Form,
-            CategoriesList,
-            BrandsList,
-            ProductsList,*/
+
         },
         data() {
             return{
                 tabs: null,
                 categories: [],
-                /*brands: [],
-                products: [],*/
-
             }
         },
         created: function () {
