@@ -21,14 +21,17 @@
                             v-model="editedItem.productDiscription"
                             label="product Discription"
                     ></v-text-field>
-
                     <v-btn color="blue darken-1" text @click="save">Save</v-btn>
                 </v-container>
 
-
-
+                <v-container id="product-table">
+                    <!--тут будет список товаров-->
+                </v-container>
 
     </v-container>
+
+
+
 </template>
 
 <script>
