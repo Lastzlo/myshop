@@ -1,16 +1,58 @@
 package com.example.myshop.controller;
 
-import com.example.myshop.domain.Category;
-import com.example.myshop.domain.Views;
-import com.example.myshop.repos.CategoryRepo;
-import com.fasterxml.jackson.annotation.JsonView;
-import org.springframework.beans.BeanUtils;
+import com.example.myshop.domain.DirectoryType;
+import com.example.myshop.domain.LinkedDirectory;
+import com.example.myshop.repos.LinkedDirectoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
+@RequestMapping("directory")
+public class DirectoryController {
+    private final LinkedDirectoryRepo directoryRepo;
+
+
+
+    @Autowired
+    public DirectoryController (LinkedDirectoryRepo directoryRepo) {
+        this.directoryRepo = directoryRepo;
+    }
+
+    @GetMapping("getCore")
+    public LinkedDirectory getCore(){
+
+        LinkedDirectory directory = directoryRepo.findByDirectoryType (DirectoryType.CORE.toString ());
+        if (directory==null){
+            directory = new LinkedDirectory ("MyShop", DirectoryType.CORE.toString ());
+            directory = directoryRepo.save (directory);
+        }
+
+        return directory;
+    }
+
+    @GetMapping("{id}")
+    public LinkedDirectory getOne(@PathVariable String id){
+        return directoryRepo.getOne(Long.valueOf(id));
+    }
+
+    @PostMapping
+    private LinkedDirectory create(
+            @RequestBody LinkedDirectory directory
+    ){
+        directory.setDirectoryType (DirectoryType.CATEGORY.toString ());
+
+        return directoryRepo.save(directory);
+    }
+
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable String id){
+        directoryRepo.deleteById(Long.valueOf(id));
+    }
+
+
+
+    /*
+    @RestController
 @RequestMapping("category")
 public class CategoryController {
     private final CategoryRepo categoryRepo;
@@ -59,7 +101,6 @@ public class CategoryController {
     public void delete(@PathVariable String id){
         categoryRepo.deleteById(Long.valueOf(id));
     }
-
-
+    */
 
 }

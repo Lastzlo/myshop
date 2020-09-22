@@ -4,7 +4,7 @@
             <v-toolbar-title>My Shop</v-toolbar-title>
         </v-app-bar>
         <v-main>
-            <v-container>
+            <!--<v-container>
                 <v-tabs v-model="tabs">
                     <v-tab>Product</v-tab>
                     <v-tab>Brand</v-tab>
@@ -24,24 +24,26 @@
 
 
                 </v-tabs-items>
-            </v-container>
-
+            </v-container>-->
+            <directory-list/>
         </v-main>
     </v-app>
 
 </template>
 
 <script>
-    import ProductList from "components/products/ProductList.vue";
-    import BrandsList from "components/brands/BrandsList.vue";
-    import CategoriesList from "components/categories/CategoriesList.vue";
+    import DirectoryList from "components/other/DirectoryList.vue";
+    //import ProductList from "components/products/ProductList.vue";
+    //import BrandsList from "components/brands/BrandsList.vue";
+    //import CategoriesList from "components/categories/CategoriesList.vue";
 
     export default {
         name: "App.vue",
         components: {
-            ProductList,
-            CategoriesList,
-            BrandsList
+            DirectoryList
+            //ProductList,
+            //CategoriesList,
+            //BrandsList
         },
         data() {
             return{
@@ -51,12 +53,12 @@
         },
         created: function () {
             //запрос на сервер
-            this.$resource('/category{/id}').get().then(result =>
-                result.json().then(data =>
-                    //записать данные в products
-                    data.forEach(category => this.categories.push(category))
-                )
-            )
+            // this.$resource('/category{/id}').get().then(result =>
+            //     result.json().then(data =>
+            //         //записать данные в products
+            //         data.forEach(category => this.categories.push(category))
+            //     )
+            // )
 
             /*this.$resource('/brand{/id}').get().then(result =>
                 result.json().then(data =>
