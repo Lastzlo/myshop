@@ -141,8 +141,11 @@
                 if (this.id > -1) {
                     this.$resource('/category{/id}').update({id: this.id}, category).then(result =>
                         result.json().then(data => {
-                            var index = getIndex(this.categories, data.id)
+                            //var index = getIndex(this.categories, data.id)
+                            const index = this.categories.findIndex(item => item.id === data.id)
+
                             this.categories.splice(index, 1, data)
+
 
                         })
                     )

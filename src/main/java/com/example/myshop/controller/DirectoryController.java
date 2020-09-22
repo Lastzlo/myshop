@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("directory")
 public class DirectoryController {
@@ -57,12 +59,26 @@ public class DirectoryController {
     public void delete(@PathVariable String id){
         LinkedDirectory child = directoryRepo.getOne (Long.valueOf (id));
 
-        LinkedDirectory father = child.getFather ();
+        if(child !=null){
+            if(child.getFather ()!=null){
+                LinkedDirectory father = child.getFather ();
 
-        father.deleteChild (child);
-        directoryRepo.save (father);
+                father.deleteChild (child);
+                directoryRepo.save (father);
+            }
 
-        directoryRepo.deleteById(Long.valueOf(id));
+            if(child.getChildren ().size () != 0){
+                Set<LinkedDirectory> children = child.getChildren ();
+
+                children.forEach ((item)-> item.setFather (null));
+                child.getChildren ().clear ();
+                children.forEach ((item)-> directoryRepo.deleteById(item.getId ()));
+            }
+
+            directoryRepo.deleteById(Long.valueOf(id));
+        }
+
+
     }
 
 

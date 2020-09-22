@@ -1,7 +1,5 @@
 package com.example.myshop.domain;
 
-
-
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
@@ -17,14 +15,16 @@ public class LinkedDirectory {
     @JsonView(Views.IdName.class)
     String name;
 
+    @OneToMany
+    @JsonView(Views.OnlyChild.class)
+    private Set<LinkedDirectory> children;
+
+    @JsonView(Views.Type.class)
     String directoryType;
 
     @ManyToOne
     private LinkedDirectory father;
 
-    @OneToMany
-    @JsonView(Views.OnlyChild.class)
-    private Set<LinkedDirectory> children;
 
     public LinkedDirectory () {
     }

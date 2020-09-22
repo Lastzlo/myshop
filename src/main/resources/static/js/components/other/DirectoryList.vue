@@ -4,20 +4,16 @@
             <v-col>
                 <v-treeview
                         v-model="selection"
-
-                        :items="directories"
-                        item-key="name"
+                        :items="items"
                         selection-type="leaf"
                         selectable
 
-                        activatable
-                        open-all
-
-
                         return-object
                 >
-                    <template v-slot:append="{ item, open }">
-                        <v-btn @click="addChild(item)">Add child</v-btn>
+                    <template v-slot:append="{ item }">
+
+                        <v-icon @click="addChild(item) ">mdi-plus-circle-outline</v-icon>
+                        <v-icon v-if="item.directoryType !== 'CORE'" @click="deleteChild(item)">mdi-delete</v-icon>
                     </template>
                 </v-treeview>
             </v-col>
@@ -44,23 +40,7 @@
         name: "DirectoryList",
         data: () => ({
             selection: [],
-            directories: [
-                /*{
-                    id: 1,
-                    name: 'CategoryList',
-                    children: [
-                        { id: 7, name: 'Grandchild #3' },
-                        { id: 8, name: 'Grandchild #4' },
-                    ],
-                },
-                {
-                    id: 2,
-                    name: 'Root2',
-                    children: [
-                        { id: 5, name: 'Grandchild #1' },
-                        { id: 6, name: 'Grandchild #2' },
-                    ],
-                },*/
+            items: [
             ],
             defaultDirectory: {
                 name: '',
@@ -89,14 +69,45 @@
                 )
 
             },
+            deleteChild(item) {
 
+                this.$resource('/directory{/id}').remove({id: item.id}).then(result => {
+                    if (result.ok) {
+                        let father = this.findFatherOfItem(item.id, this.items)
+                        if(father.children){
+                            let children = father.children
+                            children.splice(children.indexOf(item), 1)
+                        } else this.items.splice(this.items.indexOf(father), 1)
 
+                    }
+                })
+            },
+
+            findFatherOfItem(id, items) {
+                return items.reduce((acc, item) => {
+                    if (acc) {
+                        return acc;
+                    }
+
+                    if (item.id === id) {
+                        return item;
+
+                    }
+
+                    if (item.children) {
+                        if(this.findFatherOfItem(id, item.children) != null){
+                            return item;
+                        }
+                    }
+                    return acc;
+                }, null);
+            },
         },
         created: function () {
             //запрос на сервер
             this.$resource('/directory/getCore').get().then(result =>
                 result.json().then(data => {
-                    this.directories.push(data)
+                    this.items.push(data)
                 })
             )
         },
