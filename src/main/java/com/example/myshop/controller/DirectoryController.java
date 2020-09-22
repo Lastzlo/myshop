@@ -2,7 +2,9 @@ package com.example.myshop.controller;
 
 import com.example.myshop.domain.DirectoryType;
 import com.example.myshop.domain.LinkedDirectory;
+import com.example.myshop.domain.Views;
 import com.example.myshop.repos.LinkedDirectoryRepo;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,14 +13,13 @@ import org.springframework.web.bind.annotation.*;
 public class DirectoryController {
     private final LinkedDirectoryRepo directoryRepo;
 
-
-
     @Autowired
     public DirectoryController (LinkedDirectoryRepo directoryRepo) {
         this.directoryRepo = directoryRepo;
     }
 
     @GetMapping("getCore")
+    @JsonView(Views.OnlyChild.class)
     public LinkedDirectory getCore(){
 
         LinkedDirectory directory = directoryRepo.findByDirectoryType (DirectoryType.CORE.toString ());
@@ -36,18 +37,34 @@ public class DirectoryController {
     }
 
     @PostMapping
+    @JsonView(Views.OnlyChild.class)
     private LinkedDirectory create(
-            @RequestBody LinkedDirectory directory
+            @RequestBody LinkedDirectory linkedDirectory
     ){
-        directory.setDirectoryType (DirectoryType.CATEGORY.toString ());
+        LinkedDirectory father = directoryRepo.getOne (linkedDirectory.getFather ().getId ());
 
-        return directoryRepo.save(directory);
+
+        linkedDirectory.setFather (father);
+        LinkedDirectory child = directoryRepo.save (linkedDirectory);
+
+        father.addChild (child);
+        directoryRepo.save (father);
+
+        return child;
     }
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){
+        LinkedDirectory child = directoryRepo.getOne (Long.valueOf (id));
+
+        LinkedDirectory father = child.getFather ();
+
+        father.deleteChild (child);
+        directoryRepo.save (father);
+
         directoryRepo.deleteById(Long.valueOf(id));
     }
+
 
 
 

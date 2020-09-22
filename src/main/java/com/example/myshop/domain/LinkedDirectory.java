@@ -2,6 +2,8 @@ package com.example.myshop.domain;
 
 
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -9,8 +11,10 @@ import java.util.Set;
 public class LinkedDirectory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.IdName.class)
     Long id;
 
+    @JsonView(Views.IdName.class)
     String name;
 
     String directoryType;
@@ -19,6 +23,7 @@ public class LinkedDirectory {
     private LinkedDirectory father;
 
     @OneToMany
+    @JsonView(Views.OnlyChild.class)
     private Set<LinkedDirectory> children;
 
     public LinkedDirectory () {
@@ -43,6 +48,14 @@ public class LinkedDirectory {
 
     public void setChildren (Set<LinkedDirectory> children) {
         this.children = children;
+    }
+
+    public void addChild(LinkedDirectory child){
+        this.children.add (child);
+    }
+
+    public void deleteChild(LinkedDirectory child){
+        this.children.remove (child);
     }
 
     public String getDirectoryType () {

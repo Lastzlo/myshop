@@ -12,7 +12,7 @@
 
                         activatable
                         open-all
-                        open-on-click
+
 
                         return-object
                 >
@@ -62,6 +62,10 @@
                     ],
                 },*/
             ],
+            defaultDirectory: {
+                name: '',
+                father: null
+            },
         }),
         methods: {
             addChild(item) {
@@ -70,38 +74,23 @@
 
                 }
 
-                const name = `${item.name} (${item.children.length})`;
-                const id = this.nextId++;
-                item.children.push({
-                    id,
-                    name
-                });
+                let linkedDirectory = {
+                    name :`${item.name} (${item.children.length})`,
+                    father: item,
+                    children: []
+                }
 
 
+                this.$resource('/directory{/id}').save({}, linkedDirectory).then(
+                    result =>
+                        result.json().then(data => {
+                            item.children.push(data)
+                        })
+                )
 
             },
 
-            /*findItem(id, items = null) {
-                if (!items) {
-                    items = this.items;
-                }
 
-                return items.reduce((acc, item) => {
-                    if (acc) {
-                        return acc;
-                    }
-
-                    if (item.id === id) {
-                        return item;
-                    }
-
-                    if (item.children) {
-                        return this.findItem(id, item.children);
-                    }
-
-                    return acc;
-                }, null);
-            }*/
         },
         created: function () {
             //запрос на сервер
@@ -110,12 +99,6 @@
                     this.directories.push(data)
                 })
             )
-            /*this.$resource('/category{/id}').save({}, category).then(
-                result =>
-                    result.json().then(data => {
-                        this.categories.push(data)
-                    })
-            )*/
         },
 
     }
