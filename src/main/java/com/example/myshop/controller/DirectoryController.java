@@ -23,20 +23,19 @@ public class DirectoryController {
     @GetMapping("getCore")
     @JsonView(Views.OnlyChild.class)
     public LinkedDirectory getCore(){
-
-        LinkedDirectory directory = directoryRepo.findByDirectoryType (DirectoryType.CORE.toString ());
+        LinkedDirectory directory = directoryRepo.findByDirectoryType (DirectoryType.CATEGORY_LIST.toString ());
         if (directory==null){
-            directory = new LinkedDirectory ("MyShop", DirectoryType.CORE.toString ());
+            directory = new LinkedDirectory ("Категории", DirectoryType.CATEGORY_LIST.toString ());
             directory = directoryRepo.save (directory);
         }
 
         return directory;
     }
 
-    @GetMapping("{id}")
+    /*@GetMapping("{id}")
     public LinkedDirectory getOne(@PathVariable String id){
         return directoryRepo.getOne(Long.valueOf(id));
-    }
+    }*/
 
     @PostMapping
     @JsonView(Views.OnlyChild.class)

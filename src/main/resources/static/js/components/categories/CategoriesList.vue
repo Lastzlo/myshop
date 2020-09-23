@@ -144,6 +144,7 @@
                             //var index = getIndex(this.categories, data.id)
                             const index = this.categories.findIndex(item => item.id === data.id)
 
+
                             this.categories.splice(index, 1, data)
 
 
