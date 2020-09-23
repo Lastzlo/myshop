@@ -1,34 +1,4 @@
 <template>
-    <!--<v-container>
-        <v-dialog v-model="dialog" max-width="500px">
-            <v-card>
-                <v-card-title>
-                    <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text>
-                    <v-container>
-                        <v-row>
-                            <v-col cols="12" sm="6" md="4">
-                                <v-text-field
-                                        v-model="editedItem.categoryName"
-                                        label="Category name"
-                                        autofocus
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                    <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </v-container>-->
-
     <v-container>
         <v-row>
             <v-col>
@@ -74,7 +44,35 @@
                 </template>
             </v-col>
         </v-row>
+        <v-container>
+            <v-dialog v-model="dialog" max-width="500px">
+                <v-card>
+                    <v-card-title>
+                        <span class="headline">{{ formTitle }}</span>
+                    </v-card-title>
 
+                    <v-card-text>
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12" sm="6" md="4">
+                                    <v-text-field
+                                            v-model="editedItem.name"
+                                            label="Write name"
+                                            autofocus
+                                    ></v-text-field>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" text @click="closeDialog">Cancel</v-btn>
+                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+        </v-container>
     </v-container>
 
 
@@ -110,34 +108,60 @@
         },
         watch: {
             dialog (val) {
-                val || this.close()
+                val || this.closeDialog()
             },
         },
         methods: {
+            closeDialog () {
+                this.dialog = false
+                this.$nextTick(() => {
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.id = -1
+                })
+            },
             addChild(item) {
-                if (!item.children) {
+                this.editedItem.father = item
+                this.dialog = true
+            },
+
+            save(){
+                let linkedDirectory = this.editedItem
+
+                if (this.id > -1) {
+                    //update
+                } else {
+                    let item = this.editedItem.father
+                    //save
+                    this.$resource('/directory').save({}, linkedDirectory).then(
+                        result =>
+                            result.json().then(data => {
+                                item.children.push(data)
+
+                                //открывает папку
+                                this.open.push(item)
+                                //console.log('this.open = '+this.open)
+                            })
+                    )
+                }
+                this.closeDialog()
+
+                /*if (!item.children) {
                     this.$set(item, "children", []);
 
-                }
+                }*/
 
-                let linkedDirectory = {
+                /*let linkedDirectory = {
                     name :`${item.name} (${item.children.length})`,
                     father: item,
                     children: []
-                }
+                }*/
 
+            },
 
-                this.$resource('/directory{/id}').save({}, linkedDirectory).then(
-                    result =>
-                        result.json().then(data => {
-                            item.children.push(data)
-
-                            //открывает папку
-                            this.open.push(item)
-                            console.log('this.open = '+this.open)
-                        })
-                )
-
+            editChild(item){
+                this.id = item.id
+                this.editedItem = Object.assign({}, item)
+                this.dialog = true
             },
 
             deleteChild(item) {
