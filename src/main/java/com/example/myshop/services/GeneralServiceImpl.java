@@ -48,4 +48,23 @@ public class GeneralServiceImpl implements  GeneralService{
 
         return productRepo.save(product);
     }
+
+    @Override
+    public void deleteProduct (Long id) {
+        productRepo.deleteById(id);
+    }
+
+    @Override
+    public Product updateProduct (Product product) {
+
+        Product productFromDb = productRepo.findById (product.getId ()).get ();
+
+        if(productFromDb!= null){
+            BeanUtils.copyProperties (product, productFromDb, "id", "tags", "photos", "creationDate");
+            productFromDb.setTags (product.getTags ());
+            return productRepo.save (productFromDb);
+        }
+
+        return product;
+    }
 }

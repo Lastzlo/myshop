@@ -77,7 +77,9 @@
 <script>
     export default {
         name: "DirectoryList",
-        props:['clearSelected'],
+        props:[
+            'tegsFromProduct',
+        ],
         data: () => ({
             dialog: false,
             selection: [],
@@ -110,18 +112,9 @@
                 this.$emit("selected-tags", this.selection);
             },
 
-            clearSelected(){
-                /*val || (this.selection = [])*/
-
-                this.selection = []
-
-                /*if (val === true){
-                    this.selection = []
-
-                }*/
+            tegsFromProduct(newVal, oldVal){
+                this.selection = newVal;
             }
-
-
         },
         methods: {
             closeDialog () {
@@ -187,8 +180,6 @@
                         } else {
                             this.items.splice(this.items.indexOf(item), 1)
                         }
-
-
                     }
                 })
             },
@@ -211,11 +202,8 @@
 
                         if (testId != null) {
                             if (testId.id===-100) {
-                                //console.log("testId.id===-100")
                                 return item
                             } else {
-                                //console.log("testId.id!=-100")
-                                //console.log("testId.name = "+testId.name)
                                 return testId
                             }
                         }
@@ -247,7 +235,6 @@
                     this.open.splice(index, 1)
                 }
             },
-
         },
         created: function () {
             //запрос на сервер
@@ -261,7 +248,6 @@
                 })
             )
         },
-
     }
 </script>
 

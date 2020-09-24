@@ -51,6 +51,20 @@ public class ProductController {
         return generalService.saveProduct(product);
     }
 
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable String id){
+        generalService.deleteProduct(Long.valueOf(id));
+    }
+
+    @PutMapping("{id}")
+    @JsonView(Views.FullMessage.class)
+    private Product update(
+            @PathVariable String id,
+            @RequestBody Product product
+    ){
+        return generalService.updateProduct(product);
+    }
+
     /*@PutMapping("{id}")
     public Product update(
             @PathVariable String id,

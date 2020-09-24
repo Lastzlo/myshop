@@ -10,4 +10,8 @@ public interface GeneralService {
     Product getProduct (Long id);
 
     Product saveProduct (Product product);
+
+    void deleteProduct (Long valueOf);
+
+    Product updateProduct (Product product);
 }
