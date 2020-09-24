@@ -28,7 +28,6 @@ public class DirectoryController {
             directory = new LinkedDirectory ("Категории", DirectoryType.CATEGORY_LIST.toString ());
             directory = directoryRepo.save (directory);
         }
-
         return directory;
     }
 
@@ -44,14 +43,17 @@ public class DirectoryController {
     ){
         LinkedDirectory father = directoryRepo.getOne (linkedDirectory.getFather ().getId ());
 
+        if(father!=null){
+            linkedDirectory.setFather (father);
+            LinkedDirectory child = directoryRepo.save (linkedDirectory);
 
-        linkedDirectory.setFather (father);
-        LinkedDirectory child = directoryRepo.save (linkedDirectory);
+            father.addChild (child);
+            directoryRepo.save (father);
 
-        father.addChild (child);
-        directoryRepo.save (father);
-
-        return child;
+            return child;
+        } else {
+            return directoryRepo.save (linkedDirectory);
+        }
     }
 
     @PutMapping("{id}")
@@ -60,37 +62,42 @@ public class DirectoryController {
             @PathVariable String id,
             @RequestBody LinkedDirectory directory
     ){
-        LinkedDirectory directoryFromDb = directoryRepo.findById(Long.valueOf(id)).get();
+        if(directoryRepo.findById(Long.valueOf(id)).isPresent ()){
+            LinkedDirectory directoryFromDb = directoryRepo.findById(Long.valueOf(id)).get();
 
-        directoryFromDb.setName (directory.getName ());
-
-        //BeanUtils.copyProperties (category, categoryFromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
-        return directoryRepo.save (directoryFromDb);
+            directoryFromDb.setName (directory.getName ());
+            return directoryRepo.save (directoryFromDb);
+        }
+        return directory;
     }
 
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){
-        LinkedDirectory child = directoryRepo.getOne (Long.valueOf (id));
+        directoryRepo.findById (Long.valueOf (id)).ifPresent (
+                child -> {
+                    if(child.getFather ()!=null){
+                        LinkedDirectory father = child.getFather ();
 
-        if(child !=null){
-            if(child.getFather ()!=null){
-                LinkedDirectory father = child.getFather ();
+                        father.deleteChild (child);
+                        directoryRepo.save (father);
+                    }
 
-                father.deleteChild (child);
-                directoryRepo.save (father);
-            }
+                    if(child.getChildren ().size () != 0){
+                        Set<LinkedDirectory> children = child.getChildren ();
 
-            if(child.getChildren ().size () != 0){
-                Set<LinkedDirectory> children = child.getChildren ();
+                        children.forEach ((item)-> item.setFather (null));
+                        child.getChildren ().clear ();
+                        //children.forEach ((item)-> directoryRepo.deleteById(item.getId ()));
+                        children.forEach ((item)-> directoryRepo.delete (item));
+                    }
+                    //directoryRepo.deleteById(Long.valueOf(id));
+                    directoryRepo.delete (child);
 
-                children.forEach ((item)-> item.setFather (null));
-                child.getChildren ().clear ();
-                children.forEach ((item)-> directoryRepo.deleteById(item.getId ()));
-            }
+                }
+        );
 
-            directoryRepo.deleteById(Long.valueOf(id));
-        }
+
 
 
     }

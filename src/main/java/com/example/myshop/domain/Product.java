@@ -1,8 +1,10 @@
 package com.example.myshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -34,6 +36,11 @@ public class Product {
 
     @JsonView(Views.FullMessage.class)
     private String price;
+
+    @Column(updatable = false)  //колонка не обновляемая
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")   //чтобы Джейсон отшорматировал  дату и время по нашему патерну
+    @JsonView(Views.FullMessage.class)
+    private LocalDateTime creationDate;
 
     public Product () {
     }
@@ -87,7 +94,14 @@ public class Product {
     }
 
     public void addTag (LinkedDirectory tagFromDb) {
-        this.tags.add (tagFromDb);
+        this.getTags ().add (tagFromDb);
     }
 
+    public LocalDateTime getCreationDate () {
+        return creationDate;
+    }
+
+    public void setCreationDate (LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 }

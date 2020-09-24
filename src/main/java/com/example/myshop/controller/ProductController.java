@@ -43,9 +43,8 @@ public class ProductController {
         return productRepo.save(product);
     }*/
 
-
-
     @PostMapping
+    @JsonView(Views.FullMessage.class)
     private Product create(
             @RequestBody Product product
     ){

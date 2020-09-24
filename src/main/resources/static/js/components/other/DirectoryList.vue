@@ -1,50 +1,45 @@
 <template>
     <v-container>
-        <v-row>
-            <v-col>
-                <v-treeview
-                        v-model="selection"
-                        hoverable
-                        open-on-click
-                        :items="items"
-                        :open.sync="open"
-                        selection-type="independent"
-                        selectable
-                        return-object
-                >
-                    <template v-slot:append="{ item }">
+        <v-container>
+            <v-treeview
+                    v-model="selection"
+                    hoverable
+                    open-on-click
+                    :items="items"
+                    :open.sync="open"
+                    selection-type="independent"
+                    selectable
+                    return-object
+            >
+                <template v-slot:append="{ item }">
 
-                        <v-icon
-                                @click="addChild(item) "
-                        >
-                            mdi-plus-circle-outline
-                        </v-icon>
-                        <v-icon
-                                @click="editChild(item)"
-                        >
-                            mdi-pencil
-                        </v-icon>
-                        <v-icon
-                                v-if="item.directoryType !== 'CATEGORY_LIST'"
-                                @click="deleteChild(item)"
-                        >
-                            mdi-delete
-                        </v-icon>
-                    </template>
-                </v-treeview>
-            </v-col>
-            <v-divider vertical></v-divider>
-            <v-col class="pa-6" cols="6">
-                <template v-if="!selection.length">
-                    No nodes selected.
+                    <v-icon
+                            @click="addChild(item) "
+                    >
+                        mdi-plus-circle-outline
+                    </v-icon>
+                    <v-icon
+                            @click="editChild(item)"
+                    >
+                        mdi-pencil
+                    </v-icon>
+                    <v-icon
+                            v-if="item.directoryType !== 'CATEGORY_LIST'"
+                            @click="deleteChild(item)"
+                    >
+                        mdi-delete
+                    </v-icon>
                 </template>
-                <template v-else>
-                    <div v-for="node in selection" :key="node.id">
-                        {{ node.name }}
-                    </div>
-                </template>
-            </v-col>
-        </v-row>
+            </v-treeview>
+            <template v-if="!selection.length">
+                No nodes selected.
+            </template>
+            <template v-else>
+                <div v-for="node in selection" :key="node.id">
+                    {{ node.name }}
+                </div>
+            </template>
+        </v-container>
         <v-container>
             <v-dialog v-model="dialog" max-width="500px">
                 <v-card>
