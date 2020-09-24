@@ -3,6 +3,7 @@ package com.example.myshop.domain;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -32,6 +33,8 @@ public class LinkedDirectory {
     public LinkedDirectory (String name, String directoryType) {
         this.name = name;
         this.directoryType = directoryType;
+        this.children = new HashSet<> ();
+
     }
 
     public Long getId () {

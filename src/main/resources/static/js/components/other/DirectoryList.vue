@@ -4,12 +4,15 @@
             <v-col>
                 <v-treeview
                         v-model="selection"
+
+                        hoverable
+                        open-on-click
+
                         :items="items"
                         :open.sync="open"
                         selection-type="independent"
                         selectable
                         return-object
-
                 >
                     <template v-slot:append="{ item }">
 
@@ -101,7 +104,6 @@
             },
         }),
         computed: {
-
             formTitle () {
                 return this.id === -1 ? 'New Item' : 'Edit Item'
             },
@@ -127,18 +129,32 @@
             save(){
                 let linkedDirectory = this.editedItem
 
+
+
+
                 if (this.id > -1) {
                     //update
+                    this.$resource('/directory{/id}').update({id: this.id}, linkedDirectory).then(result =>
+                        result.json().then(data => {
+                            let father = this.findFatherOfItem(data.id, this.items)
+                            let index = father.children.findIndex(item => item.id === data.id)
+                            father.children.splice(index, 1, data)
+
+                        })
+                    )
+
+
+
                 } else {
-                    let item = this.editedItem.father
+                    let father = this.editedItem.father
                     //save
                     this.$resource('/directory').save({}, linkedDirectory).then(
                         result =>
                             result.json().then(data => {
-                                item.children.push(data)
+                                father.children.push(data)
 
                                 //открывает папку
-                                this.open.push(item)
+                                this.open.push(father)
                                 //console.log('this.open = '+this.open)
                             })
                     )
@@ -161,6 +177,8 @@
             editChild(item){
                 this.id = item.id
                 this.editedItem = Object.assign({}, item)
+
+                //this.editedItem.father = item
                 this.dialog = true
             },
 

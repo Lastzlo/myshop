@@ -54,6 +54,21 @@ public class DirectoryController {
         return child;
     }
 
+    @PutMapping("{id}")
+    @JsonView(Views.OnlyChild.class)
+    public LinkedDirectory update(
+            @PathVariable String id,
+            @RequestBody LinkedDirectory directory
+    ){
+        LinkedDirectory directoryFromDb = directoryRepo.findById(Long.valueOf(id)).get();
+
+        directoryFromDb.setName (directory.getName ());
+
+        //BeanUtils.copyProperties (category, categoryFromDb, "id");    //утила спринга которая копирует все поля из message в messageFromDb кроме id
+        return directoryRepo.save (directoryFromDb);
+    }
+
+
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){
         LinkedDirectory child = directoryRepo.getOne (Long.valueOf (id));
