@@ -26,6 +26,9 @@ public class LinkedDirectory {
     @ManyToOne
     private LinkedDirectory father;
 
+    /*@ManyToMany
+    private Set<Product> products;*/
+
 
     public LinkedDirectory () {
     }
@@ -84,4 +87,16 @@ public class LinkedDirectory {
     public void setFather (LinkedDirectory father) {
         this.father = father;
     }
+
+    /*public Set<Product> getProducts () {
+        return products;
+    }
+
+    public void setProducts (Set<Product> products) {
+        this.products = products;
+    }*/
+
+    /*public void addProduct (Product product) {
+        this.getProducts ().add (product);
+    }*/
 }

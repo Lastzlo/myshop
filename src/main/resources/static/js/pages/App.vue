@@ -25,32 +25,34 @@
 
                 </v-tabs-items>
             </v-container>-->
-            <directory-list/>
+
+            <!--<directory-list/>-->
+            <product-list/>
         </v-main>
     </v-app>
 
 </template>
 
 <script>
-    import DirectoryList from "components/other/DirectoryList.vue";
-    //import ProductList from "components/products/ProductList.vue";
+    //import DirectoryList from "components/other/DirectoryList.vue";
+    import ProductList from "components/products/ProductList.vue";
     //import BrandsList from "components/brands/BrandsList.vue";
     //import CategoriesList from "components/categories/CategoriesList.vue";
 
     export default {
         name: "App.vue",
         components: {
-            DirectoryList
-            //ProductList,
+            //DirectoryList,
+            ProductList,
             //CategoriesList,
             //BrandsList
         },
-        data() {
-            return{
-                tabs: null,
-                categories: [],
-            }
-        },
+        // data() {
+        //     return{
+        //         tabs: null,
+        //         categories: [],
+        //     }
+        // },
         created: function () {
             //запрос на сервер
             // this.$resource('/category{/id}').get().then(result =>

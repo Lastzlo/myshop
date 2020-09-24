@@ -4,10 +4,8 @@
             <v-col>
                 <v-treeview
                         v-model="selection"
-
                         hoverable
                         open-on-click
-
                         :items="items"
                         :open.sync="open"
                         selection-type="independent"
@@ -84,6 +82,7 @@
 <script>
     export default {
         name: "DirectoryList",
+        props:['clearSelected'],
         data: () => ({
             dialog: false,
             selection: [],
@@ -112,6 +111,22 @@
             dialog (val) {
                 val || this.closeDialog()
             },
+            selection() {
+                this.$emit("selected-tags", this.selection);
+            },
+
+            clearSelected(){
+                /*val || (this.selection = [])*/
+
+                this.selection = []
+
+                /*if (val === true){
+                    this.selection = []
+
+                }*/
+            }
+
+
         },
         methods: {
             closeDialog () {
@@ -125,12 +140,13 @@
                 this.editedItem.father = item
                 this.dialog = true
             },
-
+            editChild(item){
+                this.id = item.id
+                this.editedItem = Object.assign({}, item)
+                this.dialog = true
+            },
             save(){
                 let linkedDirectory = this.editedItem
-
-
-
 
                 if (this.id > -1) {
                     //update
@@ -142,44 +158,21 @@
 
                         })
                     )
-
-
-
                 } else {
-                    let father = this.editedItem.father
                     //save
+                    let father = this.editedItem.father
                     this.$resource('/directory').save({}, linkedDirectory).then(
                         result =>
                             result.json().then(data => {
                                 father.children.push(data)
-
                                 //открывает папку
                                 this.open.push(father)
-                                //console.log('this.open = '+this.open)
+
                             })
                     )
                 }
+
                 this.closeDialog()
-
-                /*if (!item.children) {
-                    this.$set(item, "children", []);
-
-                }*/
-
-                /*let linkedDirectory = {
-                    name :`${item.name} (${item.children.length})`,
-                    father: item,
-                    children: []
-                }*/
-
-            },
-
-            editChild(item){
-                this.id = item.id
-                this.editedItem = Object.assign({}, item)
-
-                //this.editedItem.father = item
-                this.dialog = true
             },
 
             deleteChild(item) {
@@ -188,7 +181,7 @@
                     if (result.ok) {
 
                         //Удалялет item и его children с this.open
-                        this.closeAll2(item)
+                        this.closeAll(item)
 
                         //найти father item
                         let father = this.findFatherOfItem(item.id, this.items)
@@ -246,26 +239,10 @@
 
                 })
             },
-            // closeAll(items){
-            //     items.forEach(item => {
-            //         if(item.children){
-            //             this.closeAll(item.children)
-            //         }
-            //
-            //         let index = this.open.findIndex(i => i.id === item.id)
-            //         console.log('index = '+index)
-            //         if(index>-1){
-            //             this.open.splice(index, 1)
-            //         }
-            //
-            //
-            //     })
-            // },
-
-            closeAll2(item){
+            closeAll(item){
                 if(item.children){
                     item.children.forEach(item => {
-                        this.closeAll2(item)
+                        this.closeAll(item)
                     })
                 }
 
@@ -274,8 +251,7 @@
                 if(index>-1){
                     this.open.splice(index, 1)
                 }
-
-            }
+            },
 
         },
         created: function () {
