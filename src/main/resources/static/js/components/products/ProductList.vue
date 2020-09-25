@@ -90,6 +90,14 @@
                                             autofocus
                                     ></v-text-field>
 
+                                    <v-file-input
+                                            v-model="files"
+                                            multiple
+                                            label="Загрузите фото"
+                                    ></v-file-input>
+
+
+
                                     <directory-list @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
 
                                 </v-col>
@@ -244,6 +252,8 @@
                 //price: '',
                 //productDiscription: '',
             },
+            //переменная для файла
+            files: []
         }),
         computed: {
             formTitle () {
@@ -258,6 +268,7 @@
                 let product = this.editedItem
 
                 if (this.id > -1) {
+                    //update
                     this.$resource('/product{/id}').update({id: this.id}, product).then(result =>
                         result.json().then(data => {
                             const index = this.products.findIndex(item => item.id === data.id)
@@ -265,14 +276,36 @@
                         })
                     )
                 } else {
-                    this.$resource('/product{/id}').save({}, product).then(
+                    let formData = new FormData();
+
+                    this.files.forEach(
+                        file => {
+                            formData.append('files', file)
+                        }
+                    )
+                    formData.append(
+                        'product',
+                        new Blob(
+                            [JSON.stringify(product)
+                            ],
+                            {
+                                type: "application/json"
+                            }
+                        )
+                    )
+
+                    //save
+                    this.$resource('/product{/id}').save({}, formData).then(
                         result =>
                             result.json().then(data => {
                                 this.products.push(data)
                             })
                     )
+
                 }
                 this.closeDialog()
+
+                this.files = [];
             },
             closeDialog () {
                 this.dialog = false

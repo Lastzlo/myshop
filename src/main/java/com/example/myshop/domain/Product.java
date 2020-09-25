@@ -28,7 +28,10 @@ public class Product {
 
     @ElementCollection
     @JsonView(Views.FullMessage.class)
-    private List<String> photos;
+    private Set<String> photos;
+
+//    @JsonView(Views.FullMessage.class)
+//    private String filename;
 
     @ManyToMany
     @JsonView(Views.FullMessage.class)
@@ -41,6 +44,7 @@ public class Product {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")   //чтобы Джейсон отшорматировал  дату и время по нашему патерну
     @JsonView(Views.FullMessage.class)
     private LocalDateTime creationDate;
+
 
     public Product () {
     }
@@ -69,12 +73,17 @@ public class Product {
         this.productDiscription = productDiscription;
     }
 
-    public List<String> getPhotos () {
+
+    public Set<String> getPhotos () {
         return photos;
     }
 
-    public void setPhotos (List<String> photos) {
+    public void setPhotos (Set<String> photos) {
         this.photos = photos;
+    }
+
+    public void addPhoto (String resultFilename) {
+        this.photos.add (resultFilename);
     }
 
     public Set<LinkedDirectory> getTags () {
@@ -85,16 +94,16 @@ public class Product {
         this.tags = tags;
     }
 
+    public void addTag (LinkedDirectory tagFromDb) {
+        this.tags.add (tagFromDb);
+    }
+
     public String getPrice () {
         return price;
     }
 
     public void setPrice (String price) {
         this.price = price;
-    }
-
-    public void addTag (LinkedDirectory tagFromDb) {
-        this.getTags ().add (tagFromDb);
     }
 
     public LocalDateTime getCreationDate () {

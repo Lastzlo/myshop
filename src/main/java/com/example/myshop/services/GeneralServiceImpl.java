@@ -2,19 +2,18 @@ package com.example.myshop.services;
 
 import com.example.myshop.domain.LinkedDirectory;
 import com.example.myshop.domain.Product;
-
-import com.example.myshop.domain.Views;
 import com.example.myshop.repos.LinkedDirectoryRepo;
 import com.example.myshop.repos.ProductRepo;
-import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class GeneralServiceImpl implements  GeneralService{
@@ -22,6 +21,9 @@ public class GeneralServiceImpl implements  GeneralService{
     private LinkedDirectoryRepo directoryRepo;
     @Autowired
     private ProductRepo productRepo;
+
+    @Value("${upload.path}")
+    private String uploadPath;
 
     @Override
     public List<Product> getAllProducts () {
@@ -47,6 +49,43 @@ public class GeneralServiceImpl implements  GeneralService{
         );
 
         return productRepo.save(product);
+    }
+
+    @Override
+    public Product saveProductWithFile (Product product, Optional<MultipartFile[]> files) {
+
+        if(files.isPresent ()){
+
+            final MultipartFile[] multipartFiles = files.get ();
+
+            File uploadDir = new File (uploadPath);
+
+            if(!uploadDir.exists ()){
+                uploadDir.mkdir ();
+            }
+
+//            String uuidFile = UUID.randomUUID ().toString ();
+//            String resultFilename = uuidFile + "." + multipartFile.getOriginalFilename ();
+
+            product.setPhotos (new HashSet<> ());
+
+            for (MultipartFile multipartFile: multipartFiles
+            ) {
+                String resultFilename = multipartFile.getOriginalFilename ();
+
+                try {
+                    multipartFile.transferTo (new File (uploadPath + "/" + resultFilename));
+                } catch (IOException e) {
+                    System.out.println ("файл не переместили в папку ");
+                    //e.printStackTrace ();
+                }
+
+                product.addPhoto(resultFilename);
+            }
+
+        }
+
+        return saveProduct (product);
     }
 
     @Override

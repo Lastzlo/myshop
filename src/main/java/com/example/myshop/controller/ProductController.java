@@ -1,13 +1,17 @@
 package com.example.myshop.controller;
 
+import com.example.myshop.domain.LinkedDirectory;
 import com.example.myshop.domain.Product;
 import com.example.myshop.domain.Views;
 import com.example.myshop.services.GeneralService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("product")
@@ -43,12 +47,27 @@ public class ProductController {
         return productRepo.save(product);
     }*/
 
+//    @PostMapping
+//    @JsonView(Views.FullMessage.class)
+//    private Product create(
+//            @RequestBody Product product
+//    ){
+//        return generalService.saveProduct(product);
+//    }
+
     @PostMapping
     @JsonView(Views.FullMessage.class)
     private Product create(
-            @RequestBody Product product
+            /*@RequestBody Product product*/
+            /*@RequestPart(value = "files") Optional<Set<MultipartFile>> files,*/
+            /*@RequestPart(value = "files") Optional<MultipartFile[]> files,*/
+            @RequestPart(value = "files") Optional<MultipartFile[]> files,
+            @RequestPart(value = "product") Product product
     ){
-        return generalService.saveProduct(product);
+        //System.out.println ("files.length = "+ files.length);
+        //return product;
+
+        return generalService.saveProductWithFile(product, files);
     }
 
     @DeleteMapping("{id}")
