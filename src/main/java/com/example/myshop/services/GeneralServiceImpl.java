@@ -15,7 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class GeneralServiceImpl implements  GeneralService{
@@ -74,15 +77,25 @@ public class GeneralServiceImpl implements  GeneralService{
 
             product.setPhotos (new HashSet<> ());
 
+            //получаем путь
+            //Path rootLocation = Paths.get(uploadPath);
+
             for (MultipartFile multipartFile: multipartFiles
             ) {
                 String resultFilename = multipartFile.getOriginalFilename ();
-
+//                try {
+//                    try (InputStream inputStream = multipartFile.getInputStream()) {
+//                        Files.copy(inputStream, rootLocation.resolve(resultFilename),
+//                                StandardCopyOption.REPLACE_EXISTING);
+//                    }
+//                }
+//                catch (IOException e) {
+//                    System.out.println ("Failed to store file ");
+//                }
                 try {
                     multipartFile.transferTo (new File (uploadPath + "/" + resultFilename));
                 } catch (IOException e) {
                     System.out.println ("файл не переместили в папку ");
-                    //e.printStackTrace ();
                 }
 
                 String src = "/img/" + resultFilename;

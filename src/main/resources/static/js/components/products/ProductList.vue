@@ -215,7 +215,7 @@
                             const index = this.products.findIndex(item => item.id === data.id)
                             this.products.splice(index, 1, data)
 
-                            this.editedItem = data
+
 
                         })
                     )
@@ -244,12 +244,12 @@
                             result.json().then(data => {
                                 this.products.push(data)
 
-                                this.editedItem = data
+
                             })
                     )
 
                 }
-                //this.clearForm()
+                this.clearForm()
 
                 this.files = [];
             },
