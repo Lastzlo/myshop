@@ -26,9 +26,9 @@ public class Product {
     @JsonView(Views.FullMessage.class)
     private String productDiscription;
 
-    @ElementCollection
+    @OneToMany
     @JsonView(Views.FullMessage.class)
-    private Set<String> photos;
+    private Set<Photo> photos;
 
 //    @JsonView(Views.FullMessage.class)
 //    private String filename;
@@ -74,16 +74,16 @@ public class Product {
     }
 
 
-    public Set<String> getPhotos () {
+    public Set<Photo> getPhotos () {
         return photos;
     }
 
-    public void setPhotos (Set<String> photos) {
+    public void setPhotos (Set<Photo> photos) {
         this.photos = photos;
     }
 
-    public void addPhoto (String resultFilename) {
-        this.photos.add (resultFilename);
+    public void addPhoto (Photo photo) {
+        this.photos.add (photo);
     }
 
     public Set<LinkedDirectory> getTags () {

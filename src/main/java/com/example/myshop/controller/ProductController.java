@@ -58,15 +58,9 @@ public class ProductController {
     @PostMapping
     @JsonView(Views.FullMessage.class)
     private Product create(
-            /*@RequestBody Product product*/
-            /*@RequestPart(value = "files") Optional<Set<MultipartFile>> files,*/
-            /*@RequestPart(value = "files") Optional<MultipartFile[]> files,*/
             @RequestPart(value = "files") Optional<MultipartFile[]> files,
             @RequestPart(value = "product") Product product
     ){
-        //System.out.println ("files.length = "+ files.length);
-        //return product;
-
         return generalService.saveProductWithFile(product, files);
     }
 

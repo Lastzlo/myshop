@@ -1,117 +1,82 @@
 <template>
     <v-container fluid>
-        <!--<v-container id="categories-playground">
-            <category-autocomplete :categories="categories" @select-category="selectCategory"/>
-        </v-container>
+        <v-container id="product-form">
+            <v-card>
+                <v-card-title>
+                    <span class="headline">{{ formTitle }}</span>
+                </v-card-title>
 
-        <v-container id="brands-playground" v-if="selectedCategory.brands.length>0" >
-            <brand-autocomplete :brands="selectedCategory.brands" @select-brand="selectBrand"/>
-        </v-container>-->
+                <v-card-text>
+                    <v-container>
+                        <v-row>
+                            <v-col>
+                                <v-text-field
+                                        v-model="editedItem.productName"
+                                        label="Product name"
+                                        autofocus
+                                ></v-text-field>
 
-        <!--<v-container id="product-playground">
-            <v-text-field
-                    v-model="editedItem.productName"
-                    label="Product name"
-            ></v-text-field>
-            <v-text-field
-                    v-model="editedItem.price"
-                    label="price(грн)"
-            ></v-text-field>
-            <v-text-field
-                    v-model="editedItem.productDiscription"
-                    label="product Discription"
-            ></v-text-field>
-            <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-        </v-container>-->
+                                <v-container
+                                        id="photos"
+                                        v-if="this.photoToShow.length>0"
+                                >
+                                    <v-row>
+                                        <v-col
+                                                v-for="card in this.photoToShow"
+                                                :key="card.src"
 
-        <!--<v-container id="product-table">
-            &lt;!&ndash;тут будет список товаров&ndash;&gt;
-        </v-container>-->
+                                        >
+                                            <v-card>
+                                                <v-img
+                                                        :src="card.src"
+                                                        height="200px"
+                                                        width="200px"
+                                                >
+                                                    <!--<v-card-title v-text="card.title"></v-card-title>-->
+                                                </v-img>
 
-        <!--<v-container>
-            &lt;!&ndash;диалог для добавления товара&ndash;&gt;
-            <v-dialog v-model="dialog" max-width="500px">
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                            color="primary"
-                            dark
-                            class="mb-2"
-                            v-bind="attrs"
-                            v-on="on"
-                    >New Product</v-btn>
-                </template>
-                <v-card>
-                    <v-card-title>
-                        <span class="headline">{{ formTitle }}</span>
-                    </v-card-title>
+                                                <!--<v-card-actions>
+                                                    <v-spacer></v-spacer>
 
-                    <v-card-text>
-                        <v-container>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                            v-model="editedItem.productName"
-                                            label="Product name"
-                                            autofocus
-                                    ></v-text-field>
+                                                    <v-btn icon>
+                                                        <v-icon>mdi-heart</v-icon>
+                                                    </v-btn>
 
-                                    <directory-list @selected-tags="selectedTags" :clearSelected="clearSelected"/>
+                                                    <v-btn icon>
+                                                        <v-icon>mdi-bookmark</v-icon>
+                                                    </v-btn>
 
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-card-text>
+                                                    <v-btn icon>
+                                                        <v-icon>mdi-share-variant</v-icon>
+                                                    </v-btn>
+                                                </v-card-actions>-->
+                                            </v-card>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
 
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" text @click="closeDialog">Cancel</v-btn>
-                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-        </v-container>-->
+
+                                <v-file-input
+                                        v-model="files"
+                                        multiple
+                                        label="Загрузите фото"
+                                ></v-file-input>
 
 
 
-        <v-container id="dialog">
-            <v-dialog v-model="dialog" max-width="500px">
-                <v-card>
-                    <v-card-title>
-                        <span class="headline">{{ formTitle }}</span>
-                    </v-card-title>
+                                <directory-list @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
 
-                    <v-card-text>
-                        <v-container>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                            v-model="editedItem.productName"
-                                            label="Product name"
-                                            autofocus
-                                    ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card-text>
 
-                                    <v-file-input
-                                            v-model="files"
-                                            multiple
-                                            label="Загрузите фото"
-                                    ></v-file-input>
-
-
-
-                                    <directory-list @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
-
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-card-text>
-
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" text @click="closeDialog">Cancel</v-btn>
-                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="clearForm">Clear</v-btn>
+                    <v-btn color="blue darken-1" text @click="save">{{ saveButtonTitle }}</v-btn>
+                </v-card-actions>
+            </v-card>
         </v-container>
 
         <v-container id="product-table">
@@ -131,52 +96,6 @@
                                     inset
                                     vertical
                             ></v-divider>
-                            <v-spacer></v-spacer>
-                            <v-btn
-                                    color="primary"
-                                    dark
-                                    class="mb-2"
-                                    @click="addItem"
-                            >New Product</v-btn>
-                            <!--<v-dialog v-model="dialog" max-width="500px">
-                                <template v-slot:activator="{ on, attrs }">
-                                    <v-btn
-                                            color="primary"
-                                            dark
-                                            class="mb-2"
-                                            v-bind="attrs"
-                                            v-on="on"
-                                    >New Product</v-btn>
-                                </template>
-                                <v-card>
-                                    <v-card-title>
-                                        <span class="headline">{{ formTitle }}</span>
-                                    </v-card-title>
-
-                                    <v-card-text>
-                                        <v-container>
-                                            <v-row>
-                                                <v-col>
-                                                    <v-text-field
-                                                            v-model="editedItem.productName"
-                                                            label="Product name"
-                                                            autofocus
-                                                    ></v-text-field>
-
-                                                    <directory-list @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
-
-                                                </v-col>
-                                            </v-row>
-                                        </v-container>
-                                    </v-card-text>
-
-                                    <v-card-actions>
-                                        <v-spacer></v-spacer>
-                                        <v-btn color="blue darken-1" text @click="closeDialog">Cancel</v-btn>
-                                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-dialog>-->
                         </v-toolbar>
                     </template>
                     <template v-slot:item.actions="{ item }">
@@ -236,11 +155,11 @@
             ],
             products: [],
             tegsFromProduct:[],
-            dialog: false,
             id: -1,
             editedItem: {
                 productName: '',
-                tags: []
+                tags: [],
+                photos: [],
                 //price: '',
                 //productDiscription: '',
             },
@@ -248,19 +167,41 @@
                 //category: null,
                 //brand: null,
                 productName: '',
-                tags: []
+                tags: [],
+                photos:[],
                 //price: '',
                 //productDiscription: '',
             },
             //переменная для файла
-            files: []
+            files: [],
+            photoToShow:[],
+            photoToDelete:[],
         }),
         computed: {
             formTitle () {
                 return this.id === -1 ? 'New Item' : 'Edit Item'
             },
+            saveButtonTitle () {
+                return this.id === -1 ? 'Save' : 'Update'
+            },
+        },
+        watch: {
+            // files(newVal, oldVal){
+            //
+            //     newVal.forEach(
+            //
+            //         item => this.photoToShow.push(
+            //             window.URL.createObjectURL(item)
+            //         )
+            //     )
+            // }
+
         },
         methods: {
+            getImgUrl(pic) {
+                let url = '/img/'+pic.toString()
+                return url
+            },
             selectedTags(tags){
                 this.editedItem.tags = tags;
             },
@@ -273,6 +214,9 @@
                         result.json().then(data => {
                             const index = this.products.findIndex(item => item.id === data.id)
                             this.products.splice(index, 1, data)
+
+                            this.editedItem = data
+
                         })
                     )
                 } else {
@@ -299,16 +243,18 @@
                         result =>
                             result.json().then(data => {
                                 this.products.push(data)
+
+                                this.editedItem = data
                             })
                     )
 
                 }
-                this.closeDialog()
+                //this.clearForm()
 
                 this.files = [];
             },
-            closeDialog () {
-                this.dialog = false
+            clearForm () {
+
 
                 this.$nextTick(() => {
                     //очищает список отмеченых тегов
@@ -316,14 +262,9 @@
 
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.id = -1
-                })
-            },
 
-            addItem(){
-                this.id = -1
-                this.tegsFromProduct = []
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.dialog = true
+                    this.photoToShow = []
+                })
             },
 
             initialize () {
@@ -346,7 +287,12 @@
                 this.id = item.id
                 this.tegsFromProduct = item.tags
                 this.editedItem = Object.assign({}, item)
-                this.dialog = true
+
+                if(item.photos !== null){
+                    this.photoToShow = item.photos
+                }
+
+
             },
         },
         created: function () {

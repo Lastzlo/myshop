@@ -1,8 +1,10 @@
 package com.example.myshop.services;
 
 import com.example.myshop.domain.LinkedDirectory;
+import com.example.myshop.domain.Photo;
 import com.example.myshop.domain.Product;
 import com.example.myshop.repos.LinkedDirectoryRepo;
+import com.example.myshop.repos.PhotoRepo;
 import com.example.myshop.repos.ProductRepo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class GeneralServiceImpl implements  GeneralService{
     private LinkedDirectoryRepo directoryRepo;
     @Autowired
     private ProductRepo productRepo;
+    @Autowired
+    private PhotoRepo photoRepo;
+
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -80,7 +85,12 @@ public class GeneralServiceImpl implements  GeneralService{
                     //e.printStackTrace ();
                 }
 
-                product.addPhoto(resultFilename);
+                String src = "/img/" + resultFilename;
+                Photo photo = new Photo (resultFilename, src);
+
+                //сначала сохраняем информацию о фото в БД
+                //потом записываем в продукт
+                product.addPhoto(photoRepo.save (photo));
             }
 
         }
