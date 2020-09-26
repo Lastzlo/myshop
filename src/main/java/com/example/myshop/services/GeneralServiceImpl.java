@@ -161,6 +161,12 @@ public class GeneralServiceImpl implements  GeneralService{
 
                                         //удалить с хранилища
                                         //хранилище.удалить(item)
+                                        /*if(new File (uploadPath + "/" + item.getName ()).delete ()){
+                                            System.out.println("Deleted the file: " + item.getName ());
+                                        } else {
+                                            System.out.println("Failed to delete the file.");
+                                        }*/
+                                        new File (uploadPath + "/" + item.getName ()).delete ();
                                     }
                             );
                         }
