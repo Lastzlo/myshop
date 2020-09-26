@@ -17,52 +17,68 @@
                                 ></v-text-field>
 
                                 <v-container
-                                        id="photos"
-                                        v-if="this.photoToShow.length>0"
+                                        id="editedItemPhoto"
+                                        fluid
+                                        v-if="this.editedItemPhoto.length>0"
                                 >
                                     <v-row>
+                                        <span class="headline">editedItemPhoto</span>
+                                    </v-row>
+                                    <v-row>
                                         <v-col
-                                                v-for="card in this.photoToShow"
-                                                :key="card.src"
-
+                                                v-for="photo in this.editedItemPhoto"
+                                                :key="photo.src"
+                                                class="d-flex child-flex"
+                                                cols="4"
                                         >
-                                            <v-card>
+                                            <v-card flat tile class="d-flex">
                                                 <v-img
-                                                        :src="card.src"
-                                                        height="200px"
-                                                        width="200px"
+                                                        :src="photo.src"
+                                                        aspect-ratio="1"
                                                 >
-                                                    <!--<v-card-title v-text="card.title"></v-card-title>-->
+                                                    <v-btn
+                                                            small color="white">
+                                                        <v-icon @click="deletePicture(photo)">
+                                                            mdi-close
+                                                        </v-icon>
+                                                    </v-btn>
                                                 </v-img>
-
-                                                <!--<v-card-actions>
-                                                    <v-spacer></v-spacer>
-
-                                                    <v-btn icon>
-                                                        <v-icon>mdi-heart</v-icon>
-                                                    </v-btn>
-
-                                                    <v-btn icon>
-                                                        <v-icon>mdi-bookmark</v-icon>
-                                                    </v-btn>
-
-                                                    <v-btn icon>
-                                                        <v-icon>mdi-share-variant</v-icon>
-                                                    </v-btn>
-                                                </v-card-actions>-->
                                             </v-card>
                                         </v-col>
                                     </v-row>
                                 </v-container>
 
-
-                                <v-file-input
-                                        v-model="files"
-                                        multiple
-                                        label="Загрузите фото"
-                                ></v-file-input>
-
-
+                                <v-container
+                                        id="newPhoto"
+                                        fluid
+                                >
+                                    <v-row>
+                                        <span class="headline">Загрузить фото</span>
+                                    </v-row>
+                                    <v-row>
+                                        <v-file-input
+                                                v-model="files"
+                                                multiple
+                                                label="Загрузите фото"
+                                        ></v-file-input>
+                                    </v-row>
+                                    <v-row v-if="this.newPhotoToShow.length>0">
+                                        <v-col
+                                                v-for="photo in this.newPhotoToShow"
+                                                :key="photo"
+                                                class="d-flex child-flex"
+                                                cols="4"
+                                        >
+                                            <v-card flat tile>
+                                                <v-img
+                                                        :src="photo"
+                                                        aspect-ratio="1"
+                                                >
+                                                </v-img>
+                                            </v-card>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
 
                                 <directory-list @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
 
@@ -160,6 +176,7 @@
                 productName: '',
                 tags: [],
                 photos: [],
+                photoToDelete:[],
                 //price: '',
                 //productDiscription: '',
             },
@@ -169,12 +186,14 @@
                 productName: '',
                 tags: [],
                 photos:[],
+                photoToDelete:[],
                 //price: '',
                 //productDiscription: '',
             },
             //переменная для файла
             files: [],
-            photoToShow:[],
+            newPhotoToShow:[],
+            editedItemPhoto:[],
             photoToDelete:[],
         }),
         computed: {
@@ -186,21 +205,24 @@
             },
         },
         watch: {
-            // files(newVal, oldVal){
-            //
-            //     newVal.forEach(
-            //
-            //         item => this.photoToShow.push(
-            //             window.URL.createObjectURL(item)
-            //         )
-            //     )
-            // }
+            files(newVal, oldVal){
+                this.newPhotoToShow = []
 
+                newVal.forEach(
+                    item => this.newPhotoToShow.push(window.URL.createObjectURL(item))
+                )
+            }
         },
         methods: {
-            getImgUrl(pic) {
-                let url = '/img/'+pic.toString()
-                return url
+            deletePicture(photo){
+                const index = this.editedItemPhoto.findIndex(item => item === photo)
+                this.editedItemPhoto.splice(index, 1)
+
+
+                //this.editedItem.photoToDelete.push(photo)
+                this.photoToDelete.push(photo)
+
+
             },
             selectedTags(tags){
                 this.editedItem.tags = tags;
@@ -210,16 +232,10 @@
 
                 if (this.id > -1) {
                     //update
-                    this.$resource('/product{/id}').update({id: this.id}, product).then(result =>
-                        result.json().then(data => {
-                            const index = this.products.findIndex(item => item.id === data.id)
-                            this.products.splice(index, 1, data)
 
 
+                    product.photoToDelete = this.photoToDelete
 
-                        })
-                    )
-                } else {
                     let formData = new FormData();
 
                     this.files.forEach(
@@ -238,35 +254,64 @@
                         )
                     )
 
+                    this.$resource('/product').update({}, formData).then(result =>
+                        result.json().then(data => {
+                            const index = this.products.findIndex(item => item.id === data.id)
+                            this.products.splice(index, 1, data)
+                        })
+                    )
+                } else {
                     //save
-                    this.$resource('/product{/id}').save({}, formData).then(
+                    let formData = new FormData();
+
+                    this.files.forEach(
+                        file => {
+                            formData.append('files', file)
+                        }
+                    )
+                    formData.append(
+                        'product',
+                        new Blob(
+                            [JSON.stringify(product)
+                            ],
+                            {
+                                type: "application/json"
+                            }
+                        )
+                    )
+
+                    this.$resource('/product').save({}, formData).then(
                         result =>
                             result.json().then(data => {
                                 this.products.push(data)
-
-
                             })
                     )
-
                 }
-                this.clearForm()
 
-                this.files = [];
+                this.clearForm()
             },
             clearForm () {
+                this.photoToDelete = []
+                this.tegsFromProduct = []
+                this.editedItem = Object.assign({}, this.defaultItem)
+                this.id = -1
+                this.editedItemPhoto = []
+                this.files = []
 
-
-                this.$nextTick(() => {
-                    //очищает список отмеченых тегов
-                    this.tegsFromProduct = []
-
-                    this.editedItem = Object.assign({}, this.defaultItem)
-                    this.id = -1
-
-                    this.photoToShow = []
-                })
+                // this.$nextTick(() => {
+                //     //очищает список отмеченых тегов
+                //     this.tegsFromProduct = []
+                //
+                //     this.editedItem = Object.assign({}, this.defaultItem)
+                //     this.id = -1
+                //     //
+                //     this.editedItemPhoto = []
+                //     //
+                //     //this.photoToDelete = []
+                //     //
+                //     this.files = []
+                // })
             },
-
             initialize () {
                 this.$resource('/product').get().then(result =>
                     result.json().then(data =>
@@ -275,7 +320,6 @@
                     )
                 )
             },
-
             deleteItem(item){
                 this.$resource('/product{/id}').remove({id: item.id}).then(result => {
                     if (result.ok) {
@@ -284,15 +328,17 @@
                 })
             },
             editItem(item){
+                //очистка
+                this.clearForm()
+
                 this.id = item.id
                 this.tegsFromProduct = item.tags
+
                 this.editedItem = Object.assign({}, item)
 
                 if(item.photos !== null){
-                    this.photoToShow = item.photos
+                    item.photos.forEach(photo => this.editedItemPhoto.push(photo))
                 }
-
-
             },
         },
         created: function () {

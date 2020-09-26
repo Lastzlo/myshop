@@ -18,4 +18,6 @@ public interface GeneralService {
     void deleteProduct (Long valueOf);
 
     Product updateProduct (Product product);
+
+    Product updateProductWithFile (Product product, Optional<MultipartFile[]> files);
 }

@@ -69,14 +69,24 @@ public class ProductController {
         generalService.deleteProduct(Long.valueOf(id));
     }
 
-    @PutMapping("{id}")
+//    @PutMapping("{id}")
+//    @JsonView(Views.FullMessage.class)
+//    private Product update(
+//            @PathVariable String id,
+//            @RequestBody Product product
+//    ){
+//        return generalService.updateProduct(product);
+//    }
+
+    @PutMapping
     @JsonView(Views.FullMessage.class)
     private Product update(
-            @PathVariable String id,
-            @RequestBody Product product
+            @RequestPart(value = "files") Optional<MultipartFile[]> files,
+            @RequestPart(value = "product") Product product
     ){
-        return generalService.updateProduct(product);
+        return generalService.updateProductWithFile(product, files);
     }
+
 
     /*@PutMapping("{id}")
     public Product update(

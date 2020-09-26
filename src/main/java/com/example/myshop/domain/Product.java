@@ -30,6 +30,10 @@ public class Product {
     @JsonView(Views.FullMessage.class)
     private Set<Photo> photos;
 
+    @Transient
+    private Set<Photo> photoToDelete;
+
+
 //    @JsonView(Views.FullMessage.class)
 //    private String filename;
 
@@ -86,6 +90,11 @@ public class Product {
         this.photos.add (photo);
     }
 
+    public void deletePhoto(Photo photo){
+        this.photos.remove (photo);
+    }
+
+
     public Set<LinkedDirectory> getTags () {
         return tags;
     }
@@ -113,4 +122,9 @@ public class Product {
     public void setCreationDate (LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
+
+    public Set<Photo> getPhotoToDelete () {
+        return photoToDelete;
+    }
+
 }
