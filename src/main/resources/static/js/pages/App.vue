@@ -25,7 +25,6 @@
 
                 </v-tabs-items>
             </v-container>-->
-
             <!--<directory-list/>-->
             <product-list/>
         </v-main>
@@ -34,8 +33,8 @@
 </template>
 
 <script>
-    //import DirectoryList from "components/other/DirectoryList.vue";
     import ProductList from "components/products/ProductList.vue";
+    //import DirectoryList from "components/other/DirectoryList.vue";
     //import BrandsList from "components/brands/BrandsList.vue";
     //import CategoriesList from "components/categories/CategoriesList.vue";
 
