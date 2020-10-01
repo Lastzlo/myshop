@@ -1,6 +1,5 @@
 <template>
     <v-app>
-
         <v-app-bar app dense>
 
             <v-app-bar-nav-icon @click.stop="catalogDrawer = !catalogDrawer"></v-app-bar-nav-icon>
@@ -43,6 +42,7 @@
                     dense
             >
                 <v-list-item
+
                         v-for="item in items"
                         :key="item.title"
                         link
@@ -51,8 +51,6 @@
                     <v-list-item-content>
                         <v-list-item-title>{{ item.name }}</v-list-item-title>
                     </v-list-item-content>
-
-                    <v-list-item-group v-model="group"></v-list-item-group>
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
@@ -77,59 +75,56 @@
                     nav
                     dense
             >
-                <v-list-item-group v-model="group">
-                    <v-list-item @click="openPage(null)">
-                        <v-list-item-title>Войдти через Google</v-list-item-title>
-                    </v-list-item>
+                <v-list-item @click="openPage(null)">
+                    <v-list-item-title>Войдти через Google</v-list-item-title>
+                </v-list-item>
 
-                    <v-list-item @click="openPage(null)">
-                        <v-list-item-title>Войдти через Facebook</v-list-item-title>
-                    </v-list-item>
+                <v-list-item @click="openPage(null)">
+                    <v-list-item-title>Войдти через Facebook</v-list-item-title>
+                </v-list-item>
 
-                    <v-list-item @click="openPage(null)">
-                        <v-list-item-title>Регистрация</v-list-item-title>
-                    </v-list-item>
-                </v-list-item-group>
+                <v-list-item @click="openPage(null)">
+                    <v-list-item-title>Регистрация</v-list-item-title>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
 
         <v-main>
             <v-card
-            ё        class="mx-auto"
+                    class="mx-auto"
                     max-width="768"
+                    v-resize="onResize"
             >
-                <v-container fluid>
+                <v-container>
+<!--                    <v-subheader>Window Size</v-subheader>-->
+<!--                    {{ windowSize }}-->
+
                     <v-row
                             dense
                     >
                         <v-col
                                 v-for="item in items"
                                 :key="item.id"
-                                :cols="4"
+                                :cols=cols
+
+
                         >
                             <v-card
-                                    height="120px"
-                                    width="120px"
+                                    class="d-flex align-end justify-center pa-0 mx-auto"
+                                    height="125px"
                                     @click="openPage(item)"
+                                    outlined
                             >
-                                <!--<v-img
-                                        class="white&#45;&#45;text align-end"
-                                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                                        height="150px"
-                                        width="150px"
-                                >
-                                    <v-card-title v-text="item.name"></v-card-title>
-                                </v-img>-->
+                                <div :class="`text-body-2 mx-2`">
+                                    {{item.name}}
+                                </div>
 
-                                <v-card-subtitle v-text="item.name"></v-card-subtitle>
                             </v-card>
                         </v-col>
                     </v-row>
                 </v-container>
             </v-card>
-
         </v-main>
-
     </v-app>
 
 </template>
@@ -140,20 +135,50 @@
         data: () => ({
             catalogDrawer: false,
             autorizationDrawer: false,
-            group: null,
-            items: [
-            ],
+            items: [],
+            // windowSize: {
+            //     x: 0,
+            //     y: 0,
+            // },
+            cols: 4,
         }),
+        mounted () {
+            this.onResize()
+        },
         methods:{
             openPage(item){
                 console.log("openPage")
-            },
-        },
-        watch: {
-            group () {
                 this.catalogDrawer = false
                 this.autorizationDrawer = false
             },
+            onResize () {
+                //this.windowSize = { x: window.innerWidth, y: window.innerHeight }
+                let x = window.innerWidth;
+
+                //перебор
+                if(x<240){
+                    this.cols = 12;
+                }
+                //перебор
+                if(x>=240 && x<360){
+                    this.cols = 6;
+                }
+
+                if(x>=360 && x<480){
+                    this.cols = 4;
+                }else if(x>=480 && x<720){
+                    this.cols = 3;
+                } else if(x>=720){
+                    this.cols = 2;
+                }
+
+            },
+        },
+        watch: {
+            // group () {
+            //     this.catalogDrawer = false
+            //     this.autorizationDrawer = false
+            // },
         },
         created: function () {
             //запрос на сервер
