@@ -86,6 +86,10 @@
                 <v-list-item @click="openPage(null)">
                     <v-list-item-title>Регистрация</v-list-item-title>
                 </v-list-item>
+
+                <v-list-item @click="openPage(null)">
+                    <v-list-item-title>Страница управления товарами</v-list-item-title>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
 
@@ -147,6 +151,8 @@
         },
         methods:{
             openPage(item){
+                window.location.href = 'http://localhost:9500/setting'
+
                 console.log("openPage")
                 this.catalogDrawer = false
                 this.autorizationDrawer = false
