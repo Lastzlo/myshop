@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class GeneralServiceImpl implements  GeneralService{
+public class ProductService {
     @Autowired
     private LinkedDirectoryRepo directoryRepo;
     @Autowired
@@ -29,17 +29,17 @@ public class GeneralServiceImpl implements  GeneralService{
     @Value("${upload.path}")
     private String uploadPath;
 
-    @Override
+
     public List<Product> getAllProducts () {
         return productRepo.findAll();
     }
 
-    @Override
+
     public Product getProduct (Long id) {
         return productRepo.getOne(id);
     }
 
-    @Override
+
     public Product saveProduct (Product product) {
         product.setCreationDate (LocalDateTime.now ());
 
@@ -57,7 +57,7 @@ public class GeneralServiceImpl implements  GeneralService{
         return productRepo.save(product);
     }
 
-    @Override
+
     public Product saveProductWithFile (Product product, Optional<MultipartFile[]> files) {
 
         if(files.isPresent ()){
@@ -110,12 +110,12 @@ public class GeneralServiceImpl implements  GeneralService{
         return saveProduct (product);
     }
 
-    @Override
+
     public void deleteProduct (Long id) {
         productRepo.deleteById(id);
     }
 
-    @Override
+
     public Product updateProduct (Product product) {
 
         Product productFromDb = productRepo.findById (product.getId ()).get ();
@@ -129,7 +129,7 @@ public class GeneralServiceImpl implements  GeneralService{
         return product;
     }
 
-    @Override
+
     public Product updateProductWithFile (Product product, Optional<MultipartFile[]> files) {
         Product productFromDb = productRepo.findById (product.getId ()).get ();
 

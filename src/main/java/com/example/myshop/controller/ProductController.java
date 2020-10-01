@@ -1,9 +1,8 @@
 package com.example.myshop.controller;
 
-import com.example.myshop.domain.LinkedDirectory;
 import com.example.myshop.domain.Product;
 import com.example.myshop.domain.Views;
-import com.example.myshop.services.GeneralService;
+import com.example.myshop.services.ProductService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,25 +10,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("product")
 public class ProductController {
 
     @Autowired
-    private GeneralService generalService;
+    private ProductService productService;
 
     @GetMapping
     @JsonView(Views.FullMessage.class)
     public List<Product> list(){
-        return generalService.getAllProducts();
+        return productService.getAllProducts();
     }
 
     @GetMapping("{id}")
     @JsonView(Views.FullMessage.class)
     public Product getOne(@PathVariable String id){
-        return generalService.getProduct(Long.valueOf(id));
+        return productService.getProduct(Long.valueOf(id));
     }
 
     /*@PostMapping
@@ -61,12 +59,12 @@ public class ProductController {
             @RequestPart(value = "files") Optional<MultipartFile[]> files,
             @RequestPart(value = "product") Product product
     ){
-        return generalService.saveProductWithFile(product, files);
+        return productService.saveProductWithFile(product, files);
     }
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){
-        generalService.deleteProduct(Long.valueOf(id));
+        productService.deleteProduct(Long.valueOf(id));
     }
 
 //    @PutMapping("{id}")
@@ -84,7 +82,7 @@ public class ProductController {
             @RequestPart(value = "files") Optional<MultipartFile[]> files,
             @RequestPart(value = "product") Product product
     ){
-        return generalService.updateProductWithFile(product, files);
+        return productService.updateProductWithFile(product, files);
     }
 
 
