@@ -1,18 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import MainPage from "pages/MainPage.vue"
-
-import ProductList from "components/products/ProductList.vue";
-
+import CatalogCardComponent from "pages/CatalogCardComponent.vue"
+import ProductList from "components/products/ProductList.vue"
 
 Vue.use(VueRouter)
 
 const routes = [
-    { path: '/', component: MainPage },
+    { path: '/', component: CatalogCardComponent },
     { path: '/setting', component: ProductList },
-    { path: '*', component: MainPage },
+    { path: '*', component: CatalogCardComponent },
 ]
-
 
 export default new VueRouter({
     mode: 'history',

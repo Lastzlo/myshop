@@ -136,23 +136,14 @@
             </template>
         </v-container>
     </v-container>
-
-
-
 </template>
 
 <script>
-    //import CategoryAutocomplete from "../categories/CategoryAutocomplete.vue";
-    //
-    // import BrandAutocomplete from "../brands/BrandAutocomplete.vue";
-
     import DirectoryList from "components/other/DirectoryList.vue";
 
     export default {
         name: "ProductList",
         components: {
-            // CategoryAutocomplete,
-            // BrandAutocomplete,
             DirectoryList
         },
         data: () => ({

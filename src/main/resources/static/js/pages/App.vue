@@ -1,42 +1,21 @@
 <template>
-<!--    <v-app>-->
-<!--        <v-app-bar app>-->
-<!--            <v-toolbar-title>My Shop</v-toolbar-title>-->
-<!--        </v-app-bar>-->
-<!--        <v-main>-->
-<!--            -->
-<!--            <product-list/>-->
-<!--        </v-main>-->
-<!--        -->
-<!--        -->
-<!--        -->
-<!--        -->
-<!--    </v-app>-->
+        <v-app>
+                <AppBarComponent/>
 
-        <router-view></router-view>
+                <v-main>
+                        <router-view></router-view>
+                </v-main>
+        </v-app>
 
 </template>
 
 <script>
-    //import ProductList from "components/products/ProductList.vue";
+        import AppBarComponent from "pages/AppBarComponent.vue"
 
-
-    export default {
-        name: "App.vue",
-        components: {
-            //ProductList,
-
-
-        },
-        // data() {
-        //     return{
-        //         tabs: null,
-        //         categories: [],
-        //     }
-        // },
-        created: function () {
-        },
-    }
+        export default {
+                name: "App.vue",
+                components: {AppBarComponent},
+        }
 </script>
 
 <style scoped>
