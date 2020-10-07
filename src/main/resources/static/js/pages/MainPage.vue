@@ -2,7 +2,7 @@
     <v-app>
         <v-app-bar app dense>
 
-            <v-app-bar-nav-icon @click.stop="catalogDrawer = !catalogDrawer"></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon @click.stop="onCatalogDrawer = !onCatalogDrawer"></v-app-bar-nav-icon>
 
             <v-btn icon>
                 <v-icon>mdi-magnify</v-icon>
@@ -16,7 +16,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn icon @click.stop="autorizationDrawer = !autorizationDrawer">
+            <v-btn icon @click.stop="onAutorizationDrawer = !onAutorizationDrawer">
                 <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
 
@@ -24,7 +24,7 @@
 
         <v-navigation-drawer
                 id="catalogDrawer"
-                v-model="catalogDrawer"
+                v-model="onCatalogDrawer"
                 absolute
                 temporary
         >
@@ -57,7 +57,7 @@
 
         <v-navigation-drawer
                 id="autorizationDrawer"
-                v-model="autorizationDrawer"
+                v-model="onAutorizationDrawer"
                 absolute
                 temporary
                 right
@@ -87,7 +87,7 @@
                     <v-list-item-title>Регистрация</v-list-item-title>
                 </v-list-item>
 
-                <v-list-item @click="openPage(null)">
+                <v-list-item @click="showProductList">
                     <v-list-item-title>Страница управления товарами</v-list-item-title>
                 </v-list-item>
             </v-list>
@@ -137,8 +137,8 @@
     export default {
         name: "MainPage",
         data: () => ({
-            catalogDrawer: false,
-            autorizationDrawer: false,
+            onCatalogDrawer: false,
+            onAutorizationDrawer: false,
             items: [],
             // windowSize: {
             //     x: 0,
@@ -150,12 +150,15 @@
             this.onResize()
         },
         methods:{
+            showProductList(){
+                this.$router.push('/setting')
+            },
             openPage(item){
-                window.location.href = 'http://localhost:9500/setting'
+                //window.location.href = 'http://localhost:9500/setting'
 
                 console.log("openPage")
-                this.catalogDrawer = false
-                this.autorizationDrawer = false
+                this.onCatalogDrawer = false
+                this.onAutorizationDrawer = false
             },
             onResize () {
                 //this.windowSize = { x: window.innerWidth, y: window.innerHeight }
@@ -182,8 +185,8 @@
         },
         watch: {
             // group () {
-            //     this.catalogDrawer = false
-            //     this.autorizationDrawer = false
+            //     this.onCatalogDrawer = false
+            //     this.onAutorizationDrawer = false
             // },
         },
         created: function () {

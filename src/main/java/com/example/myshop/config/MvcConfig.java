@@ -22,9 +22,9 @@ public class MvcConfig implements WebMvcConfigurer {
                 .addResourceLocations ("file:/" + uploadPath + "/");
     }
 
-    public void addViewControllers (ViewControllerRegistry registry){
-        registry.addViewController ("/setting").setViewName ("setting.html");
-    }
+//    public void addViewControllers (ViewControllerRegistry registry){
+//        registry.addViewController ("/setting").setViewName ("setting.html");
+//    }
 
 
 
