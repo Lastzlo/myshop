@@ -139,6 +139,9 @@
 </template>
 
 <script>
+    import productsApi from 'api/products'
+
+
     import DirectoryList from "components/other/DirectoryList.vue";
 
     export default {
@@ -245,12 +248,21 @@
                         )
                     )
 
-                    this.$resource('/product').update({}, formData).then(result =>
+                    // this.$resource('/product').update({}, formData).then(result =>
+                    //     result.json().then(data => {
+                    //         const index = this.products.findIndex(item => item.id === data.id)
+                    //         this.products.splice(index, 1, data)
+                    //     })
+                    // )
+
+                    productsApi.update(formData).then(result =>
                         result.json().then(data => {
                             const index = this.products.findIndex(item => item.id === data.id)
                             this.products.splice(index, 1, data)
                         })
                     )
+
+
                 } else {
                     //save
                     let formData = new FormData();
@@ -271,12 +283,19 @@
                         )
                     )
 
-                    this.$resource('/product').save({}, formData).then(
+                    productsApi.add(formData).then(
                         result =>
                             result.json().then(data => {
                                 this.products.push(data)
                             })
                     )
+
+                    // this.$resource('/product').save({}, formData).then(
+                    //     result =>
+                    //         result.json().then(data => {
+                    //             this.products.push(data)
+                    //         })
+                    // )
                 }
 
                 this.clearForm()
@@ -304,19 +323,31 @@
                 // })
             },
             initialize () {
-                this.$resource('/product').get().then(result =>
+                productsApi.getAll().then(result =>
                     result.json().then(data =>
                         //записать данные в products
                         data.forEach(product => this.products.push(product))
                     )
                 )
+                // this.$resource('/product').get().then(result =>
+                //     result.json().then(data =>
+                //         //записать данные в products
+                //         data.forEach(product => this.products.push(product))
+                //     )
+                // )
             },
             deleteItem(item){
-                this.$resource('/product{/id}').remove({id: item.id}).then(result => {
+                productsApi.remove(item.id).then(result => {
                     if (result.ok) {
                         this.products.splice(this.products.indexOf(item), 1)
                     }
                 })
+
+                // this.$resource('/product{/id}').remove({id: item.id}).then(result => {
+                //     if (result.ok) {
+                //         this.products.splice(this.products.indexOf(item), 1)
+                //     }
+                // })
             },
             editItem(item){
                 //очистка

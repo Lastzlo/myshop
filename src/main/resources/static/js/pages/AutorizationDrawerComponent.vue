@@ -38,21 +38,36 @@
     </v-navigation-drawer>
 </template>
 <script>
+    import {mapState} from 'vuex'
+
+
     export default {
         name: 'AutorizationDrawerComponent',
-        props: ['onAutorizationDrawer'],
+        props: ['changeOnAutorizationDrawer','onAutorizationDrawer'],
         data () {
             return {
                 onAutorization: false
             }
         },
-
+        // computed:
+        //     mapState(['onAutorizationDrawer'])
+        // ,
+        watch: {
+            // onAutorization: function (newVal, oldVal) {
+            //     this.changeOnAutorizationDrawer(newVal)
+            // },
+            onAutorizationDrawer: function (newVal, oldVal) {
+                this.onAutorization = newVal
+            },
+            onAutorization: function (newVal, oldVal) {
+                this.changeOnAutorizationDrawer(newVal)
+            },
+        },
         methods:{
             openPage(item){
-                //window.location.href = 'http://localhost:9500/setting'
 
+                //this.changeOnAutorizationDrawer(this.onAutorization)
                 console.log("openPage")
-                //this.onAutorization = false
             },
             showProductList(){
                 this.$router.push('/setting')

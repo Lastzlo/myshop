@@ -75,6 +75,8 @@
 </template>
 
 <script>
+    import directoriesApi from 'api/directories'
+
     export default {
         name: "DirectoryList",
         props:[
@@ -138,7 +140,8 @@
 
                 if (this.id > -1) {
                     //update
-                    this.$resource('/directory{/id}').update({id: this.id}, linkedDirectory).then(result =>
+
+                    directoriesApi.update(this.id, linkedDirectory).then(result =>
                         result.json().then(data => {
                             let father = this.findFatherOfItem(data.id, this.items)
                             let index = father.children.findIndex(item => item.id === data.id)
@@ -146,10 +149,18 @@
 
                         })
                     )
+                    // this.$resource('/directory{/id}').update({id: this.id}, linkedDirectory).then(result =>
+                    //     result.json().then(data => {
+                    //         let father = this.findFatherOfItem(data.id, this.items)
+                    //         let index = father.children.findIndex(item => item.id === data.id)
+                    //         father.children.splice(index, 1, data)
+                    //
+                    //     })
+                    // )
                 } else {
                     //save
                     let father = this.editedItem.father
-                    this.$resource('/directory').save({}, linkedDirectory).then(
+                    directoriesApi.add(linkedDirectory).then(
                         result =>
                             result.json().then(data => {
                                 father.children.push(data)
@@ -158,6 +169,16 @@
 
                             })
                     )
+
+                    // this.$resource('/directory').save({}, linkedDirectory).then(
+                    //     result =>
+                    //         result.json().then(data => {
+                    //             father.children.push(data)
+                    //             //открывает папку
+                    //             this.open.push(father)
+                    //
+                    //         })
+                    // )
                 }
 
                 this.closeDialog()
@@ -165,7 +186,7 @@
 
             deleteChild(item) {
 
-                this.$resource('/directory{/id}').remove({id: item.id}).then(result => {
+                directoriesApi.remove(item.id).then(result => {
                     if (result.ok) {
 
                         //Удалялет item и его children с this.open
@@ -182,6 +203,24 @@
                         }
                     }
                 })
+
+                // this.$resource('/directory{/id}').remove({id: item.id}).then(result => {
+                //     if (result.ok) {
+                //
+                //         //Удалялет item и его children с this.open
+                //         this.closeAll(item)
+                //
+                //         //найти father item
+                //         let father = this.findFatherOfItem(item.id, this.items)
+                //
+                //         if(father.children){
+                //             let children = father.children
+                //             children.splice(children.indexOf(item), 1)
+                //         } else {
+                //             this.items.splice(this.items.indexOf(item), 1)
+                //         }
+                //     }
+                // })
             },
 
             findFatherOfItem(id, items) {
@@ -238,15 +277,25 @@
         },
         created: function () {
             //запрос на сервер
-            this.$resource('/directory/getCore').get().then(result =>
+
+            directoriesApi.getCore().then(result =>
                 result.json().then(data => {
                     //this.items = data.children
-
                     this.items.push(data)
 
                     this.openAll(this.items)
                 })
             )
+
+            // this.$resource('/directory/getCore').get().then(result =>
+            //     result.json().then(data => {
+            //         //this.items = data.children
+            //
+            //         this.items.push(data)
+            //
+            //         this.openAll(this.items)
+            //     })
+            // )
         },
     }
 </script>

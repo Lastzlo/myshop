@@ -28,6 +28,8 @@
 </template>
 
 <script>
+    import directoriesApi from 'api/directories'
+
     export default {
         name: "CatalogCardComponent",
         data: () => ({
@@ -60,7 +62,7 @@
         },
         created: function () {
             //запрос на сервер
-            this.$resource('/directory/getCore').get().then(result =>
+            directoriesApi.getCore().then(result =>
                 result.json().then(data => {
                     //this.items = data.children
                     if(data.children){
@@ -72,6 +74,18 @@
                     }
                 })
             )
+            // this.$resource('/directory/getCore').get().then(result =>
+            //     result.json().then(data => {
+            //         //this.items = data.children
+            //         if(data.children){
+            //             data.children.forEach(
+            //                 item => {
+            //                     this.items.push(item)
+            //                 }
+            //             )
+            //         }
+            //     })
+            // )
         },
     }
 </script>
