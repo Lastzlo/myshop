@@ -33,23 +33,35 @@
     </v-navigation-drawer>
 </template>
 <script>
+    import directoriesApi from 'api/directories'
+    import {mapState, mapMutations} from 'vuex'
+
     export default {
         name: 'CatalogDrawerComponent',
-        props: ['onCatalogDrawer'],
         data: () => ({
             items: [],
             onCatalog: false
         }),
+        computed: mapState(['onCatalogDrawer']),
+        watch: {
+            onCatalogDrawer: function (newVal, oldVal) {
+                this.onCatalog = newVal
+            },
+            onCatalog: function (newVal, oldVal) {
+                if(newVal!==this.onCatalogDrawer){
+                    this.changeCatalogDrawerMutation()
+                }
+            },
+        },
         methods:{
+            ...mapMutations(['changeCatalogDrawerMutation']),
             openPage(item){
-                //window.location.href = 'http://localhost:9500/setting'
-                console.log("openPage")
-                this.onCatalog = false
+                console.log("openCatalogPage")
             },
         },
         created: function () {
             //запрос на сервер
-            this.$resource('/directory/getCore').get().then(result =>
+            directoriesApi.getCore().then(result =>
                 result.json().then(data => {
                     if(data.children){
                         data.children.forEach(
@@ -60,6 +72,17 @@
                     }
                 })
             )
+            // this.$resource('/directory/getCore').get().then(result =>
+            //     result.json().then(data => {
+            //         if(data.children){
+            //             data.children.forEach(
+            //                 item => {
+            //                     this.items.push(item)
+            //                 }
+            //             )
+            //         }
+            //     })
+            // )
         },
 
     }

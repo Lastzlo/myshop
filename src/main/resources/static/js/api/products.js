@@ -1,5 +1,5 @@
 import Vue from 'vue'
-
+//апи для работы с продуктами
 const products = Vue.resource('/product{/id}')
 
 export default {

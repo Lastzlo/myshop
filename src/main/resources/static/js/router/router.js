@@ -5,12 +5,14 @@ import ProductList from "components/products/ProductList.vue"
 
 Vue.use(VueRouter)
 
+//отвечает за то какие компоненты и когда подргружать
 const routes = [
     { path: '/', component: CatalogCardComponent },
     { path: '/setting', component: ProductList },
     { path: '*', component: CatalogCardComponent },
 ]
 
+//мод history убирает * строке запроса
 export default new VueRouter({
     mode: 'history',
     routes

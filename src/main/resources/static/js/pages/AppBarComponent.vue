@@ -2,7 +2,7 @@
     <v-container>
         <v-app-bar app dense>
 
-            <!--        <v-app-bar-nav-icon @click.stop="this.onCatalogDrawer = !this.onCatalogDrawer"></v-app-bar-nav-icon>-->
+            <v-app-bar-nav-icon @click.stop="openCatalogDrawer"></v-app-bar-nav-icon>
 
             <v-btn icon>
                 <v-icon>mdi-magnify</v-icon>
@@ -20,57 +20,32 @@
                 <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
 
-            <!--        <CatalogDrawerComponent :onCatalogDrawer="onCatalogDrawer"/>-->
 
 
         </v-app-bar>
 
+        <CatalogDrawerComponent/>
         <AutorizationDrawerComponent
-                :changeOnAutorizationDrawer="changeOnAutorizationDrawer"
-                :onAutorizationDrawer="onAutorizationDrawer"
         />
     </v-container>
 </template>
 <script>
+    import {mapState, mapMutations} from 'vuex'
     import CatalogDrawerComponent from "pages/CatalogDrawerComponent.vue";
     import AutorizationDrawerComponent from "pages/AutorizationDrawerComponent.vue";
+
 
     export default {
         name: 'AppBarComponent',
         components: {CatalogDrawerComponent, AutorizationDrawerComponent},
-        // computed: {
-        //     onCatalogDrawer: this.$store.getters.catalogDrawer,
-        //     onAutorizationDrawer: this.$store.getters.autorizationDrawer
-        // }
-        data: () => ({
-            backupAutorizationDrawer:false,
-            onAutorizationDrawer: false,
-        }),
+        computed: mapState(['onAutorizationDrawer']),
         methods: {
-            changeOnAutorizationDrawer(change){
-                if(change === this.backupAutorizationDrawer){
-                    console.log("change === backupAutorizationDrawer")
-                }else {
-                    console.log("change !== backupAutorizationDrawer")
-                    this.backupAutorizationDrawer = change
-
-                }
-
-            },
+            ...mapMutations(['changeAutorizationDrawerMutation', 'changeCatalogDrawerMutation']),
             openAutorizationDrawer(){
-                if(this.backupAutorizationDrawer !==this.onAutorizationDrawer){
-                    console.log("this.backupAutorizationDrawer !==this.onAutorizationDrawer")
-                    const test = this.backupAutorizationDrawer
-                    console.log("const test ="+test)
-                    this.onAutorizationDrawer = test
-
-                    this.onAutorizationDrawer = !test
-                } else {
-                    this.onAutorizationDrawer = true
-                    this.backupAutorizationDrawer = true
-                }
-
-
+                this.changeAutorizationDrawerMutation()
+            },
+            openCatalogDrawer(){
+                this.changeCatalogDrawerMutation()
             },
         },
 

@@ -75,6 +75,7 @@
 </template>
 
 <script>
+    //используем апи
     import directoriesApi from 'api/directories'
 
     export default {

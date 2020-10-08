@@ -38,35 +38,27 @@
     </v-navigation-drawer>
 </template>
 <script>
-    import {mapState} from 'vuex'
-
+    import {mapState, mapMutations} from 'vuex'
 
     export default {
         name: 'AutorizationDrawerComponent',
-        props: ['changeOnAutorizationDrawer','onAutorizationDrawer'],
-        data () {
-            return {
-                onAutorization: false
-            }
-        },
-        // computed:
-        //     mapState(['onAutorizationDrawer'])
-        // ,
+        data: () => ({
+            onAutorization: false
+        }),
+        computed: mapState(['onAutorizationDrawer']),
         watch: {
-            // onAutorization: function (newVal, oldVal) {
-            //     this.changeOnAutorizationDrawer(newVal)
-            // },
             onAutorizationDrawer: function (newVal, oldVal) {
                 this.onAutorization = newVal
             },
             onAutorization: function (newVal, oldVal) {
-                this.changeOnAutorizationDrawer(newVal)
+                if(newVal!==this.onAutorizationDrawer){
+                    this.changeAutorizationDrawerMutation()
+                }
             },
         },
         methods:{
+            ...mapMutations(['changeAutorizationDrawerMutation']),
             openPage(item){
-
-                //this.changeOnAutorizationDrawer(this.onAutorization)
                 console.log("openPage")
             },
             showProductList(){

@@ -139,6 +139,7 @@
 </template>
 
 <script>
+    //используем апи
     import productsApi from 'api/products'
 
 

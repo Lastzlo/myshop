@@ -1,5 +1,5 @@
 import Vue from 'vue'
-
+//апи для работы с директориями
 const directories = Vue.resource('/directory{/id}')
 
 export default {
