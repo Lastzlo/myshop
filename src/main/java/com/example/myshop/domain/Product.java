@@ -23,7 +23,10 @@ public class Product {
     // dicription
     // price
     // photos
+
+
     @JsonView(Views.FullMessage.class)
+    @Column(name = "productDiscription", length = 1024)
     private String productDiscription;
 
     @OneToMany
@@ -105,6 +108,10 @@ public class Product {
 
     public void addTag (LinkedDirectory tagFromDb) {
         this.tags.add (tagFromDb);
+    }
+
+    public void deleteTag (LinkedDirectory tagFromDb) {
+        this.tags.remove (tagFromDb);
     }
 
     public String getPrice () {

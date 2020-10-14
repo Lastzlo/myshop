@@ -20,6 +20,9 @@ import java.util.*;
 @Service
 public class ProductService {
     @Autowired
+    private LinkedDirectoryRepo linkedDirectoryRepo;
+
+    @Autowired
     private LinkedDirectoryRepo directoryRepo;
     @Autowired
     private ProductRepo productRepo;
@@ -43,18 +46,34 @@ public class ProductService {
     public Product saveProduct (Product product) {
         product.setCreationDate (LocalDateTime.now ());
 
+
+        Set<LinkedDirectory> tagsFromDb = new HashSet<>();
+
         if(product.getTags () != null){
             Set<LinkedDirectory> tags = new HashSet<> (){{addAll (product.getTags ());}};
             product.getTags ().clear ();
             tags.forEach (tag -> {
                         this.directoryRepo.findById (tag.getId ()).ifPresent (
-                                tagFromDb -> product.addTag (tagFromDb)
+                                tagFromDb -> {
+
+                                    product.addTag (tagFromDb);
+                                    tagsFromDb.add (tagFromDb);
+                                    //tagFromDb.addProduct ();
+                                }
                         );
                     }
             );
         }
+        final Product finalProduct = productRepo.save(product);
 
-        return productRepo.save(product);
+        //Добавляет товар в каждый тег
+        tagsFromDb.forEach (tag -> {
+            tag.addProduct (finalProduct);
+            linkedDirectoryRepo.save (tag);
+
+        });
+
+        return finalProduct;
     }
 
 
@@ -112,6 +131,16 @@ public class ProductService {
 
 
     public void deleteProduct (Long id) {
+        productRepo.findById (id).ifPresent (
+                product -> {
+                    product.getTags ().forEach (
+                            tag -> {
+                                tag.deleteProduct (product);
+                                linkedDirectoryRepo.save (tag);
+                            }
+                    );
+                }
+        );
         productRepo.deleteById(id);
     }
 

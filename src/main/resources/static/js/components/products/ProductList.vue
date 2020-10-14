@@ -15,6 +15,16 @@
                                         label="Product name"
                                         autofocus
                                 ></v-text-field>
+                                <v-text-field
+                                        v-model="editedItem.price"
+                                        label="Product price"
+                                        autofocus
+                                ></v-text-field>
+                                <v-text-field
+                                        v-model="editedItem.productDiscription"
+                                        label="Product discription"
+                                        autofocus
+                                ></v-text-field>
 
                                 <v-container
                                         id="editedItemPhoto"
@@ -169,16 +179,17 @@
             id: -1,
             editedItem: {
                 productName: '',
+                price: '',
+                productDiscription: '',
                 tags: [],
                 photos: [],
                 photoToDelete:[],
-                //price: '',
-                //productDiscription: '',
+
             },
             defaultItem: {
-                //category: null,
-                //brand: null,
                 productName: '',
+                price: '',
+                productDiscription: '',
                 tags: [],
                 photos:[],
                 photoToDelete:[],

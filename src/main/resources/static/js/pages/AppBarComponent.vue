@@ -48,7 +48,9 @@
                 this.changeCatalogDrawerMutation()
             },
             showMainPage(){
-                this.$router.push('/')
+                //this.$router.push('/')
+                this.$router.push('/', () => {})
+
             }
         },
 

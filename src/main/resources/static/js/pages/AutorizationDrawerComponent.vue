@@ -62,7 +62,8 @@
                 console.log("openPage")
             },
             showProductList(){
-                this.$router.push('/setting')
+                this.$router.push('/setting', () => {})
+                //this.$router.push('/setting')
             },
         }
     }

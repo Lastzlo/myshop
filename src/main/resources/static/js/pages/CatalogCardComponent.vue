@@ -1,30 +1,36 @@
 <template>
-        <v-card
-                class="mx-auto"
-                max-width="768"
-                v-resize="onResize"
-        >
-            <v-container>
-                <v-row dense>
-                    <v-col
-                            v-for="item in items"
-                            :key="item.id"
-                            :cols=cols
-                    >
-                        <v-card
-                                class="d-flex align-end justify-center pa-0 mx-auto"
-                                height="125px"
-                                @click="openPage(item)"
-                                outlined
+    <v-container fluid>
+        <v-container id="catalogCard">
+            <v-card
+                    class="mx-auto"
+
+                    v-resize="onResize"
+            >
+                <v-container>
+                    <v-row dense>
+                        <v-col
+                                v-for="item in items"
+                                :key="item.id"
+                                :cols=cols
                         >
-                            <div :class="`text-body-2 mx-2`">
-                                {{item.name}}
-                            </div>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-container>
-        </v-card>
+                            <v-card
+                                    class="d-flex align-end justify-center pa-0 mx-auto"
+                                    height="125px"
+                                    @click="openPage(item)"
+                                    outlined
+                            >
+                                <div :class="`text-body-2 mx-2`">
+                                    {{item.name}}
+                                </div>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card>
+        </v-container>
+
+    </v-container>
+
 </template>
 
 <script>
@@ -47,10 +53,13 @@
                 console.log("openPage")
 
                 //переход на страницу
-                this.$router.push({ path: `/filter/${item.id}` })
+                //this.$router.push({ path: `/filter/${item.id}` })
+                this.$router.push({ path: `/filter/${item.id}` }, () => {})
             },
             onResize () {
                 let x = window.innerWidth;
+
+                //console.log("window.innerWidth = "+window.innerWidth)
 
                 if(x<360){
                     this.cols = 12;
@@ -58,9 +67,12 @@
                     this.cols = 4;
                 }else if(x>=480 && x<720){
                     this.cols = 3;
-                } else if(x>=720){
+                } else if(x>=720 && x<1280){
                     this.cols = 2;
+                } else if(x>=1280){
+                    this.cols = 1.5;
                 }
+
             },
         },
         created: function () {

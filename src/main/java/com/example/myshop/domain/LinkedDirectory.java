@@ -26,9 +26,9 @@ public class LinkedDirectory {
     @ManyToOne
     private LinkedDirectory father;
 
-    /*@ManyToMany
-    private Set<Product> products;*/
-
+    @ManyToMany
+    //@JsonView(Views.FullMessage.class)
+    private Set<Product> products;
 
     public LinkedDirectory () {
     }
@@ -46,6 +46,22 @@ public class LinkedDirectory {
 
     public void setId (Long id) {
         this.id = id;
+    }
+
+    public Set<Product> getProducts () {
+        return products;
+    }
+
+    public void setProducts (Set<Product> products) {
+        this.products = products;
+    }
+
+    public void addProduct (Product productFromDb) {
+        this.products.add (productFromDb);
+    }
+
+    public void deleteProduct (Product productFromDb) {
+        this.products.remove (productFromDb);
     }
 
     public Set<LinkedDirectory> getChildren () {

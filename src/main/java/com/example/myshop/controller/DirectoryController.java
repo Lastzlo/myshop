@@ -4,6 +4,7 @@ import com.example.myshop.domain.DirectoryType;
 import com.example.myshop.domain.LinkedDirectory;
 import com.example.myshop.domain.Views;
 import com.example.myshop.repos.LinkedDirectoryRepo;
+import com.example.myshop.repos.ProductRepo;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +14,14 @@ import java.util.Set;
 @RestController
 @RequestMapping("directory")
 public class DirectoryController {
+    private final ProductRepo productRepo;
+
+
     private final LinkedDirectoryRepo directoryRepo;
 
     @Autowired
-    public DirectoryController (LinkedDirectoryRepo directoryRepo) {
+    public DirectoryController (ProductRepo productRepo, LinkedDirectoryRepo directoryRepo) {
+        this.productRepo = productRepo;
         this.directoryRepo = directoryRepo;
     }
 
@@ -117,25 +122,44 @@ public class DirectoryController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id){
         directoryRepo.findById (Long.valueOf (id)).ifPresent (
-                child -> {
-                    if(child.getFather ()!=null){
-                        LinkedDirectory father = child.getFather ();
+                linkedDirectory -> {
+                    //удаление тега из всех товаров
+                    linkedDirectory.getProducts ().forEach (
+                            product -> {
+                                product.deleteTag (linkedDirectory);
+                                productRepo.save (product);
+                            }
+                    );
 
-                        father.deleteChild (child);
+                    //удаление у родителя
+                    if(linkedDirectory.getFather ()!=null){
+                        LinkedDirectory father = linkedDirectory.getFather ();
+
+                        father.deleteChild (linkedDirectory);
                         directoryRepo.save (father);
                     }
 
-                    if(child.getChildren ().size () != 0){
-                        Set<LinkedDirectory> children = child.getChildren ();
+                    //удаление всех детей
+                    if(linkedDirectory.getChildren ().size () != 0){
+                        Set<LinkedDirectory> children = linkedDirectory.getChildren ();
 
-                        children.forEach ((item)-> item.setFather (null));
-                        child.getChildren ().clear ();
-                        //children.forEach ((item)-> directoryRepo.deleteById(item.getId ()));
-                        children.forEach ((item)-> directoryRepo.delete (item));
+                        children.forEach (item-> item.setFather (null));
+                        linkedDirectory.getChildren ().clear ();
+
+                        children.forEach (item-> {
+                            //удаление тега из всех товаров
+                            item.getProducts ().forEach (
+                                    product -> {
+                                        product.deleteTag (item);
+                                        productRepo.save (product);
+                                    }
+                            );
+
+                            directoryRepo.delete (item);
+                        });
                     }
-                    //directoryRepo.deleteById(Long.valueOf(id));
-                    directoryRepo.delete (child);
 
+                    directoryRepo.delete (linkedDirectory);
                 }
         );
     }
