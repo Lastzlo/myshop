@@ -45,6 +45,9 @@
             },
             openPage(item){
                 console.log("openPage")
+
+                //переход на страницу
+                this.$router.push({ path: `/filter/${item.id}` })
             },
             onResize () {
                 let x = window.innerWidth;

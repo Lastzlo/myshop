@@ -10,7 +10,7 @@ Vue.use(VueRouter)
 const routes = [
     { path: '/', component: CatalogCardComponent },
     { path: '/setting', component: ProductList },
-    { path: '/filter', component: FilterComponent },
+    { path: '/filter/:id', component: FilterComponent },
     { path: '*', component: CatalogCardComponent },
 ]
 

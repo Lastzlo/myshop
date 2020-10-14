@@ -23,7 +23,7 @@
                     v-for="item in items"
                     :key="item.title"
                     link
-                    @click="openPage"
+                    @click="openPage(item)"
             >
                 <v-list-item-content>
                     <v-list-item-title>{{ item.name }}</v-list-item-title>
@@ -57,6 +57,10 @@
             ...mapMutations(['changeCatalogDrawerMutation']),
             openPage(item){
                 console.log("openCatalogPage")
+
+                //переход на страницу
+                this.$router.push({ path: `/filter/${item.id}` })
+
             },
         },
         created: function () {
