@@ -24,9 +24,8 @@ public class Product {
     // price
     // photos
 
-
+    //@Column(columnDefinition="text")
     @JsonView(Views.FullMessage.class)
-    @Column(name = "productDiscription", length = 1024)
     private String productDiscription;
 
     @OneToMany
@@ -51,7 +50,6 @@ public class Product {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")   //чтобы Джейсон отшорматировал  дату и время по нашему патерну
     @JsonView(Views.FullMessage.class)
     private LocalDateTime creationDate;
-
 
     public Product () {
     }

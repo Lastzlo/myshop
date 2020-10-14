@@ -1,8 +1,12 @@
 package com.example.myshop.repos;
 
+import com.example.myshop.domain.LinkedDirectory;
 import com.example.myshop.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProductRepo extends JpaRepository<Product, Long> {
+import java.util.List;
+import java.util.Set;
 
+public interface ProductRepo extends JpaRepository<Product, Long> {
+        //List<Product> findByTagsWithi_Id (LinkedDirectory tags_id);
 }

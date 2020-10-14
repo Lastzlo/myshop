@@ -24,10 +24,16 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+//    @GetMapping("{id}")
+//    @JsonView(Views.FullMessage.class)
+//    public Product getOne(@PathVariable String id){
+//        return productService.getProduct(Long.valueOf(id));
+//    }
+
     @GetMapping("{id}")
     @JsonView(Views.FullMessage.class)
-    public Product getOne(@PathVariable String id){
-        return productService.getProduct(Long.valueOf(id));
+    public List<Product> getProductsByTagId(@PathVariable String id){
+        return productService.getProductsByTagId (Long.valueOf (id));
     }
 
     /*@PostMapping

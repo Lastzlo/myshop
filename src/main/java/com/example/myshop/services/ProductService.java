@@ -19,8 +19,6 @@ import java.util.*;
 
 @Service
 public class ProductService {
-    @Autowired
-    private LinkedDirectoryRepo linkedDirectoryRepo;
 
     @Autowired
     private LinkedDirectoryRepo directoryRepo;
@@ -37,6 +35,10 @@ public class ProductService {
         return productRepo.findAll();
     }
 
+    public List<Product> getProductsByTagId (Long id) {
+        return productRepo.findAll();
+        //return productRepo.findByTagsWithi_Id (directoryRepo.findById (id).get ());
+    }
 
     public Product getProduct (Long id) {
         return productRepo.getOne(id);
@@ -69,7 +71,7 @@ public class ProductService {
         //Добавляет товар в каждый тег
         tagsFromDb.forEach (tag -> {
             tag.addProduct (finalProduct);
-            linkedDirectoryRepo.save (tag);
+            directoryRepo.save (tag);
 
         });
 
@@ -136,7 +138,7 @@ public class ProductService {
                     product.getTags ().forEach (
                             tag -> {
                                 tag.deleteProduct (product);
-                                linkedDirectoryRepo.save (tag);
+                                directoryRepo.save (tag);
                             }
                     );
                 }

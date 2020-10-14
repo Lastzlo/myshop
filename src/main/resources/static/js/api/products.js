@@ -7,4 +7,5 @@ export default {
     update: product => products.update({}, product),
     remove: id => products.remove({id: id}),
     getAll: () => products.get(),
+    getProductsByTagId: id => products.get({id: id}),
 }
