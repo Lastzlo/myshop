@@ -10,7 +10,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn text>
+            <v-btn @click="showMainPage" text>
                 My Shop
             </v-btn>
 
@@ -47,6 +47,9 @@
             openCatalogDrawer(){
                 this.changeCatalogDrawerMutation()
             },
+            showMainPage(){
+                this.$router.push('/')
+            }
         },
 
     }

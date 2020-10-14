@@ -1,0 +1,13 @@
+<template>
+    
+</template>
+
+<script>
+    export default {
+        name: "FilterComponent"
+    }
+</script>
+
+<style scoped>
+
+</style>

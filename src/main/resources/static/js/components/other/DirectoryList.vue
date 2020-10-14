@@ -168,6 +168,8 @@
                                 //открывает папку
                                 this.open.push(father)
 
+                                this.openAll(father.children)
+
                             })
                     )
 

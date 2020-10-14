@@ -5,5 +5,6 @@ public enum DirectoryType {
     CATEGORY,
     BRAND_LIST,
     BRAND,
+    PARAMETER_LIST,
     PARAMETER
 }

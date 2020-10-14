@@ -43,9 +43,51 @@ public class DirectoryController {
     ){
         LinkedDirectory father = directoryRepo.getOne (linkedDirectory.getFather ().getId ());
 
+        LinkedDirectory child = linkedDirectory;
+
         if(father!=null){
-            linkedDirectory.setFather (father);
-            LinkedDirectory child = directoryRepo.save (linkedDirectory);
+            String fatherDirectoryType = father.getDirectoryType ();
+
+            child.setFather (father);
+
+            //проверка что отец CATEGORY_LIST
+            if(fatherDirectoryType.equals (DirectoryType.CATEGORY_LIST.toString ())){
+                child.setDirectoryType (DirectoryType.CATEGORY.toString ());
+                child = directoryRepo.save (child);
+
+                //добавляем в него дочернюю директорию Бренды
+                LinkedDirectory brandList = new LinkedDirectory (
+                        "Бренды",
+                        DirectoryType.BRAND_LIST.toString ()
+                );
+                brandList.setFather (child);
+                brandList = directoryRepo.save (brandList);
+
+                //добавляем в него дочернюю директорию Параметры
+                LinkedDirectory parameterList = new LinkedDirectory (
+                        "Параметры",
+                        DirectoryType.PARAMETER_LIST.toString ()
+                );
+                parameterList.setFather (child);
+                parameterList = directoryRepo.save (parameterList);
+
+                child.addChild (brandList);
+                child.addChild (parameterList);
+            }
+
+            //проверка что отец BRAND_LIST
+            if(fatherDirectoryType.equals (DirectoryType.BRAND_LIST.toString ())){
+
+                child.setDirectoryType (DirectoryType.BRAND.toString ());
+            }
+
+            //проверка что отец PARAMETER_LIST
+            if(fatherDirectoryType.equals (DirectoryType.PARAMETER_LIST.toString ())){
+
+                child.setDirectoryType (DirectoryType.PARAMETER.toString ());
+            }
+
+            child = directoryRepo.save (child);
 
             father.addChild (child);
             directoryRepo.save (father);
