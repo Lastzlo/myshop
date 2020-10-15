@@ -2,9 +2,16 @@
     <v-navigation-drawer
             id="catalogDrawer"
             v-model="onCatalog"
+            style="position:fixed; overflow-y:scroll;"
             absolute
             temporary
     >
+        <!--<v-navigation-drawer
+                dark
+                v-model="drawer"
+                width="400"
+                style="position:fixed; top:0; left:0; overflow-y:scroll;"
+        >-->
         <v-list-item>
             <v-list-item-content>
                 <v-list-item-title class="title">

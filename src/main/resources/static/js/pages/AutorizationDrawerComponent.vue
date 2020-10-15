@@ -2,6 +2,7 @@
     <v-navigation-drawer
             id="autorizationDrawer"
             v-model="onAutorization"
+            style="position:fixed; overflow-y:scroll;"
             absolute
             temporary
             right

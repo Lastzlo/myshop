@@ -1,14 +1,20 @@
 <template>
     <v-container fluid>
+        //добавить панель для фильтра, она будет видна если экран больше 960
+
+
         <v-container>
             <v-row>
                 <v-col
                         v-for="product in products"
                         :key="product.id"
+
+                        v-resize="onResize"
+
                         cols="12"
                 >
                     <v-card
-                            class="d-flex"
+                            :class=vCradClass
                             color="grey lighten-2"
                             flat
                             tile
@@ -88,7 +94,11 @@
         data: () => ({
             products: [],
             directoryId: null,
+            vCradClass: ""
         }),
+        mounted () {
+            this.onResize()
+        },
         watch: {
             $route(to, from) {
                 // обрабатываем изменение параметров маршрута...
@@ -113,6 +123,18 @@
                 console.log("openPage")
                 //переход на страницу и обработана ошибка
                 this.$router.push({ path: `/filter/${item.id}` }, () => {})
+            },
+            onResize () {
+                let x = window.innerWidth;
+
+                //console.log("window.innerWidth = "+window.innerWidth)
+
+                if(x>660){
+                    this.vCradClass = "d-flex"
+                } else {
+                    this.vCradClass = ""
+                }
+
             },
         },
         created() {
