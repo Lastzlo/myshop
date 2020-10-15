@@ -24,7 +24,7 @@ public class Product {
     // price
     // photos
 
-    //@Column(columnDefinition="text")
+    //PROBLEM! lengh only 255 charts
     @JsonView(Views.FullMessage.class)
     private String productDiscription;
 

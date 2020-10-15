@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-container id="product-form">
+        <v-container id="productForm">
             <v-card>
                 <v-card-title>
                     <span class="headline">{{ formTitle }}</span>
@@ -105,7 +105,7 @@
             </v-card>
         </v-container>
 
-        <v-container id="product-table">
+        <v-container id="productTable">
             <!--тут будет список товаров-->
             <template>
                 <v-data-table
@@ -151,12 +151,10 @@
 <script>
     //используем апи
     import productsApi from 'api/products'
-
-
-    import DirectoryList from "components/other/DirectoryList.vue";
+    import DirectoryList from "components/other/DirectoryList.vue"
 
     export default {
-        name: "ProductList",
+        name: "ProductManagementComponent",
         components: {
             DirectoryList
         },

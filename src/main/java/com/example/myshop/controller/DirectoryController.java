@@ -50,10 +50,11 @@ public class DirectoryController {
 
     }
 
-    /*@GetMapping("{id}")
+    @GetMapping("{id}")
+    @JsonView(Views.OnlyChild.class)
     public LinkedDirectory getOne(@PathVariable String id){
         return directoryRepo.getOne(Long.valueOf(id));
-    }*/
+    }
 
     @PostMapping
     @JsonView(Views.OnlyChild.class)

@@ -11,24 +11,6 @@
                     selectable
                     return-object
             >
-                <template v-slot:append="{ item }">
-                    <v-icon
-                            @click="addChild(item) "
-                    >
-                        mdi-plus-circle-outline
-                    </v-icon>
-                    <v-icon
-                            @click="editChild(item)"
-                    >
-                        mdi-pencil
-                    </v-icon>
-                    <v-icon
-                            v-if="item.directoryType !== 'CATEGORY_LIST'"
-                            @click="deleteChild(item)"
-                    >
-                        mdi-delete
-                    </v-icon>
-                </template>
             </v-treeview>
             <template v-if="!selection.length">
                 No nodes selected.
@@ -39,35 +21,6 @@
                 </div>
             </template>
         </div>
-        <div>
-            <v-dialog v-model="dialog" max-width="500px">
-                <v-card>
-                    <v-card-title>
-                        <span class="headline">{{ formTitle }}</span>
-                    </v-card-title>
-
-                    <v-card-text>
-                        <v-container>
-                            <v-row>
-                                <v-col cols="12" sm="6" md="4">
-                                    <v-text-field
-                                            v-model="editedItem.name"
-                                            label="Write name"
-                                            autofocus
-                                    ></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-card-text>
-
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" text @click="closeDialog">Cancel</v-btn>
-                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
-        </div   >
     </div>
 
 
@@ -140,7 +93,6 @@
 
                 if (this.id > -1) {
                     //update
-
                     directoriesApi.update(this.id, linkedDirectory).then(result =>
                         result.json().then(data => {
                             let father = this.findFatherOfItem(data.id, this.items)
@@ -149,14 +101,7 @@
 
                         })
                     )
-                    // this.$resource('/directory{/id}').update({id: this.id}, linkedDirectory).then(result =>
-                    //     result.json().then(data => {
-                    //         let father = this.findFatherOfItem(data.id, this.items)
-                    //         let index = father.children.findIndex(item => item.id === data.id)
-                    //         father.children.splice(index, 1, data)
-                    //
-                    //     })
-                    // )
+
                 } else {
                     //save
                     let father = this.editedItem.father
@@ -168,19 +113,8 @@
                                 this.open.push(father)
 
                                 this.openAll(father.children)
-
                             })
                     )
-
-                    // this.$resource('/directory').save({}, linkedDirectory).then(
-                    //     result =>
-                    //         result.json().then(data => {
-                    //             father.children.push(data)
-                    //             //открывает папку
-                    //             this.open.push(father)
-                    //
-                    //         })
-                    // )
                 }
 
                 this.closeDialog()
@@ -206,23 +140,6 @@
                     }
                 })
 
-                // this.$resource('/directory{/id}').remove({id: item.id}).then(result => {
-                //     if (result.ok) {
-                //
-                //         //Удалялет item и его children с this.open
-                //         this.closeAll(item)
-                //
-                //         //найти father item
-                //         let father = this.findFatherOfItem(item.id, this.items)
-                //
-                //         if(father.children){
-                //             let children = father.children
-                //             children.splice(children.indexOf(item), 1)
-                //         } else {
-                //             this.items.splice(this.items.indexOf(item), 1)
-                //         }
-                //     }
-                // })
             },
 
             findFatherOfItem(id, items) {
@@ -278,15 +195,8 @@
             },
         },
         created: function () {
-            //запрос на сервер
-            directoriesApi.getCore().then(result =>
-                result.json().then(data => {
-                    this.items.push(data)
 
-                    this.openAll(this.items)
-                })
-            )
-            /*if(this.$route.params.id !==undefined){
+            if(this.$route.params.id !==null){
                 let directoryId = this.$route.params.id
 
                 //запрос на сервер
@@ -297,7 +207,7 @@
                         this.openAll(this.items)
                     })
                 )
-            } else {
+            } /*else {
                 //запрос на сервер
                 directoriesApi.getCore().then(result =>
                     result.json().then(data => {

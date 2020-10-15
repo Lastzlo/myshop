@@ -2,91 +2,109 @@
     <v-container fluid>
         //добавить панель для фильтра, она будет видна если экран больше 960
 
-        <v-container>
-            <v-row>
+        <v-container
+                fluid
+                id="productList"
+
+        >
+            <v-row >
                 <v-col
-                        v-for="product in products"
-                        :key="product.id"
-
-                        v-resize="onResize"
-
-                        cols="12"
+                        class="pa-0"
+                        cols="3"
                 >
-                    <v-card
-                            :class=vCradClass
-                            color="grey lighten-2"
-                            flat
-                            tile
+                    <directory-list2 @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
+
+                </v-col>
+                <v-col
+                        class="pa-0"
+                        cols="9"
+                >
+                    <v-col
+                            class="pa-1"
+                            v-for="product in products"
+                            :key="product.id"
+
+                            v-resize="onResize"
+
                     >
                         <v-card
-                                class="align-self-center"
-                        >
-                            <v-img
-                                    v-if="product.photos.length>0"
-                                    :src="product.photos[0]"
-                                    contain
-                                    height="150"
-                                    width="150"
-                                    @click="openPage2(product)"
-
-                            ></v-img>
-
-                        </v-card>
-
-                        <v-card
-                                outlined
+                                :class=vCradClass
+                                color="grey lighten-2"
+                                flat
                                 tile
                         >
-                            <v-card-title
-                                    v-text="product.productName"
-                                    @click="openPage2(product)"
+                            <v-card
+                                    class="align-self-center"
                             >
-                                Name of product
-                            </v-card-title>
-                            <v-card-subtitle
-                                    v-text="product.productDiscription"
+                                <v-img
+                                        v-if="product.photos.length>0"
+                                        :src="product.photos[0]"
+                                        contain
+                                        height="150"
+                                        width="150"
+                                        @click="openPage2(product)"
+
+                                ></v-img>
+
+                            </v-card>
+
+                            <v-card
+                                    outlined
+                                    tile
+                                    max-width="800"
                             >
-                                iscription of product
-                            </v-card-subtitle>
-                            <v-card-text>
-                                <v-chip-group
-                                        column
-                                >
-                                    <v-chip
-                                            v-for="tag in product.tags"
-                                            :key="tag.id"
-                                            @click="openPage(tag)"
-                                            small
-                                    >
-                                        {{tag.name}}
-                                    </v-chip>
-
-                                </v-chip-group>
-                            </v-card-text>
-                        </v-card>
-
-                        <v-card
-                                class="ml-auto"
-                                outlined
-                                tile
-                        >
-                            <div class="d-flex flex-column align-center">
                                 <v-card-title
-                                        v-text="product.price"
+                                        v-text="product.productName"
                                         @click="openPage2(product)"
                                 >
-                                    Price
+                                    Name of product
                                 </v-card-title>
-                                <v-btn
-                                        text
-                                        @click="openPage2(product)"
+                                <v-card-subtitle
+                                        v-text="product.productDiscription"
                                 >
-                                    Купить
-                                </v-btn>
-                            </div>
+                                    iscription of product
+                                </v-card-subtitle>
+                                <v-card-text>
+                                    <v-chip-group
+                                            column
+                                    >
+                                        <v-chip
+                                                v-for="tag in product.tags"
+                                                :key="tag.id"
+                                                @click="openPage(tag)"
+                                                small
+                                        >
+                                            {{tag.name}}
+                                        </v-chip>
+
+                                    </v-chip-group>
+                                </v-card-text>
+                            </v-card>
+
+                            <v-card
+                                    class="ml-auto"
+                                    outlined
+                                    tile
+                            >
+                                <div class="d-flex flex-column align-center">
+                                    <v-card-title
+                                            v-text="product.price+' грн'"
+                                            @click="openPage2(product)"
+                                    >
+                                        Price
+                                    </v-card-title>
+                                    <v-btn
+                                            text
+                                            @click="openPage2(product)"
+                                    >
+                                        Купить
+                                    </v-btn>
+                                </div>
+                            </v-card>
                         </v-card>
-                    </v-card>
+                    </v-col>
                 </v-col>
+
             </v-row>
         </v-container>
 
@@ -96,13 +114,19 @@
 
 <script>
     import directoriesApi from "api/directories.js";
+    import DirectoryList2 from "components/other/DirectoryList2.vue"
 
     export default {
         name: "FilterComponent",
+        components: {
+            DirectoryList2
+        },
         data: () => ({
             products: [],
             directoryId: null,
-            vCradClass: ""
+            vCradClass: "",
+
+            tegsFromProduct:[],
         }),
         mounted () {
             this.onResize()
@@ -117,6 +141,9 @@
             }
         },
         methods :{
+            selectedTags(tags){
+                //
+            },
             setProducts(directoryId){
 
                 this.products= []

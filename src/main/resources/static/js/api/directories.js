@@ -10,4 +10,5 @@ export default {
     getCore: () => Vue.resource('/directory/getCore').get(),
     //getProductByDirectoryId: id => Vue.resource('/directory/getProductByDirectoryId/'+id).get(),
     getProductByDirectoryId: id => Vue.http.get('/directory/getProductByDirectoryId/'+id),
+    getOne: id => Vue.http.get('/directory/'+id),
 }
