@@ -2,7 +2,6 @@
     <v-container fluid>
         //добавить панель для фильтра, она будет видна если экран больше 960
 
-
         <v-container>
             <v-row>
                 <v-col
@@ -20,7 +19,6 @@
                             tile
                     >
                         <v-card
-
                                 class="align-self-center"
                         >
                             <v-img
@@ -29,7 +27,7 @@
                                     contain
                                     height="150"
                                     width="150"
-
+                                    @click="openPage2(product)"
 
                             ></v-img>
 
@@ -39,9 +37,17 @@
                                 outlined
                                 tile
                         >
-                            <v-card-title v-text="product.productName">
+                            <v-card-title
+                                    v-text="product.productName"
+                                    @click="openPage2(product)"
+                            >
                                 Name of product
                             </v-card-title>
+                            <v-card-subtitle
+                                    v-text="product.productDiscription"
+                            >
+                                iscription of product
+                            </v-card-subtitle>
                             <v-card-text>
                                 <v-chip-group
                                         column
@@ -50,17 +56,13 @@
                                             v-for="tag in product.tags"
                                             :key="tag.id"
                                             @click="openPage(tag)"
+                                            small
                                     >
                                         {{tag.name}}
                                     </v-chip>
 
                                 </v-chip-group>
                             </v-card-text>
-                            <v-card-subtitle
-                                    v-text="product.productDiscription"
-                            >
-                                iscription of product
-                            </v-card-subtitle>
                         </v-card>
 
                         <v-card
@@ -69,10 +71,16 @@
                                 tile
                         >
                             <div class="d-flex flex-column align-center">
-                                <v-card-title v-text="product.price">
+                                <v-card-title
+                                        v-text="product.price"
+                                        @click="openPage2(product)"
+                                >
                                     Price
                                 </v-card-title>
-                                <v-btn text>
+                                <v-btn
+                                        text
+                                        @click="openPage2(product)"
+                                >
                                     Купить
                                 </v-btn>
                             </div>
@@ -123,6 +131,11 @@
                 console.log("openPage")
                 //переход на страницу и обработана ошибка
                 this.$router.push({ path: `/filter/${item.id}` }, () => {})
+            },
+            openPage2(item){
+                console.log("openPage2")
+                //переход на страницу и обработана ошибка
+                //this.$router.push({ path: `/filter/${item.id}` }, () => {})
             },
             onResize () {
                 let x = window.innerWidth;
