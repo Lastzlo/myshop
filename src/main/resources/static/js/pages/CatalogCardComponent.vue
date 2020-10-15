@@ -52,8 +52,8 @@
             openPage(item){
                 console.log("openPage")
 
-                //переход на страницу
-                //this.$router.push({ path: `/filter/${item.id}` })
+
+                //переход на страницу и обработана ошибка
                 this.$router.push({ path: `/filter/${item.id}` }, () => {})
             },
             onResize () {

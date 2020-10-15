@@ -30,20 +30,13 @@ public class ProductService {
     @Value("${upload.path}")
     private String uploadPath;
 
-
     public List<Product> getAllProducts () {
         return productRepo.findAll();
-    }
-
-    public List<Product> getProductsByTagId (Long id) {
-        return productRepo.findAll();
-        //return productRepo.findByTagsWithi_Id (directoryRepo.findById (id).get ());
     }
 
     public Product getProduct (Long id) {
         return productRepo.getOne(id);
     }
-
 
     public Product saveProduct (Product product) {
         product.setCreationDate (LocalDateTime.now ());
@@ -78,7 +71,6 @@ public class ProductService {
         return finalProduct;
     }
 
-
     public Product saveProductWithFile (Product product, Optional<MultipartFile[]> files) {
 
         if(files.isPresent ()){
@@ -96,10 +88,8 @@ public class ProductService {
 
             //иницыализирует массив для фото
             product.setPhotos (new HashSet<> ());
-
             //получаем путь
             //Path rootLocation = Paths.get(uploadPath);
-
             for (MultipartFile multipartFile: multipartFiles
             ) {
                 String resultFilename = multipartFile.getOriginalFilename ();
@@ -131,7 +121,6 @@ public class ProductService {
         return saveProduct (product);
     }
 
-
     public void deleteProduct (Long id) {
         productRepo.findById (id).ifPresent (
                 product -> {
@@ -147,7 +136,7 @@ public class ProductService {
     }
 
 
-    public Product updateProduct (Product product) {
+    /*public Product updateProduct (Product product) {
 
         Product productFromDb = productRepo.findById (product.getId ()).get ();
 
@@ -158,13 +147,14 @@ public class ProductService {
         }
 
         return product;
-    }
-
+    }*/
 
     public Product updateProductWithFile (Product product, Optional<MultipartFile[]> files) {
-        Product productFromDb = productRepo.findById (product.getId ()).get ();
+        Optional<Product> optionalProductFromDb = productRepo.findById (product.getId ());
 
-        if(productFromDb!= null){
+        if(optionalProductFromDb.isPresent ()){
+            final Product productFromDb = optionalProductFromDb.get ();
+
             BeanUtils.copyProperties (product, productFromDb, "id", "photos", "photoToDelete", "tags","creationDate");
 
             //Работа с тегами
@@ -257,8 +247,11 @@ public class ProductService {
                 }
 
             }
+
+            return productRepo.save (productFromDb);
         }
 
-        return productRepo.save (productFromDb);
+        //нужно обработать ответ если вдруг небыло такого продукта
+        return null;
     }
 }

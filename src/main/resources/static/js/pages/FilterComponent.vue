@@ -13,21 +13,22 @@
                             flat
                             tile
                     >
-                        <!--<v-card
-                                outlined
-                                tile
+                        <v-card
+
+                                class="align-self-center"
                         >
-                            <v-card
-                                    width="125px"
-                                    height="125px"
-                            ></v-card>
-                        </v-card>-->
-                        <v-avatar
-                                size="125"
-                                tile
-                        >
-                            <v-img v-if="product.photos.length>0" :src="product.photos[0]"></v-img>
-                        </v-avatar>
+                            <v-img
+                                    v-if="product.photos.length>0"
+                                    :src="product.photos[0]"
+                                    contain
+                                    height="150"
+                                    width="150"
+
+
+                            ></v-img>
+
+                        </v-card>
+
                         <v-card
                                 outlined
                                 tile
@@ -35,28 +36,33 @@
                             <v-card-title v-text="product.productName">
                                 Name of product
                             </v-card-title>
-                            <v-card-subtitle v-text="product.productDiscription">Discription of product</v-card-subtitle>
+                            <v-card-text>
+                                <v-chip-group
+                                        column
+                                >
+                                    <v-chip
+                                            v-for="tag in product.tags"
+                                            :key="tag.id"
+                                            @click="openPage(tag)"
+                                    >
+                                        {{tag.name}}
+                                    </v-chip>
+
+                                </v-chip-group>
+                            </v-card-text>
+                            <v-card-subtitle
+                                    v-text="product.productDiscription"
+                            >
+                                iscription of product
+                            </v-card-subtitle>
                         </v-card>
-                        <!--<v-card
-                                class="ml-auto align-self-center"
-                                outlined
-                                tile
-                        >
-                            <div class="d-flex flex-column">
-                                <v-card-title>
-                                    Цена
-                                </v-card-title>
-                                <v-btn text>
-                                    Купить
-                                </v-btn>
-                            </div>
-                        </v-card>-->
+
                         <v-card
                                 class="ml-auto"
                                 outlined
                                 tile
                         >
-                            <div class="d-flex flex-column">
+                            <div class="d-flex flex-column align-center">
                                 <v-card-title v-text="product.price">
                                     Price
                                 </v-card-title>
@@ -75,31 +81,52 @@
 </template>
 
 <script>
-    import productsApi from "../api/products";
+    import directoriesApi from "api/directories.js";
 
     export default {
         name: "FilterComponent",
         data: () => ({
             products: [],
+            directoryId: null,
         }),
+        watch: {
+            $route(to, from) {
+                // обрабатываем изменение параметров маршрута...
+                this.directoryId = to.params.id
+                console.log("newDirectoryId = "+this.directoryId)
+
+                this.setProducts(this.directoryId)
+            }
+        },
+        methods :{
+            setProducts(directoryId){
+
+                this.products= []
+                directoriesApi.getProductByDirectoryId(directoryId).then(result =>
+                    result.json().then(data =>
+                        //записать данные в products
+                        data.forEach(product => this.products.push(product))
+                    )
+                )
+            },
+            openPage(item){
+                console.log("openPage")
+                //переход на страницу и обработана ошибка
+                this.$router.push({ path: `/filter/${item.id}` }, () => {})
+            },
+        },
         created() {
-            let categoryId = this.$route.params.id
+            this.directoryId = this.$route.params.id
+            console.log("directoryId = "+this.directoryId)
 
-            console.log("categoryId = "+categoryId)
+            this.setProducts(this.directoryId)
 
-            // productsApi.getAll().then(result =>
+            // directoriesApi.getProductByDirectoryId(this.directoryId).then(result =>
             //     result.json().then(data =>
             //         //записать данные в products
             //         data.forEach(product => this.products.push(product))
             //     )
             // )
-
-            productsApi.getProductsByTagId(categoryId).then(result =>
-                result.json().then(data =>
-                    //записать данные в products
-                    data.forEach(product => this.products.push(product))
-                )
-            )
         }
 
     }

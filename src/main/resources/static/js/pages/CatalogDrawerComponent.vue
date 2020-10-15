@@ -58,9 +58,7 @@
             openPage(item){
                 console.log("openCatalogPage")
 
-                //переход на страницу
-                //this.$router.push({ path: `/filter/${item.id}` })
-                //также тут обработана ошибка
+                //переход на страницу и обработана ошибка
                 this.$router.push({ path: `/filter/${item.id}` }, () => {})
 
             },

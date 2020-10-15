@@ -8,5 +8,4 @@ import java.util.List;
 import java.util.Set;
 
 public interface ProductRepo extends JpaRepository<Product, Long> {
-        //List<Product> findByTagsWithi_Id (LinkedDirectory tags_id);
 }

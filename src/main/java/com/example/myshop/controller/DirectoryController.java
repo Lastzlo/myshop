@@ -2,13 +2,18 @@ package com.example.myshop.controller;
 
 import com.example.myshop.domain.DirectoryType;
 import com.example.myshop.domain.LinkedDirectory;
+import com.example.myshop.domain.Product;
 import com.example.myshop.domain.Views;
 import com.example.myshop.repos.LinkedDirectoryRepo;
 import com.example.myshop.repos.ProductRepo;
+import com.example.myshop.services.ProductService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -16,11 +21,10 @@ import java.util.Set;
 public class DirectoryController {
     private final ProductRepo productRepo;
 
-
     private final LinkedDirectoryRepo directoryRepo;
 
     @Autowired
-    public DirectoryController (ProductRepo productRepo, LinkedDirectoryRepo directoryRepo) {
+    public DirectoryController (ProductRepo productRepo,  LinkedDirectoryRepo directoryRepo) {
         this.productRepo = productRepo;
         this.directoryRepo = directoryRepo;
     }
@@ -34,6 +38,16 @@ public class DirectoryController {
             directory = directoryRepo.save (directory);
         }
         return directory;
+    }
+
+    @GetMapping("getProductByDirectoryId/{id}")
+    @JsonView(Views.FullMessage.class)
+    public Set<Product> getProductsByLinkedDirectoryId(@PathVariable String id){
+        Optional<LinkedDirectory> optionalLinkedDirectory = directoryRepo.findById (Long.valueOf (id));
+        if (optionalLinkedDirectory.isPresent ()){
+            return optionalLinkedDirectory.get ().getProducts ();
+        } else return new HashSet<> ();
+
     }
 
     /*@GetMapping("{id}")

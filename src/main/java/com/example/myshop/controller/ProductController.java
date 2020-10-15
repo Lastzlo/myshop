@@ -30,12 +30,6 @@ public class ProductController {
 //        return productService.getProduct(Long.valueOf(id));
 //    }
 
-    @GetMapping("{id}")
-    @JsonView(Views.FullMessage.class)
-    public List<Product> getProductsByTagId(@PathVariable String id){
-        return productService.getProductsByTagId (Long.valueOf (id));
-    }
-
     /*@PostMapping
     private Product create(
             @RequestPart(value = "file") Optional<MultipartFile> file,
@@ -127,7 +121,5 @@ public class ProductController {
     public void delete(@PathVariable String id){
         productRepo.deleteById(Long.valueOf(id));
     }*/
-
-
 
 }

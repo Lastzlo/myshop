@@ -8,4 +8,6 @@ export default {
     update: (id, directory) => directories.update({id: id}, directory),
     remove: id => directories.remove({id: id}),
     getCore: () => Vue.resource('/directory/getCore').get(),
+    //getProductByDirectoryId: id => Vue.resource('/directory/getProductByDirectoryId/'+id).get(),
+    getProductByDirectoryId: id => Vue.http.get('/directory/getProductByDirectoryId/'+id),
 }
