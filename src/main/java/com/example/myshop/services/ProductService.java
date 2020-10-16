@@ -14,6 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -83,29 +88,30 @@ public class ProductService {
                 uploadDir.mkdir ();
             }
 
-//            String uuidFile = UUID.randomUUID ().toString ();
-//            String resultFilename = uuidFile + "." + multipartFile.getOriginalFilename ();
-
             //иницыализирует массив для фото
             product.setPhotos (new HashSet<> ());
+
+            //рандомный индентификатор
+            String uuidFile = UUID.randomUUID ().toString ();
+
             //получаем путь
-            //Path rootLocation = Paths.get(uploadPath);
+            Path rootLocation = Paths.get(String.valueOf(uploadDir));
+            //System.out.println("rootLocation = "+rootLocation.toString());
+
             for (MultipartFile multipartFile: multipartFiles
             ) {
-                String resultFilename = multipartFile.getOriginalFilename ();
-//                try {
-//                    try (InputStream inputStream = multipartFile.getInputStream()) {
-//                        Files.copy(inputStream, rootLocation.resolve(resultFilename),
-//                                StandardCopyOption.REPLACE_EXISTING);
-//                    }
-//                }
-//                catch (IOException e) {
-//                    System.out.println ("Failed to store file ");
-//                }
+
+                //дополняем имя файла чтобы не возникало коллизий
+                String resultFilename = uuidFile + "." + multipartFile.getOriginalFilename ();
+                //String resultFilename = multipartFile.getOriginalFilename ();
                 try {
-                    multipartFile.transferTo (new File (uploadPath + "/" + resultFilename));
-                } catch (IOException e) {
-                    System.out.println ("файл не переместили в папку ");
+                    try (InputStream inputStream = multipartFile.getInputStream()) {
+                        Files.copy(inputStream, rootLocation.resolve(resultFilename),
+                                StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+                catch (IOException e) {
+                    System.out.println ("Failed to store file ");
                 }
 
                 String src = "/img/" + resultFilename;
@@ -200,7 +206,6 @@ public class ProductService {
                 final MultipartFile[] multipartFiles = files.get ();
 
                 File uploadDir = new File (uploadPath);
-
                 //эту проверку в будущем убрать она, должна выполняться во время старта приложения
                 if(!uploadDir.exists ()){
                     uploadDir.mkdir ();
@@ -209,33 +214,30 @@ public class ProductService {
                 //рандомный индентификатор
                 String uuidFile = UUID.randomUUID ().toString ();
 
-
-//                if(product.getPhotos () == null){
-//                    product.setPhotos (new HashSet<> ());
-//                }
-
                 //получаем путь
-                //Path rootLocation = Paths.get(uploadPath);
+                Path rootLocation = Paths.get(String.valueOf(uploadDir));
+                //System.out.println("rootLocation = "+rootLocation.toString());
 
                 for (MultipartFile multipartFile: multipartFiles
                 ) {
                     //дополняем имя файла чтобы не возникало коллизий
                     String resultFilename = uuidFile + "." + multipartFile.getOriginalFilename ();
                     //String resultFilename = multipartFile.getOriginalFilename ();
-//                try {
-//                    try (InputStream inputStream = multipartFile.getInputStream()) {
-//                        Files.copy(inputStream, rootLocation.resolve(resultFilename),
-//                                StandardCopyOption.REPLACE_EXISTING);
-//                    }
-//                }
-//                catch (IOException e) {
-//                    System.out.println ("Failed to store file ");
-//                }
                     try {
-                        multipartFile.transferTo (new File (uploadPath + "/" + resultFilename));
-                    } catch (IOException e) {
-                        System.out.println ("файл не переместили в папку ");
+                        try (InputStream inputStream = multipartFile.getInputStream()) {
+                            Files.copy(inputStream, rootLocation.resolve(resultFilename),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                        }
                     }
+                    catch (IOException e) {
+                        System.out.println ("Failed to store file ");
+                    }
+
+//                    try {
+//                        multipartFile.transferTo (new File (uploadPath + "/" + resultFilename));
+//                    } catch (IOException e) {
+//                        System.out.println ("файл не переместили в папку ");
+//                    }
 
                     //путь по которому можна получить картинку
                     String src = "/img/" + resultFilename;

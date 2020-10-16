@@ -8,92 +8,112 @@
 
                 <v-card-text>
                     <v-container>
-                        <v-row>
-                            <v-col>
-                                <v-text-field
-                                        v-model="editedItem.productName"
-                                        label="Product name"
-                                        autofocus
-                                ></v-text-field>
-                                <v-text-field
-                                        v-model="editedItem.price"
-                                        label="Product price"
-                                        autofocus
-                                ></v-text-field>
-                                <v-text-field
-                                        v-model="editedItem.productDiscription"
-                                        label="Product discription"
-                                        autofocus
-                                ></v-text-field>
 
-                                <v-container
-                                        id="editedItemPhoto"
-                                        fluid
-                                        v-if="this.editedItemPhoto.length>0"
+                        <v-text-field
+                                v-model="editedItem.productName"
+                                label="Product name"
+                                autofocus
+                        ></v-text-field>
+                        <v-text-field
+                                v-model="editedItem.price"
+                                label="Product price"
+                                autofocus
+                        ></v-text-field>
+                        <v-text-field
+                                v-model="editedItem.productDiscription"
+                                label="Product discription"
+                                autofocus
+                        ></v-text-field>
+
+                        <v-container
+                                id="editedItemPhoto"
+                                fluid
+                                v-if="this.editedItemPhoto.length>0"
+                        >
+                            <v-row>
+                                <span class="headline">editedItemPhoto</span>
+                            </v-row>
+                            <v-row>
+                                <v-col
+                                        v-for="photo in this.editedItemPhoto"
+                                        :key="photo.src"
+                                        class="d-flex child-flex"
+                                        cols="2"
                                 >
-                                    <v-row>
-                                        <span class="headline">editedItemPhoto</span>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col
-                                                v-for="photo in this.editedItemPhoto"
-                                                :key="photo.src"
-                                                class="d-flex child-flex"
-                                                cols="4"
+                                    <v-container
+                                            fluid
+                                            height="150"
+                                            width="150"
+                                    >
+                                        <v-img
+                                                :src="photo"
+                                                contain
                                         >
-                                            <v-card flat tile class="d-flex">
-                                                <v-img
-                                                        :src="photo.src"
-                                                        aspect-ratio="1"
-                                                >
-                                                    <v-btn
-                                                            small color="white">
-                                                        <v-icon @click="deletePicture(photo)">
-                                                            mdi-close
-                                                        </v-icon>
-                                                    </v-btn>
-                                                </v-img>
-                                            </v-card>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
+                                            <v-btn
+                                                    small color="white">
+                                                <v-icon @click="deletePicture(photo)">
+                                                    mdi-close
+                                                </v-icon>
+                                            </v-btn>
+                                        </v-img>
+                                    </v-container>
+                                </v-col>
+                            </v-row>
+                        </v-container>
 
-                                <v-container
-                                        id="newPhoto"
-                                        fluid
+                        <v-container
+                                id="newPhoto"
+                                fluid
+                        >
+                            <v-row>
+                                <span class="headline">Загрузить фото</span>
+                            </v-row>
+                            <v-row>
+                                <v-file-input
+                                        v-model="files"
+                                        multiple
+                                        label="Загрузите фото"
+                                ></v-file-input>
+                            </v-row>
+                            <v-row v-if="this.newPhotoToShow.length>0">
+                                <v-col
+                                        v-for="photo in this.newPhotoToShow"
+                                        :key="photo"
+                                        class="d-flex child-flex"
+                                        cols="2"
                                 >
-                                    <v-row>
-                                        <span class="headline">Загрузить фото</span>
-                                    </v-row>
-                                    <v-row>
-                                        <v-file-input
-                                                v-model="files"
-                                                multiple
-                                                label="Загрузите фото"
-                                        ></v-file-input>
-                                    </v-row>
-                                    <v-row v-if="this.newPhotoToShow.length>0">
-                                        <v-col
-                                                v-for="photo in this.newPhotoToShow"
-                                                :key="photo"
-                                                class="d-flex child-flex"
-                                                cols="4"
-                                        >
-                                            <v-card flat tile>
-                                                <v-img
-                                                        :src="photo"
-                                                        aspect-ratio="1"
-                                                >
-                                                </v-img>
-                                            </v-card>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
+                                    <v-img
+                                            :src="photo"
+                                            contain
+                                            height="150"
+                                            width="150"
 
-                                <directory-list @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
+                                    ></v-img>
 
-                            </v-col>
-                        </v-row>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+
+                        <div>
+                            <v-row>
+                                <v-col
+                                        class="pa-0"
+                                        cols="8"
+                                >
+                                    #таблица заполнения характеристик
+                                </v-col>
+                                <v-col
+                                        class="pa-0"
+                                        cols="4"
+                                >
+                                    #таблица заполнения тегов
+                                    <directory-list :tegsFromProduct="tegsFromProduct"/>
+
+                                </v-col>
+                            </v-row>
+                        </div>
+
+
                     </v-container>
                 </v-card-text>
 
@@ -153,6 +173,8 @@
     import productsApi from 'api/products'
     import DirectoryList from "components/other/DirectoryList.vue"
 
+    import {mapState, mapMutations} from 'vuex'
+
     export default {
         name: "ProductManagementComponent",
         components: {
@@ -201,12 +223,14 @@
             photoToDelete:[],
         }),
         computed: {
+            ...mapState(['selectedTags']),
             formTitle () {
                 return this.id === -1 ? 'New Item' : 'Edit Item'
             },
             saveButtonTitle () {
                 return this.id === -1 ? 'Save' : 'Update'
             },
+
         },
         watch: {
             files(newVal, oldVal){
@@ -215,9 +239,14 @@
                 newVal.forEach(
                     item => this.newPhotoToShow.push(window.URL.createObjectURL(item))
                 )
-            }
+            },
+            selectedTags: function (newVal, oldVal) {
+                //this.onAutorization = newVal
+                this.editedItem.tags = newVal;
+            },
         },
         methods: {
+            ...mapMutations(['setSelectedTags']),
             deletePicture(photo){
                 const index = this.editedItemPhoto.findIndex(item => item === photo)
                 this.editedItemPhoto.splice(index, 1)
@@ -228,9 +257,9 @@
 
 
             },
-            selectedTags(tags){
-                this.editedItem.tags = tags;
-            },
+            // selectedTags(tags){
+            //     this.editedItem.tags = tags;
+            // },
             save () {
                 let product = this.editedItem
 

@@ -39,9 +39,7 @@
             dialog: false,
             selection: [],
             open: [],
-            items: [
-            ],
-            dialog: false,
+            items: [],
             id: -1,
             editedItem: {
                 name: '',
@@ -69,6 +67,13 @@
 
             tegsFromProduct(newVal, oldVal){
                 this.selection = newVal;
+            },
+            $route(to, from) {
+                // обрабатываем изменение параметров маршрута...
+                let directoryId = to.params.id
+                //console.log("newDirectoryId = "+this.directoryId)
+
+                this.setItems(directoryId)
             }
         },
         methods: {
@@ -193,30 +198,36 @@
                     this.open.splice(index, 1)
                 }
             },
-        },
-        created: function () {
+            setItems(directoryId){
 
-            if(this.$route.params.id !==null){
-                let directoryId = this.$route.params.id
-
+                this.items = []
                 //запрос на сервер
                 directoriesApi.getOne(directoryId).then(result =>
                     result.json().then(data => {
-                        this.items.push(data)
+                        data.children.forEach(
+                            item => {
+                                this.items.push(item)
+                            }
+                        )
 
                         this.openAll(this.items)
                     })
                 )
-            } /*else {
-                //запрос на сервер
-                directoriesApi.getCore().then(result =>
-                    result.json().then(data => {
-                        this.items.push(data)
 
-                        this.openAll(this.items)
-                    })
-                )
-            }*/
+                // directoriesApi.getProductByDirectoryId(directoryId).then(result =>
+                //     result.json().then(data =>
+                //         //записать данные в products
+                //         data.forEach(product => this.products.push(product))
+                //     )
+                // )
+            },
+        },
+        created: function () {
+            if(this.$route.params.id !==null){
+                let directoryId = this.$route.params.id
+
+                this.setItems(directoryId)
+            }
         },
     }
 </script>

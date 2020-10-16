@@ -76,6 +76,7 @@
 <script>
     //используем апи
     import directoriesApi from 'api/directories'
+    import {mapState, mapMutations} from 'vuex'
 
     export default {
         name: "DirectoryList",
@@ -88,7 +89,6 @@
             open: [],
             items: [
             ],
-            dialog: false,
             id: -1,
             editedItem: {
                 name: '',
@@ -110,8 +110,15 @@
             dialog (val) {
                 val || this.closeDialog()
             },
-            selection() {
-                this.$emit("selected-tags", this.selection);
+            selection(newVal, oldVal) {
+                if(newVal!==oldVal){
+                    //this.changeAutorizationDrawerMutation()
+                    this.setSelectedTags(this.selection)
+                }
+
+                //this.setSelectedTags(this.selection)
+
+                //this.$emit("selected-tags", this.selection);
             },
 
             tegsFromProduct(newVal, oldVal){
@@ -119,6 +126,7 @@
             }
         },
         methods: {
+            ...mapMutations(['setSelectedTags']),
             closeDialog () {
                 this.dialog = false
                 this.$nextTick(() => {
