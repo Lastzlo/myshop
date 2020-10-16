@@ -9,6 +9,7 @@
                 <v-container>
                     <v-row dense>
                         <v-col
+
                                 v-for="item in items"
                                 :key="item.id"
                                 :cols=cols
@@ -16,6 +17,7 @@
                             <v-card
                                     class="d-flex align-end justify-center pa-0 mx-auto"
                                     height="125px"
+                                    width="150px"
                                     @click="openPage(item)"
                                     outlined
                             >

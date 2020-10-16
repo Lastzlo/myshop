@@ -14,6 +14,7 @@ export default new Vuex.Store({
         onCatalogDrawer: false,
         onAutorizationDrawer: false,
         selectedTags: [],
+        tagsForFilterForm: [],
     },
     getters:{
         //Иногда может потребоваться вычислять производное состояние на основе состояния хранилища, например, отфильтровать список и затем подсчитать количество элементо

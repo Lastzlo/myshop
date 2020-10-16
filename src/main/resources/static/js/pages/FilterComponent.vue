@@ -12,7 +12,7 @@
                         class="pa-0"
                         cols="3"
                 >
-                    <directory-list2 @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
+                    <filter-form @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
 
                 </v-col>
                 <v-col
@@ -114,12 +114,12 @@
 
 <script>
     import directoriesApi from "api/directories.js";
-    import DirectoryList2 from "components/other/DirectoryList2.vue"
+    import FilterForm from "components/other/FilterForm.vue"
 
     export default {
         name: "FilterComponent",
         components: {
-            DirectoryList2
+            FilterForm
         },
         data: () => ({
             products: [],

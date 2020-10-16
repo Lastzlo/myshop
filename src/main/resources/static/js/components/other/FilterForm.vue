@@ -31,7 +31,7 @@
     import directoriesApi from 'api/directories'
 
     export default {
-        name: "DirectoryList",
+        name: "FilterForm",
         props:[
             'tegsFromProduct',
         ],
