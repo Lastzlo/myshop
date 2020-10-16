@@ -12,8 +12,7 @@
                         class="pa-0"
                         cols="3"
                 >
-                    <filter-form @selected-tags="selectedTags" :tegsFromProduct="tegsFromProduct"/>
-
+                    <filter-form></filter-form>
                 </v-col>
                 <v-col
                         class="pa-0"
@@ -42,7 +41,7 @@
                                         contain
                                         height="150"
                                         width="150"
-                                        @click="openPage2(product)"
+                                        @click="openProductPage(product)"
 
                                 ></v-img>
 
@@ -55,7 +54,7 @@
                             >
                                 <v-card-title
                                         v-text="product.productName"
-                                        @click="openPage2(product)"
+                                        @click="openProductPage(product)"
                                 >
                                     Name of product
                                 </v-card-title>
@@ -71,7 +70,7 @@
                                         <v-chip
                                                 v-for="tag in product.tags"
                                                 :key="tag.id"
-                                                @click="openPage(tag)"
+                                                @click="openFilerPageByTag(tag)"
                                                 small
                                         >
                                             {{tag.name}}
@@ -89,13 +88,13 @@
                                 <div class="d-flex flex-column align-center">
                                     <v-card-title
                                             v-text="product.price+' грн'"
-                                            @click="openPage2(product)"
+                                            @click="openProductPage(product)"
                                     >
                                         Price
                                     </v-card-title>
                                     <v-btn
                                             text
-                                            @click="openPage2(product)"
+                                            @click="openProductPage(product)"
                                     >
                                         Купить
                                     </v-btn>
@@ -104,10 +103,8 @@
                         </v-card>
                     </v-col>
                 </v-col>
-
             </v-row>
         </v-container>
-
     </v-container>
 
 </template>
@@ -125,15 +122,14 @@
             products: [],
             directoryId: null,
             vCradClass: "",
-
-            tegsFromProduct:[],
         }),
         mounted () {
             this.onResize()
         },
         watch: {
+            // обрабатываем изменение параметров маршрута...
             $route(to, from) {
-                // обрабатываем изменение параметров маршрута...
+
                 this.directoryId = to.params.id
                 console.log("newDirectoryId = "+this.directoryId)
 
@@ -141,9 +137,7 @@
             }
         },
         methods :{
-            selectedTags(tags){
-                //
-            },
+
             setProducts(directoryId){
 
                 this.products= []
@@ -154,16 +148,17 @@
                     )
                 )
             },
-            openPage(item){
-                console.log("openPage")
+            //переход на страницу связаную с даным тегом
+            openFilerPageByTag(tag){
+                console.log("openFilerPageByTag")
                 //переход на страницу и обработана ошибка
-                this.$router.push({ path: `/filter/${item.id}` }, () => {})
+                this.$router.push({ path: `/filter/${tag.id}` }, () => {})
             },
-            openPage2(item){
-                console.log("openPage2")
-                //переход на страницу и обработана ошибка
-                //this.$router.push({ path: `/filter/${item.id}` }, () => {})
+            //переход на странищу товара
+            openProductPage(product){
+                console.log("openProductPage")
             },
+            //при изминении размеров экрана
             onResize () {
                 let x = window.innerWidth;
 
@@ -182,13 +177,6 @@
             console.log("directoryId = "+this.directoryId)
 
             this.setProducts(this.directoryId)
-
-            // directoriesApi.getProductByDirectoryId(this.directoryId).then(result =>
-            //     result.json().then(data =>
-            //         //записать данные в products
-            //         data.forEach(product => this.products.push(product))
-            //     )
-            // )
         }
 
     }

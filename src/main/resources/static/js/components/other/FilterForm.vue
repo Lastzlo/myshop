@@ -29,152 +29,43 @@
 <script>
     //используем апи
     import directoriesApi from 'api/directories'
+    import {mapState, mapMutations} from 'vuex'
 
     export default {
         name: "FilterForm",
-        props:[
-            'tegsFromProduct',
-        ],
         data: () => ({
-            dialog: false,
             selection: [],
             open: [],
             items: [],
-            id: -1,
-            editedItem: {
-                name: '',
-                father: null,
-                children: []
-            },
-            defaultItem: {
-                name: '',
-                father: null,
-                children: []
-            },
         }),
         computed: {
-            formTitle () {
-                return this.id === -1 ? 'New Item' : 'Edit Item'
-            },
+            ...mapState(['tagsForFilterForm']),
         },
         watch: {
-            dialog (val) {
-                val || this.closeDialog()
-            },
-            selection() {
-                this.$emit("selected-tags", this.selection);
-            },
+            selection(newVal, oldVal) {
 
-            tegsFromProduct(newVal, oldVal){
-                this.selection = newVal;
+                if(newVal!==oldVal){
+                    this.setTagsForFilterForm(this.selection)
+
+                    if(newVal.length>0){
+                        //показать окно возле последнего элемента массива
+                        console.log("последний элемент массива это = "+newVal[newVal.length-1].name)
+                    }
+
+
+                }
+
+
             },
             $route(to, from) {
                 // обрабатываем изменение параметров маршрута...
                 let directoryId = to.params.id
                 //console.log("newDirectoryId = "+this.directoryId)
-
                 this.setItems(directoryId)
             }
         },
         methods: {
-            closeDialog () {
-                this.dialog = false
-                this.$nextTick(() => {
-                    this.editedItem = Object.assign({}, this.defaultItem)
-                    this.id = -1
-                })
-            },
-            addChild(item) {
-                this.editedItem.father = item
-                this.dialog = true
-            },
-            editChild(item){
-                this.id = item.id
-                this.editedItem = Object.assign({}, item)
-                this.dialog = true
-            },
-            save(){
-                let linkedDirectory = this.editedItem
-
-                if (this.id > -1) {
-                    //update
-                    directoriesApi.update(this.id, linkedDirectory).then(result =>
-                        result.json().then(data => {
-                            let father = this.findFatherOfItem(data.id, this.items)
-                            let index = father.children.findIndex(item => item.id === data.id)
-                            father.children.splice(index, 1, data)
-
-                        })
-                    )
-
-                } else {
-                    //save
-                    let father = this.editedItem.father
-                    directoriesApi.add(linkedDirectory).then(
-                        result =>
-                            result.json().then(data => {
-                                father.children.push(data)
-                                //открывает папку
-                                this.open.push(father)
-
-                                this.openAll(father.children)
-                            })
-                    )
-                }
-
-                this.closeDialog()
-            },
-
-            deleteChild(item) {
-
-                directoriesApi.remove(item.id).then(result => {
-                    if (result.ok) {
-
-                        //Удалялет item и его children с this.open
-                        this.closeAll(item)
-
-                        //найти father item
-                        let father = this.findFatherOfItem(item.id, this.items)
-
-                        if(father.children){
-                            let children = father.children
-                            children.splice(children.indexOf(item), 1)
-                        } else {
-                            this.items.splice(this.items.indexOf(item), 1)
-                        }
-                    }
-                })
-
-            },
-
-            findFatherOfItem(id, items) {
-                return items.reduce((acc, item) => {
-                    if (acc) {
-                        return acc;
-                    }
-
-                    if (item.id === id) {
-                        let test = {
-                            id:-100
-                        }
-                        return test
-                    }
-
-                    if (item.children) {
-                        let testId = this.findFatherOfItem(id, item.children)
-
-                        if (testId != null) {
-                            if (testId.id===-100) {
-                                return item
-                            } else {
-                                return testId
-                            }
-                        }
-                    }
-
-                    return acc;
-                }, null)
-            },
+            ...mapMutations(['setTagsForFilterForm']),
             //раскрывает все папки
             openAll(items){
                 items.forEach(item => {
@@ -184,19 +75,6 @@
                     }
 
                 })
-            },
-            closeAll(item){
-                if(item.children){
-                    item.children.forEach(item => {
-                        this.closeAll(item)
-                    })
-                }
-
-                let index = this.open.findIndex(i => i.id === item.id)
-                //console.log('index = '+index)
-                if(index>-1){
-                    this.open.splice(index, 1)
-                }
             },
             setItems(directoryId){
 
@@ -213,13 +91,6 @@
                         this.openAll(this.items)
                     })
                 )
-
-                // directoriesApi.getProductByDirectoryId(directoryId).then(result =>
-                //     result.json().then(data =>
-                //         //записать данные в products
-                //         data.forEach(product => this.products.push(product))
-                //     )
-                // )
             },
         },
         created: function () {

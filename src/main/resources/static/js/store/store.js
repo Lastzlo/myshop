@@ -34,6 +34,12 @@ export default new Vuex.Store({
         },
         setSelectedTags(state, tags){
             state.selectedTags = tags
+        },
+        setTagsForFilterForm(state, tags){
+            state.tagsForFilterForm = tags
+        },
+        clearTagsForFilterForm(state){
+            state.tagsForFilterForm = []
         }
     },
     actions: {

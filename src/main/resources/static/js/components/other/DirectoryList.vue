@@ -112,13 +112,9 @@
             },
             selection(newVal, oldVal) {
                 if(newVal!==oldVal){
-                    //this.changeAutorizationDrawerMutation()
+
                     this.setSelectedTags(this.selection)
                 }
-
-                //this.setSelectedTags(this.selection)
-
-                //this.$emit("selected-tags", this.selection);
             },
 
             tegsFromProduct(newVal, oldVal){
