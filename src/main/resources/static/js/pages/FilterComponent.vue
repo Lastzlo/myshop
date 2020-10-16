@@ -19,88 +19,96 @@
                         cols="9"
                 >
                     <v-col
-                            class="pa-1"
+                            class="pa-1 mb-5"
                             v-for="product in products"
                             :key="product.id"
 
                             v-resize="onResize"
 
                     >
-                        <v-card
-                                :class=vCradClass
-                                color="grey lighten-2"
-                                flat
-                                tile
+                        <v-hover
+                                v-slot:default="{ hover }"
+                                open-delay="200"
                         >
                             <v-card
-                                    class="align-self-center"
-                            >
-                                <v-img
-                                        v-if="product.photos.length>0"
-                                        :src="product.photos[0]"
-                                        contain
-                                        height="150"
-                                        width="150"
-                                        @click="openProductPage(product)"
+                                    :elevation="hover ? 16 : 2"
 
-                                ></v-img>
-
-                            </v-card>
-
-                            <v-card
-                                    outlined
-                                    tile
-                                    max-width="800"
-                            >
-                                <v-card-title
-                                        v-text="product.productName"
-                                        @click="openProductPage(product)"
-                                >
-                                    Name of product
-                                </v-card-title>
-                                <v-card-subtitle
-                                        v-text="product.productDiscription"
-                                >
-                                    iscription of product
-                                </v-card-subtitle>
-                                <v-card-text>
-                                    <v-chip-group
-                                            column
-                                    >
-                                        <v-chip
-                                                v-for="tag in product.tags"
-                                                :key="tag.id"
-                                                @click="openFilerPageByTag(tag)"
-                                                small
-                                        >
-                                            {{tag.name}}
-                                        </v-chip>
-
-                                    </v-chip-group>
-                                </v-card-text>
-                            </v-card>
-
-                            <v-card
-                                    class="ml-auto"
-                                    outlined
+                                    :class="{ 'on-hover': hover }"
+                                    class="d-lg-flex d-xl-flex"
+                                    color="grey lighten-2"
+                                    flat
                                     tile
                             >
-                                <div class="d-flex flex-column align-center">
+                                <v-card
+                                        class="align-self-center"
+                                >
+                                    <v-img
+                                            v-if="product.photos.length>0"
+                                            :src="product.photos[0]"
+                                            contain
+                                            height="150"
+                                            width="150"
+                                            @click="openProductPage(product)"
+
+                                    ></v-img>
+
+                                </v-card>
+
+                                <v-card
+                                        outlined
+                                        tile
+                                        max-width="800"
+                                >
                                     <v-card-title
-                                            v-text="product.price+' грн'"
+                                            v-text="product.productName"
                                             @click="openProductPage(product)"
                                     >
-                                        Price
+                                        Name of product
                                     </v-card-title>
-                                    <v-btn
-                                            text
-                                            @click="openProductPage(product)"
+                                    <v-card-subtitle
+                                            v-text="product.productDiscription"
                                     >
-                                        Купить
-                                    </v-btn>
-                                </div>
+                                        iscription of product
+                                    </v-card-subtitle>
+                                    <v-card-text>
+                                        <v-chip-group
+                                                column
+                                        >
+                                            <v-chip
+                                                    v-for="tag in product.tags"
+                                                    :key="tag.id"
+                                                    @click="openFilerPageByTag(tag)"
+                                                    small
+                                            >
+                                                {{tag.name}}
+                                            </v-chip>
+
+                                        </v-chip-group>
+                                    </v-card-text>
+                                </v-card>
+
+                                <v-card
+                                        class="ml-auto"
+                                        outlined
+                                        tile
+                                >
+                                    <div class="d-flex flex-column align-center">
+                                        <v-card-title
+                                                v-text="product.price+' грн'"
+                                                @click="openProductPage(product)"
+                                        >
+                                            Price
+                                        </v-card-title>
+                                        <v-btn
+                                                text
+                                                @click="openProductPage(product)"
+                                        >
+                                            Купить
+                                        </v-btn>
+                                    </div>
+                                </v-card>
                             </v-card>
-                        </v-card>
+                        </v-hover>
                     </v-col>
                 </v-col>
             </v-row>
@@ -182,6 +190,9 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="sass" scoped>
+    .v-card.on-hover.theme--dark
+        background-color: rgba(#FFF, 0.8)
+        >.v-card__text
+            color: #000
 </style>

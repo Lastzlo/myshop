@@ -43,7 +43,6 @@
         },
         watch: {
             selection(newVal, oldVal) {
-
                 if(newVal!==oldVal){
                     this.setTagsForFilterForm(this.selection)
 
@@ -51,11 +50,7 @@
                         //показать окно возле последнего элемента массива
                         console.log("последний элемент массива это = "+newVal[newVal.length-1].name)
                     }
-
-
                 }
-
-
             },
             $route(to, from) {
                 // обрабатываем изменение параметров маршрута...
