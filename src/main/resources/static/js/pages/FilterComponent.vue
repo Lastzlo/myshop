@@ -10,13 +10,13 @@
             <v-row >
                 <v-col
                         class="pa-0"
-                        cols="3"
+                        cols="6"
                 >
                     <filter-form></filter-form>
                 </v-col>
                 <v-col
                         class="pa-0"
-                        cols="9"
+                        cols="6"
                 >
                     <v-col
                             class="pa-1 mb-5"
