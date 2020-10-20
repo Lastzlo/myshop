@@ -16,22 +16,19 @@
                     <div id="snackbar">
                         <v-snackbar
                                 v-model="item.snackbarOpen"
-                                :timeout="item.snackbarTimeout"
+
                                 absolute
 
                         >
                             {{ text }}
 
-                            <template v-slot:action="{ attrs }">
-                                <v-btn
-                                        color="pink"
-                                        text
-                                        v-bind="attrs"
-                                        @click="item.snackbarOpen = false"
-                                >
-                                    Close
-                                </v-btn>
-                            </template>
+                            <v-btn
+                                    color="pink"
+
+                                    @click="this.snackbarClose(item)"
+                            >
+                                Close
+                            </v-btn>
                         </v-snackbar>
                     </div>
 
@@ -95,8 +92,8 @@
         data: () => ({
             selection: [],
             open: [],
+
             items: [],
-            snackbar: false,
             oldLastTag: null,
             text: 'Hello, I\'m a snackbar',
         }),
@@ -144,22 +141,17 @@
             },
             openLastTag(lastTag){
                 console.log("openLastTag")
-
-
                 console.log("lastTag.name = "+lastTag.name)
-
-                lastTag.snackbarTimeout = -1
                 lastTag.snackbarOpen = true
-
+            },
+            snackbarClose(item){
+                console.log("snackbarClose ")
+                console.log("item.name = "+item.name)
+                item.snackbarOpen = false
             },
             closeOldLastTag(oldLastTag){
                 console.log("closeOldLastTag")
                 console.log("oldLastTag.name = "+oldLastTag.name)
-
-                oldLastTag.snackbarTimeout = 100
-                //oldLastTag.snackbarOpen = false
-
-
             },
             setItems(directoryId){
 
@@ -171,7 +163,7 @@
                             item => {
                                 //добавили значение isOpened
                                 item.snackbarOpen = false
-                                item.snackbarTimeout = 100
+
                                 //obj.param125 = '123';
 
 
