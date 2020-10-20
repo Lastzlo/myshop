@@ -6,7 +6,9 @@
                         v-for="item in items"
                         :key="item.id"
                 >
-                    <v-list-item-content v-if="item.children.length>0">
+                    <v-list-item-content
+                            v-if="item.children.length>0"
+                    >
                         <v-list-item-title>{{ item.name }}</v-list-item-title>
 
                         <v-list-item
@@ -16,110 +18,102 @@
                             <v-checkbox
                                     v-model="selection2"
                                     :value="child"
+
+                                    :disabled="child.disableStatus === false"
                             >
                                 <template v-slot:label>
                                     <v-list-item-content>
                                         <v-list-item-title>{{ child.name }}</v-list-item-title>
-                                        <v-list-item-subtitle v-if="lastSelectedId2!==null && lastSelectedId2===child.id">Последний отмеченый</v-list-item-subtitle>
-
                                     </v-list-item-content>
                                 </template>
 
-                            </v-checkbox>
+                                <template v-slot:append>
+                                    <v-snackbar
+                                            v-if="lastSelectedId2!==null && lastSelectedId2===child.id"
+                                            :timeout="-1"
+                                            :value="true"
+                                            absolute
+                                            right
+                                            top
+                                    >
+                                        Результаты поиска...
+                                    </v-snackbar>
+                                </template>
 
+                            </v-checkbox>
                         </v-list-item>
 
                     </v-list-item-content>
+
                 </v-list-item>
-            </v-list>
-        </div>
 
+                <!--<v-list-item
+                        v-for="item in items"
+                        :key="item.id"
+                >
+                    <v-list-group
+                            v-if="item.children.length>0"
+                            :value="true"
+                            sub-group
 
-        <div>
-            <v-treeview
-                    v-model="selection"
-                    hoverable
-                    open-on-click
-                    :items="items"
-                    :open.sync="open"
-                    selection-type="independent"
-                    selectable
-                    return-object
-            >
-                <template v-slot:append="{item}">
+                    >
+                        <template v-slot:activator>
 
-                    <div>
-                        <v-snackbar
-                                v-if="lastSelectedId!==null && lastSelectedId===item.id"
-                                :timeout="-1"
-                                :value="true"
-                                absolute
+                            <v-list-item-title>{{ item.name }}</v-list-item-title>
+                        </template>
 
-                        >
-                            Результаты поиска...
-                        </v-snackbar>
-                    </div>
+                        <template v-slot:default >
+                            <v-list-item
+                                    v-for="child in item.children"
+                                    :key="child.id"
 
-                    <!--<div id="snackbar">
-                        <v-snackbar
-                                v-model="item.snackbarOpen"
-
-                                absolute
-
-                        >
-                            {{ text }}
-
-                            <v-btn
-                                    color="pink"
-
-                                    @click="this.snackbarClose(item)"
                             >
-                                Close
-                            </v-btn>
-                        </v-snackbar>
-                    </div>-->
+                                <v-checkbox
+                                        v-model="selection2"
+                                        :value="child"
 
-                </template>
-            </v-treeview>
-            <template v-if="!selection.length">
+                                        :disabled="child.disableStatus === false"
+                                >
+                                    <template v-slot:label>
+                                        <v-list-item-content>
+                                            <v-list-item-title>{{ child.name }}</v-list-item-title>
+                                        </v-list-item-content>
+                                    </template>
+
+                                    <template v-slot:append>
+                                        <v-snackbar
+                                                v-if="lastSelectedId2!==null && lastSelectedId2===child.id"
+                                                :timeout="-1"
+                                                :value="true"
+                                                absolute
+                                                right
+                                                top
+                                        >
+                                            Результаты поиска...
+                                        </v-snackbar>
+                                    </template>
+
+                                </v-checkbox>
+
+                            </v-list-item>
+                        </template>
+
+                    </v-list-group>
+
+
+                </v-list-item>-->
+            </v-list>
+
+            <template v-if="!selection2.length">
                 No nodes selected.
             </template>
             <template v-else>
-                <div v-for="node in selection" :key="node.id">
+                <div v-for="node in selection2" :key="node.id">
                     {{ node.name }}
                 </div>
             </template>
-
-
-            <!--<div class="text-center">
-
-                <v-menu
-                        top
-                        offset-x="true"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                                color="primary"
-                                dark
-                                v-bind="attrs"
-                                v-on="on"
-                        >
-                            Dropdown
-                        </v-btn>
-                    </template>
-
-                    <v-list>
-                        <v-list-item
-                                v-for="(item, index) in items2"
-                                :key="index"
-                        >
-                            <v-list-item-title>{{ item.title }}</v-list-item-title>
-                        </v-list-item>
-                    </v-list>
-                </v-menu>
-            </div>-->
-
         </div>
+
     </div>
 
 
@@ -140,14 +134,13 @@
             oldLastTag: null,
             lastSelectedId: null,
             text: 'Hello, I\'m a snackbar',
-            //for menu component
-            // items2: [
-            //     { title: 'Click Me' },
-            // ],
+
 
             //for listFilter
             selection2: [],
-            lastSelectedId2: null
+            lastSelectedId2: null,
+
+            disabledList: [],
 
 
         }),
@@ -232,7 +225,6 @@
                 console.log("oldLastTag.name = "+oldLastTag.name)
             },
             setItems(directoryId){
-
                 this.items = []
                 //запрос на сервер
                 directoriesApi.getOne(directoryId).then(result =>
@@ -242,23 +234,19 @@
                                 //добавили значение isOpened
                                 item.snackbarOpen = false
 
+                                item.disableStatus = true
                                 //obj.param125 = '123';
 
-
                                 this.items.push(item)
+
+
                             }
                         )
-
                         this.openAll(this.items)
-
-
-
-
-
-
                     })
                 )
             },
+
         },
         created: function () {
             if(this.$route.params.id !==null){
