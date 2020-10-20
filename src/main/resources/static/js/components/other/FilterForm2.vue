@@ -1,5 +1,40 @@
 <template>
     <div>
+        <div id="filterList">
+            <v-list>
+                <v-list-item
+                        v-for="item in items"
+                        :key="item.id"
+                >
+                    <v-list-item-content v-if="item.children.length>0">
+                        <v-list-item-title>{{ item.name }}</v-list-item-title>
+
+                        <v-list-item
+                                v-for="child in item.children"
+                                :key="child.id"
+                        >
+                            <v-checkbox
+                                    v-model="selection2"
+                                    :value="child"
+                            >
+                                <template v-slot:label>
+                                    <v-list-item-content>
+                                        <v-list-item-title>{{ child.name }}</v-list-item-title>
+                                        <v-list-item-subtitle v-if="lastSelectedId2!==null && lastSelectedId2===child.id">Последний отмеченый</v-list-item-subtitle>
+
+                                    </v-list-item-content>
+                                </template>
+
+                            </v-checkbox>
+
+                        </v-list-item>
+
+                    </v-list-item-content>
+                </v-list-item>
+            </v-list>
+        </div>
+
+
         <div>
             <v-treeview
                     v-model="selection"
@@ -13,7 +48,19 @@
             >
                 <template v-slot:append="{item}">
 
-                    <div id="snackbar">
+                    <div>
+                        <v-snackbar
+                                v-if="lastSelectedId!==null && lastSelectedId===item.id"
+                                :timeout="-1"
+                                :value="true"
+                                absolute
+
+                        >
+                            Результаты поиска...
+                        </v-snackbar>
+                    </div>
+
+                    <!--<div id="snackbar">
                         <v-snackbar
                                 v-model="item.snackbarOpen"
 
@@ -30,7 +77,7 @@
                                 Close
                             </v-btn>
                         </v-snackbar>
-                    </div>
+                    </div>-->
 
                 </template>
             </v-treeview>
@@ -44,37 +91,33 @@
             </template>
 
 
+            <!--<div class="text-center">
 
-            <!--<v-card
-                    height="300"
-                    flat
-            >
-                <v-btn
-                        dark
-                        @click="snackbar = true"
-                >
-                    Open Snackbar
-                </v-btn>
-                <v-snackbar
-                        v-model="snackbar"
-                        absolute
-                        left
+                <v-menu
                         top
+                        offset-x="true"
                 >
-                    {{ text }}
-
-                    <template v-slot:action="{ attrs }">
+                    <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                                color="pink"
-                                text
+                                color="primary"
+                                dark
                                 v-bind="attrs"
-                                @click="snackbar = false"
+                                v-on="on"
                         >
-                            Close
+                            Dropdown
                         </v-btn>
                     </template>
-                </v-snackbar>
-            </v-card>-->
+
+                    <v-list>
+                        <v-list-item
+                                v-for="(item, index) in items2"
+                                :key="index"
+                        >
+                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </div>-->
 
         </div>
     </div>
@@ -88,14 +131,25 @@
     import {mapState, mapMutations} from 'vuex'
 
     export default {
-        name: "FilterForm",
+        name: "FilterForm2",
         data: () => ({
             selection: [],
             open: [],
 
             items: [],
             oldLastTag: null,
+            lastSelectedId: null,
             text: 'Hello, I\'m a snackbar',
+            //for menu component
+            // items2: [
+            //     { title: 'Click Me' },
+            // ],
+
+            //for listFilter
+            selection2: [],
+            lastSelectedId2: null
+
+
         }),
         computed: {
             ...mapState(['tagsForFilterForm']),
@@ -111,13 +165,36 @@
                         let lastTag = newVal[newVal.length-1]
                         console.log("последний элемент массива это = "+lastTag.name)
 
-                        if(this.oldLastTag !==null){
+                        this.lastSelectedId = lastTag.id
 
-                            this.closeOldLastTag(this.oldLastTag)
-                        }
-                        this.oldLastTag = lastTag
+                        // if(this.oldLastTag !==null){
+                        //     this.closeOldLastTag(this.oldLastTag)
+                        // }
+                        // this.oldLastTag = lastTag
+                        //
+                        // this.openLastTag(lastTag)
+                    }
+                }
+            },
+            selection2(newVal, oldVal) {
+                if(newVal!==oldVal){
+                    //this.setTagsForFilterForm(this.selection)
 
-                        this.openLastTag(lastTag)
+                    if(newVal.length>0){
+
+                        //показать окно возле последнего элемента массива
+                        let lastTag = newVal[newVal.length-1]
+                        console.log("последний элемент массива2 это = "+lastTag.name)
+
+                        //установили this.lastSelectedId2
+                        this.lastSelectedId2 = lastTag.id
+
+                        // if(this.oldLastTag !==null){
+                        //     this.closeOldLastTag(this.oldLastTag)
+                        // }
+                        // this.oldLastTag = lastTag
+                        //
+                        // this.openLastTag(lastTag)
                     }
                 }
             },
@@ -143,7 +220,6 @@
             openLastTag(lastTag){
                 console.log("openLastTag")
                 console.log("lastTag.name = "+lastTag.name)
-                lastTag.snackbarOpen = false
                 lastTag.snackbarOpen = true
             },
             snackbarClose(item){
@@ -174,6 +250,12 @@
                         )
 
                         this.openAll(this.items)
+
+
+
+
+
+
                     })
                 )
             },

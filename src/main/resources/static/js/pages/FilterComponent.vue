@@ -18,7 +18,8 @@
                         class="pa-0"
                         cols="6"
                 >
-                    <v-col
+                    <filter-form2></filter-form2>
+                    <!--<v-col
                             class="pa-1 mb-5"
                             v-for="product in products"
                             :key="product.id"
@@ -109,7 +110,7 @@
                                 </v-card>
                             </v-card>
                         </v-hover>
-                    </v-col>
+                    </v-col>-->
                 </v-col>
             </v-row>
         </v-container>
@@ -120,11 +121,12 @@
 <script>
     import directoriesApi from "api/directories.js";
     import FilterForm from "components/other/FilterForm.vue"
+    import FilterForm2 from "components/other/FilterForm2.vue"
 
     export default {
         name: "FilterComponent",
         components: {
-            FilterForm
+            FilterForm, FilterForm2
         },
         data: () => ({
             products: [],
@@ -181,10 +183,10 @@
             },
         },
         created() {
-            this.directoryId = this.$route.params.id
+            /*this.directoryId = this.$route.params.id
             console.log("directoryId = "+this.directoryId)
 
-            this.setProducts(this.directoryId)
+            this.setProducts(this.directoryId)*/
         }
 
     }
