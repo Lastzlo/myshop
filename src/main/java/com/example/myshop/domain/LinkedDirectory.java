@@ -1,10 +1,13 @@
 package com.example.myshop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+
 
 @Entity
 public class LinkedDirectory {
@@ -26,6 +29,12 @@ public class LinkedDirectory {
     @OneToMany
     @JsonView(Views.FullLinkedDirectory.class)
     private Set<LinkedDirectory>relatedDirectories;
+
+    /*@ElementCollection
+    @CollectionTable(name = "user_phone_numbers", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "phone_number")
+    private Set<Long> relatedDirectoryIds = new HashSet<>();*/
+
 
     @ManyToOne
     private LinkedDirectory father;

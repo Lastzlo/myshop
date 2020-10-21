@@ -26,6 +26,8 @@ import java.util.*;
 public class ProductService {
 
     @Autowired
+    private LinkedDirectoryService directoryService;
+    @Autowired
     private LinkedDirectoryRepo directoryRepo;
     @Autowired
     private ProductRepo productRepo;
@@ -46,7 +48,6 @@ public class ProductService {
     public Product saveProduct (Product product) {
         product.setCreationDate (LocalDateTime.now ());
 
-
         Set<LinkedDirectory> tagsFromDb = new HashSet<>();
 
         if(product.getTags () != null){
@@ -66,9 +67,23 @@ public class ProductService {
         }
         final Product finalProduct = productRepo.save(product);
 
-        //Добавляет товар в каждый тег
+        //Обновляем теги
         tagsFromDb.forEach (tag -> {
+
+            //добавляем продукт
             tag.addProduct (finalProduct);
+
+            //обновляем количество продуктов связных с тегом
+            tag.setProductsCount ((long) tag.getProducts ().size ());
+
+            //добавляем в тег свзязаные с продуктом теги
+            tagsFromDb.forEach (relatedDirectory -> {
+                if(tag!=relatedDirectory){
+                    tag.addRelatedDirectory (relatedDirectory);
+                }
+            });
+
+            //сохраняем тег в БД
             directoryRepo.save (tag);
 
         });
@@ -140,7 +155,6 @@ public class ProductService {
         );
         productRepo.deleteById(id);
     }
-
 
     /*public Product updateProduct (Product product) {
 

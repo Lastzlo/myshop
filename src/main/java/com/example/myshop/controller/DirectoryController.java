@@ -6,6 +6,7 @@ import com.example.myshop.domain.Product;
 import com.example.myshop.domain.Views;
 import com.example.myshop.repos.LinkedDirectoryRepo;
 import com.example.myshop.repos.ProductRepo;
+import com.example.myshop.services.LinkedDirectoryService;
 import com.example.myshop.services.ProductService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,41 +20,28 @@ import java.util.Set;
 @RestController
 @RequestMapping("directory")
 public class DirectoryController {
-    private final ProductRepo productRepo;
-
-    private final LinkedDirectoryRepo directoryRepo;
 
     @Autowired
-    public DirectoryController (ProductRepo productRepo,  LinkedDirectoryRepo directoryRepo) {
-        this.productRepo = productRepo;
-        this.directoryRepo = directoryRepo;
-    }
+    private LinkedDirectoryService directoryService;
+
+
 
     @GetMapping("getCore")
-    @JsonView(Views.OnlyChild.class)
-    public LinkedDirectory getCore(){
-        LinkedDirectory directory = directoryRepo.findByDirectoryType (DirectoryType.CATEGORY_LIST.toString ());
-        if (directory==null){
-            directory = new LinkedDirectory ("Категории", DirectoryType.CATEGORY_LIST.toString ());
-            directory = directoryRepo.save (directory);
-        }
-        return directory;
+    @JsonView(Views.FullLinkedDirectory.class)
+    private LinkedDirectory getCore(){
+        return directoryService.getCore();
     }
 
     @GetMapping("getProductByDirectoryId/{id}")
     @JsonView(Views.FullMessage.class)
-    public Set<Product> getProductsByLinkedDirectoryId(@PathVariable String id){
-        Optional<LinkedDirectory> optionalLinkedDirectory = directoryRepo.findById (Long.valueOf (id));
-        if (optionalLinkedDirectory.isPresent ()){
-            return optionalLinkedDirectory.get ().getProducts ();
-        } else return new HashSet<> ();
-
+    private Set<Product> getProductsByLinkedDirectoryId(@PathVariable String id){
+        return directoryService.getProductsByLinkedDirectoryId (id);
     }
 
     @GetMapping("{id}")
-    @JsonView(Views.OnlyChild.class)
-    public LinkedDirectory getOne(@PathVariable String id){
-        return directoryRepo.getOne(Long.valueOf(id));
+    @JsonView(Views.FullLinkedDirectory.class)
+    private LinkedDirectory getOne(@PathVariable String id){
+        return directoryService.getOne(id);
     }
 
     @PostMapping
@@ -61,7 +49,8 @@ public class DirectoryController {
     private LinkedDirectory create(
             @RequestBody LinkedDirectory linkedDirectory
     ){
-        LinkedDirectory father = directoryRepo.getOne (linkedDirectory.getFather ().getId ());
+        return directoryService.create (linkedDirectory);
+        /*LinkedDirectory father = directoryRepo.getOne (linkedDirectory.getFather ().getId ());
 
         LinkedDirectory child = linkedDirectory;
 
@@ -115,28 +104,29 @@ public class DirectoryController {
             return child;
         } else {
             return directoryRepo.save (linkedDirectory);
-        }
+        }*/
     }
 
     @PutMapping("{id}")
     @JsonView(Views.OnlyChild.class)
-    public LinkedDirectory update(
+    private LinkedDirectory update(
             @PathVariable String id,
             @RequestBody LinkedDirectory directory
     ){
-        if(directoryRepo.findById(Long.valueOf(id)).isPresent ()){
+        return directoryService.update (id, directory);
+        /*if(directoryRepo.findById(Long.valueOf(id)).isPresent ()){
             LinkedDirectory directoryFromDb = directoryRepo.findById(Long.valueOf(id)).get();
 
             directoryFromDb.setName (directory.getName ());
             return directoryRepo.save (directoryFromDb);
         }
-        return directory;
+        return directory;*/
     }
 
-
     @DeleteMapping("{id}")
-    public void delete(@PathVariable String id){
-        directoryRepo.findById (Long.valueOf (id)).ifPresent (
+    private void delete(@PathVariable String id){
+        directoryService.delete (id);
+        /*directoryRepo.findById (Long.valueOf (id)).ifPresent (
                 linkedDirectory -> {
                     //удаление тега из всех товаров
                     linkedDirectory.getProducts ().forEach (
@@ -176,11 +166,8 @@ public class DirectoryController {
 
                     directoryRepo.delete (linkedDirectory);
                 }
-        );
+        );*/
     }
-
-
-
 
     /*
     @RestController
