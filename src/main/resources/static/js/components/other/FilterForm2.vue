@@ -15,32 +15,90 @@
                                 v-for="child in item.children"
                                 :key="child.id"
                         >
-                            <v-checkbox
-                                    v-model="selection2"
-                                    :value="child"
-
-                                    :disabled="child.disableStatus === false"
+                            <div
+                                    v-if="child.directoryType ==='BRAND'"
                             >
-                                <template v-slot:label>
-                                    <v-list-item-content>
-                                        <v-list-item-title>{{ child.name }}</v-list-item-title>
-                                    </v-list-item-content>
-                                </template>
+                                <v-checkbox
+                                        v-model="selection2"
+                                        :value="child"
 
-                                <template v-slot:append>
-                                    <v-snackbar
-                                            v-if="lastSelectedId2!==null && lastSelectedId2===child.id"
-                                            :timeout="-1"
-                                            :value="true"
-                                            absolute
-                                            right
-                                            top
+                                        :disabled="child.disableStatus === false"
+                                >
+                                    <template v-slot:label>
+                                        <v-list-item-content>
+                                            <v-list-item-title>{{ child.name }}</v-list-item-title>
+                                        </v-list-item-content>
+                                    </template>
+
+                                    <template v-slot:append>
+                                        <v-snackbar
+                                                v-if="lastSelectedId2!==null && lastSelectedId2===child.id"
+                                                :timeout="-1"
+                                                :value="true"
+                                                absolute
+                                                right
+                                                top
+                                        >
+                                            Результаты поиска...
+                                        </v-snackbar>
+                                    </template>
+
+                                </v-checkbox>
+                            </div>
+
+
+                            <div
+                                    v-else-if="child.directoryType ==='PARAMETER'"
+                            >
+
+                                <v-list-item-content
+                                        v-if="child.children.length>0"
+                                >
+
+                                    <v-list-item-title>{{ child.name }}</v-list-item-title>
+                                    <v-list-item-title>123456789123456789123456789123456789</v-list-item-title>
+
+                                    <v-list-item
+                                            v-for="child2 in child.children"
+                                            :key="child2.id"
                                     >
-                                        Результаты поиска...
-                                    </v-snackbar>
-                                </template>
 
-                            </v-checkbox>
+                                        <v-checkbox
+                                                v-model="selection2"
+                                                :value="child2"
+
+                                                :disabled="child2.disableStatus === false"
+                                        >
+                                            <template v-slot:label>
+                                                <v-list-item-content>
+                                                    <v-list-item-title>{{ child2.name }}</v-list-item-title>
+                                                </v-list-item-content>
+                                            </template>
+
+                                            <template v-slot:append>
+                                                <v-snackbar
+                                                        v-if="lastSelectedId2!==null && lastSelectedId2===child2.id"
+                                                        :timeout="-1"
+                                                        :value="true"
+                                                        absolute
+                                                        right
+                                                        top
+                                                >
+                                                    Результаты поиска...
+                                                </v-snackbar>
+                                            </template>
+
+                                        </v-checkbox>
+
+
+                                    </v-list-item>
+
+
+                                </v-list-item-content>
+                            </div>
+
+
+
                         </v-list-item>
 
                     </v-list-item-content>

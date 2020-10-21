@@ -8,12 +8,12 @@
 
         >
             <v-row >
-                <v-col
+                <!--<v-col
                         class="pa-0"
                         cols="6"
                 >
                     <filter-form></filter-form>
-                </v-col>
+                </v-col>-->
                 <v-col
                         class="pa-0"
                         cols="6"
