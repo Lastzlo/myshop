@@ -11,17 +11,21 @@ public class LinkedDirectory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonView(Views.IdName.class)
-    Long id;
+    private Long id;
 
     @JsonView(Views.IdName.class)
-    String name;
+    private String name;
+
+    @JsonView(Views.Type.class)
+    private String directoryType;
 
     @OneToMany
     @JsonView(Views.OnlyChild.class)
     private Set<LinkedDirectory> children;
 
-    @JsonView(Views.Type.class)
-    String directoryType;
+    @OneToMany
+    @JsonView(Views.FullLinkedDirectory.class)
+    private Set<LinkedDirectory>relatedDirectories;
 
     @ManyToOne
     private LinkedDirectory father;
@@ -29,6 +33,10 @@ public class LinkedDirectory {
     @ManyToMany
     //@JsonView(Views.FullMessage.class)
     private Set<Product> products;
+
+    @JsonView(Views.FullLinkedDirectory.class)
+    private Long productsCount;
+
 
     public LinkedDirectory () {
     }
@@ -64,6 +72,22 @@ public class LinkedDirectory {
         this.products.remove (productFromDb);
     }
 
+    public Long getProductsCount () {
+        return productsCount;
+    }
+
+    public void setProductsCount (Long productsCount) {
+        this.productsCount = productsCount;
+    }
+
+    public void incrementProductsCount () {
+        this.productsCount++;
+    }
+
+    public void decrementProductsCount () {
+        this.productsCount--;
+    }
+
     public Set<LinkedDirectory> getChildren () {
         return children;
     }
@@ -79,6 +103,23 @@ public class LinkedDirectory {
     public void deleteChild(LinkedDirectory child){
         this.children.remove (child);
     }
+
+    public Set<LinkedDirectory> getRelatedDirectories () {
+        return relatedDirectories;
+    }
+
+    public void setRelatedDirectories (Set<LinkedDirectory> relatedDirectories) {
+        this.relatedDirectories = relatedDirectories;
+    }
+
+    public void addRelatedDirectory(LinkedDirectory relatedDirectory){
+        this.relatedDirectories.add (relatedDirectory);
+    }
+
+    public void deleteRelatedDirectory(LinkedDirectory relatedDirectory){
+        this.relatedDirectories.remove (relatedDirectory);
+    }
+
 
     public String getDirectoryType () {
         return directoryType;
