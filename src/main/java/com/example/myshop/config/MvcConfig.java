@@ -32,6 +32,7 @@ public class MvcConfig implements WebMvcConfigurer {
     public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> webServerCustomizer(){
         return container -> {
             //добавили ErrorPage, если не находит даный адрес то перекидывает на "/"
+            //связно в содабвлениес vuerouter который сам занимаеться загрузкой контента относително адреса страницы
             container.addErrorPages (new ErrorPage (HttpStatus.NOT_FOUND, "/"));
         };
     }

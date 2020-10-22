@@ -26,15 +26,19 @@ public class LinkedDirectory {
     @JsonView(Views.OnlyChild.class)
     private Set<LinkedDirectory> children;
 
-    @OneToMany
-    @JsonView(Views.FullLinkedDirectory.class)
+    @ManyToMany
     private Set<LinkedDirectory>relatedDirectories;
 
-    /*@ElementCollection
-    @CollectionTable(name = "user_phone_numbers", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "phone_number")
-    private Set<Long> relatedDirectoryIds = new HashSet<>();*/
 
+    //я знаю что данный сет частично повтрояет relatedDirectories, он сдела для того чтобы мы могли передать его в JSON и не столкнуться с рекурсией
+    @ElementCollection
+    @CollectionTable(
+            name = "directories_associated_with_this_directory",
+            joinColumns = @JoinColumn(name = "directory_id")
+    )
+    @Column(name = "related_directory")
+    @JsonView(Views.FullLinkedDirectory.class)
+    private Set<Long> relatedDirectoryIds = new HashSet<>();
 
     @ManyToOne
     private LinkedDirectory father;
@@ -89,14 +93,6 @@ public class LinkedDirectory {
         this.productsCount = productsCount;
     }
 
-    public void incrementProductsCount () {
-        this.productsCount++;
-    }
-
-    public void decrementProductsCount () {
-        this.productsCount--;
-    }
-
     public Set<LinkedDirectory> getChildren () {
         return children;
     }
@@ -129,6 +125,21 @@ public class LinkedDirectory {
         this.relatedDirectories.remove (relatedDirectory);
     }
 
+    public Set<Long> getRelatedDirectoryIds () {
+        return relatedDirectoryIds;
+    }
+
+    public void setRelatedDirectoryIds (Set<Long> relatedDirectoryIds) {
+        this.relatedDirectoryIds = relatedDirectoryIds;
+    }
+
+    public void addRelatedDirectoryId(Long relatedDirectoryId){
+        this.relatedDirectoryIds.add (relatedDirectoryId);
+    }
+
+    public void deleteRelatedDirectoryId(Long relatedDirectoryid){
+        this.relatedDirectoryIds.remove (relatedDirectoryid);
+    }
 
     public String getDirectoryType () {
         return directoryType;

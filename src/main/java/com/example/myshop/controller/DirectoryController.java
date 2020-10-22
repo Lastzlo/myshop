@@ -45,7 +45,7 @@ public class DirectoryController {
     }
 
     @PostMapping
-    @JsonView(Views.OnlyChild.class)
+    @JsonView(Views.FullLinkedDirectory.class)
     private LinkedDirectory create(
             @RequestBody LinkedDirectory linkedDirectory
     ){
@@ -108,7 +108,7 @@ public class DirectoryController {
     }
 
     @PutMapping("{id}")
-    @JsonView(Views.OnlyChild.class)
+    @JsonView(Views.FullLinkedDirectory.class)
     private LinkedDirectory update(
             @PathVariable String id,
             @RequestBody LinkedDirectory directory
