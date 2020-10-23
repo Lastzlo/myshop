@@ -23,7 +23,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class ProductService {
@@ -173,27 +172,93 @@ public class ProductService {
                 product -> {
                     product.getTags ().forEach (
                             tag -> {
+                                //уменьшем количество привязаных товаров к тегу
                                 tag.deleteProduct (product);
+                                tag.setProductsCount ((long) tag.getProducts ().size ());
+
+                                //если количество привязаных товаров к тегу 0 то убираем связи тега с другими тегами
+                                if(tag.getProductsCount () == 0){
+                                    System.out.println ("tag не имеет привязаных продуктов, можно удалять связи с tag.getRelatedDirectories ()");
+
+                                    tag.getRelatedDirectories ().forEach (
+                                            relatedDirectory -> {
+                                                System.out.println ("//удалили tag с relatedDirectory");
+                                                //удалили tag с relatedDirectory
+                                                relatedDirectory.getRelatedDirectories ().remove (tag);
+                                                relatedDirectory.getRelatedDirectoryIds ().remove (tag.getId ());
+
+                                                //обновляем relatedDirectory в бд
+                                                directoryRepo.save (relatedDirectory);
+                                            }
+                                    );
+
+                                    //очищаем tag.getRelatedDirectories ()
+                                    tag.getRelatedDirectories ().clear ();
+                                    tag.getRelatedDirectoryIds ().clear ();
+
+                                } else {
+                                    System.out.println ("tag имеет ("+tag.getProductsCount ()+") привязаных продуктов");
+
+                                    //создаем копию чтобы можно было удалять элементы из сета tag.getRelatedDirectories ()
+                                    final Set<LinkedDirectory> tagRelatedDirectoriesCopy = new HashSet<> () {{
+                                        addAll (tag.getRelatedDirectories ());
+                                    }};
+
+                                    tagRelatedDirectoriesCopy.forEach (
+                                            relatedDirectory -> {
+                                                //встречаеться ли хоть один раз relatedDirectory в tag.getProducts ().product1.getTags
+                                                boolean isRelatedDirectoryInTagProductsTags = false;
+
+                                                for (Product product1: tag.getProducts ()
+                                                ) {
+                                                    if(product1.getTags ().contains (relatedDirectory)){
+                                                        isRelatedDirectoryInTagProductsTags = true;
+
+                                                        break;
+                                                    }
+                                                }
+
+                                                //встречаеться ли хоть один раз relatedDirectory в tag.getProducts ().product1.getTags
+                                                if(!isRelatedDirectoryInTagProductsTags){
+                                                    System.out.println ("!isRelatedDirectoryInTagProductsTags");
+                                                    System.out.println ("Нет, не встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
+
+                                                    System.out.println ("relatedDirectory = "+relatedDirectory);
+                                                    System.out.println ("tag = "+tag);
+
+                                                    System.out.println ("//удаляем tag с relatedDirectory");
+
+                                                    //удаляем tagToDelete с oldNeededTagId
+                                                    relatedDirectory.getRelatedDirectories ().remove (tag);
+                                                    relatedDirectory.getRelatedDirectoryIds ().remove (tag.getId ());
+
+                                                    //обновляем relatedDirectory в бд
+                                                    directoryRepo.save (relatedDirectory);
+
+                                                    System.out.println ("//удаляем relatedDirectory с tag");
+                                                    //удаляем oldNeededTagId с tagToDelete
+                                                    tag.getRelatedDirectories ().remove (relatedDirectory);
+                                                    tag.getRelatedDirectoryIds ().remove (relatedDirectory.getId ());
+                                                } else {
+                                                    System.out.println ("isRelatedDirectoryInTagProductsTags");
+                                                    System.out.println ("Да встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
+                                                }
+
+                                            }
+                                    );
+
+                                }
+
+                                //обновляем tag в бд
                                 directoryRepo.save (tag);
                             }
                     );
                 }
         );
+
+        //удаление с БД
         productRepo.deleteById(id);
     }
-
-    /*public Product updateProduct (Product product) {
-
-        Product productFromDb = productRepo.findById (product.getId ()).get ();
-
-        if(productFromDb!= null){
-            BeanUtils.copyProperties (product, productFromDb, "id", "tags", "photos", "creationDate");
-            productFromDb.setTags (product.getTags ());
-            return productRepo.save (productFromDb);
-        }
-
-        return product;
-    }*/
 
     public Product updateProductWithFile (Product product, Optional<MultipartFile[]> files) {
         Optional<Product> optionalProductFromDb = productRepo.findById (product.getId ());
@@ -220,30 +285,22 @@ public class ProductService {
                         }
                 );
 
+                //проверка что oldtagsFromDb и recivedTags равны
                 if(oldtagsFromDb.equals (recivedTags)){
                     //если нет отличий то пропускаем
-                    System.out.println ("oldtagsFromDb.containsAll (recivedTags)");
+                    System.out.println ("oldtagsFromDb.equals (recivedTags)");
                 }else {
-                    //находим теги которых нет recivedTags
+                    //находим теги которых нет в recivedTags
                     //эти теги потом надо будет убрать из продукта
                     final Set<LinkedDirectory> tagsToDeleteFromProduct = Sets.difference(oldtagsFromDb, recivedTags);
-                    /*//решил перезаписать все в Сет ведь при изминении oldtagsFromDb выпадает ошибка
-                    final Set<LinkedDirectory> tagsToDeleteFromProduct = new HashSet<> (){{
-                        addAll (Sets.difference(oldtagsFromDb, recivedTags));
-                    }};*/
 
                     System.out.println ("tagsToDeleteFromProduct:");
-//                    Set<Long> idsOfTagsToDeleteFromProduct = new HashSet<> ();
 
                     tagsToDeleteFromProduct.forEach (
                             tag-> {
-//                                //заполняем idsOfTagsToDeleteFromProduct
-//                                idsOfTagsToDeleteFromProduct.add (tag.getId ());
-                                //выводим
 
                                 System.out.println ("tagId = "+tag.getId ()+" tagName = "+tag.getName ());
 
-                                //вот оно то место изза которого была ошибка
                                 //удаляем с товара лишние теги
                                 productFromDb.deleteTag (tag);
 
@@ -255,11 +312,7 @@ public class ProductService {
                     );
 
                     //список актуальных, нужных тегов
-                    Set<LinkedDirectory>
-                            oldNeededTags = Sets.difference(oldtagsFromDb, tagsToDeleteFromProduct);
-
-                    //список id oldNeededTags
-//                    Set<Long> idsOfOldNeededTags = new HashSet<> ();
+                    Set<LinkedDirectory> oldNeededTags = Sets.difference(oldtagsFromDb, tagsToDeleteFromProduct);
 
                     //убираем у oldNeededTags связи с ненужными tagsToDeleteFromProduct тегами
                     dislinkOldNeededTagsWithDontUsedTagsToDeleteFromProduct (tagsToDeleteFromProduct, oldNeededTags);
@@ -360,12 +413,6 @@ public class ProductService {
                                         photoRepo.delete (item);
 
                                         //удалить с хранилища
-                                        //хранилище.удалить(item)
-                                        /*if(new File (uploadPath + "/" + item.getName ()).delete ()){
-                                            System.out.println("Deleted the file: " + item.getName ());
-                                        } else {
-                                            System.out.println("Failed to delete the file.");
-                                        }*/
                                         new File (uploadPath + "/" + item.getName ()).delete ();
                                     }
                             );
@@ -395,7 +442,6 @@ public class ProductService {
                 ) {
                     //дополняем имя файла чтобы не возникало коллизий
                     String resultFilename = uuidFile + "." + multipartFile.getOriginalFilename ();
-                    //String resultFilename = multipartFile.getOriginalFilename ();
                     try {
                         try (InputStream inputStream = multipartFile.getInputStream()) {
                             Files.copy(inputStream, rootLocation.resolve(resultFilename),
@@ -405,12 +451,6 @@ public class ProductService {
                     catch (IOException e) {
                         System.out.println ("Failed to store file ");
                     }
-
-//                    try {
-//                        multipartFile.transferTo (new File (uploadPath + "/" + resultFilename));
-//                    } catch (IOException e) {
-//                        System.out.println ("файл не переместили в папку ");
-//                    }
 
                     //путь по которому можна получить картинку
                     String src = "/img/" + resultFilename;
@@ -477,7 +517,6 @@ public class ProductService {
 
                                     }
 
-
                                     //встречаеться ли хоть один раз oldNeededTag в tagToDelete.getProducts.Product.getTags
                                     if(!isOldNeededTagInTagToDeleteProductsTags){
                                         System.out.println ("!isOldNeededTagInTagToDeleteProductsTags");
@@ -487,6 +526,7 @@ public class ProductService {
                                         System.out.println ("tagToDelete = "+tagToDelete);
 
                                         System.out.println ("//удалили tagToDelete с oldNeededTagId");
+
                                         //удалили tagToDelete с oldNeededTagId
                                         oldNeededTag.getRelatedDirectories ().remove (tagToDelete);
                                         oldNeededTag.getRelatedDirectoryIds ().remove (tagToDelete.getId ());
@@ -509,4 +549,5 @@ public class ProductService {
                 }
         );
     }
+
 }

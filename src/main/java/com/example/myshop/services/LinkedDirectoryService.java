@@ -131,6 +131,19 @@ public class LinkedDirectoryService {
                             }
                     );
 
+                    //удаление связей с другими тегами
+                    linkedDirectory.getRelatedDirectories ().forEach (
+                            reletaedDirectory -> {
+                                //удалили reletaedDirectory с linkedDirectory
+                                reletaedDirectory.getRelatedDirectories ().remove (linkedDirectory);
+                                reletaedDirectory.getRelatedDirectoryIds ().remove (linkedDirectory.getId ());
+
+                                directoryRepo.save (reletaedDirectory);
+                            }
+                    );
+                    linkedDirectory.getRelatedDirectories ().clear ();
+                    linkedDirectory.getRelatedDirectoryIds ().clear ();
+
                     //удаление у родителя
                     if(linkedDirectory.getFather ()!=null){
                         LinkedDirectory father = linkedDirectory.getFather ();

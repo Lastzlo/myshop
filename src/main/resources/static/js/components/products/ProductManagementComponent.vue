@@ -382,6 +382,8 @@
                     }
                 })
 
+                this.clearForm()
+
                 // this.$resource('/product{/id}').remove({id: item.id}).then(result => {
                 //     if (result.ok) {
                 //         this.products.splice(this.products.indexOf(item), 1)
