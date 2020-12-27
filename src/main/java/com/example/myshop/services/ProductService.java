@@ -28,8 +28,6 @@ import java.util.*;
 public class ProductService {
 
     @Autowired
-    private LinkedDirectoryService directoryService;
-    @Autowired
     private LinkedDirectoryRepo directoryRepo;
     @Autowired
     private ProductRepo productRepo;
@@ -47,76 +45,43 @@ public class ProductService {
         return productRepo.getOne(id);
     }
 
-    public Product saveProduct (Product product) {
+    //сохраняем товар с картинками
+    public Product saveProductWithFile (Product product, Optional<MultipartFile[]> files) {
+        //сюда можно добавить проверку полей продукта
+
+        //добавляем фото к товару
+        addPhotosToProduct (product, files);
+
+        //добавляем теги(директории) к товару
+        addTegsToProduct (product);
+
+        //устонавливаем время добавления
         product.setCreationDate (LocalDateTime.now ());
 
-        Set<LinkedDirectory> tagsFromDb = new HashSet<>();
-
-        if(product.getTags () != null){
-            Set<LinkedDirectory> tags = new HashSet<> (){{addAll (product.getTags ());}};
-            product.getTags ().clear ();
-            tags.forEach (tag -> {
-                        this.directoryRepo.findById (tag.getId ()).ifPresent (
-                                tagFromDb -> {
-
-                                    //добавляем к товару тег
-                                    product.addTag (tagFromDb);
-
-                                    //заполнем tagsFromDb
-                                    tagsFromDb.add (tagFromDb);
-
-                                }
-                        );
-                    }
-            );
-        }
+        //сохраняем товар в бд
         final Product finalProduct = productRepo.save(product);
 
-        //Обновляем теги
-        tagsFromDb.forEach (tag -> {
-
-            //добавляем продукт
-            tag.addProduct (finalProduct);
-
-            //обновляем количество продуктов связных с тегом
-            tag.setProductsCount ((long) tag.getProducts ().size ());
-
-            //проверка что DirectoryType of tag is PARAMETER or BRAND
-            if(
-                    tag.getDirectoryType ().equals (DirectoryType.PARAMETER.toString ())
-                            || tag.getDirectoryType ().equals (DirectoryType.BRAND.toString ())
-            ){
-                //добавляем в тег свзязаные с продуктом теги
-                tagsFromDb.forEach (relatedDirectory -> {
-
-                    /*if(tag!=relatedDirectory)*/
-                    if(
-                            tag!=relatedDirectory
-                                    && (
-                                    relatedDirectory.getDirectoryType ()
-                                            .equals (DirectoryType.PARAMETER.toString ())
-                                            ||
-                                            relatedDirectory.getDirectoryType ()
-                                                    .equals (DirectoryType.BRAND.toString ()))
-                    ){
-
-                        //плюс сета в том что не будет повторений
-                        tag.addRelatedDirectory (relatedDirectory);
-                        tag.addRelatedDirectoryId (relatedDirectory.getId ());
-
-                    }
-                });
-            }
-
-            //сохраняем тег в БД
-            directoryRepo.save (tag);
-
-        });
+        //добавляем товар из бд к тегам(директориям)
+        addProductToTags (finalProduct);
 
         return finalProduct;
+
     }
 
-    public Product saveProductWithFile (Product product, Optional<MultipartFile[]> files) {
+    //добавляем фото к товару
+    private void addPhotosToProduct (Product product, Optional<MultipartFile[]> files) {
+        //сохраняем файлы на сервере
+        Set<Photo> photosSet = saveFilesOnServer (product, files);
+
+        //добавляем к продукту все фото
+        photosSet.forEach (product::addPhoto);
+
+    }
+
+    //сохраняем файлы на сервере
+    private Set<Photo> saveFilesOnServer (Product product, Optional<MultipartFile[]> files){
+        //сохраняем файлы на сервере
+        Set<Photo> photosSet = new HashSet<> ();
 
         if(files.isPresent ()){
 
@@ -124,26 +89,26 @@ public class ProductService {
 
             File uploadDir = new File (uploadPath);
 
+            //если загрузочная директория не найдена то создаеться
             if(!uploadDir.exists ()){
                 uploadDir.mkdir ();
             }
 
-            //иницыализирует массив для фото
+            //инициализирует массив для фото
             product.setPhotos (new HashSet<> ());
 
             //рандомный индентификатор
             String uuidFile = UUID.randomUUID ().toString ();
 
-            //получаем путь
+            //получаем путь (можно и заранье)
             Path rootLocation = Paths.get(String.valueOf(uploadDir));
             //System.out.println("rootLocation = "+rootLocation.toString());
 
             for (MultipartFile multipartFile: multipartFiles
             ) {
-
-                //дополняем имя файла чтобы не возникало коллизий
+                //дополняем имя рандомный индентификатором чтобы не возникало коллизий в именах файлов
                 String resultFilename = uuidFile + "." + multipartFile.getOriginalFilename ();
-                //String resultFilename = multipartFile.getOriginalFilename ();
+
                 try {
                     try (InputStream inputStream = multipartFile.getInputStream()) {
                         Files.copy(inputStream, rootLocation.resolve(resultFilename),
@@ -155,17 +120,90 @@ public class ProductService {
                 }
 
                 String src = "/img/" + resultFilename;
-                Photo photo = new Photo (resultFilename, src);
 
-                //сначала сохраняем информацию о фото в БД
-                //потом записываем в продукт
-                product.addPhoto(photoRepo.save (photo));
+                //сохраняем метаданные в новый обьект
+                //сохраняем информацию в БД
+                Photo photo = photoRepo.save (new Photo (resultFilename, src));
+
+                photosSet.add (photo);
             }
 
         }
-
-        return saveProduct (product);
+        return photosSet;
     }
+
+    //добавляем теги(директории) к товару
+    private void addTegsToProduct (Product product) {
+        //проверяме пришли ли теги с товаром
+        if(product.getTags () != null){
+            //записываем спикос тегов которые пришли с товаром
+            Set<LinkedDirectory> tags = new HashSet<> (){{addAll (product.getTags ());}};
+            //очищаем список тегов
+            product.getTags ().clear ();
+            //проходим все теги которые пришли с товаром
+            tags.forEach (tag -> {
+                        //ести тег есть в бд
+                        this.directoryRepo.findById (tag.getId ()).ifPresent (
+                                tagFromDb -> {
+                                    //добавляем к тег товару
+                                    product.addTag (tagFromDb);
+                                }
+                        );
+                    }
+            );
+        }
+    }
+
+    //добавляем товар из бд к тегам(директориям)
+    private void addProductToTags (Product finalProduct) {
+        finalProduct.getTags ().forEach (tag -> {
+            //добавляем продукт
+            tag.addProduct (finalProduct);
+
+            //обновляем количество продуктов связных с тегом
+            tag.setProductsCount ((long) tag.getProducts ().size ());
+
+            //проверка что проверям что тип директории PARAMETER или BRAND
+            if(
+                    tag.getDirectoryType ().equals (DirectoryType.PARAMETER.toString ())
+                            || tag.getDirectoryType ().equals (DirectoryType.BRAND.toString ())
+            ){
+                // связываем директории, для этого в связанные директории
+                // добавляем другие теги даного продукта
+                linkingDirectories (finalProduct.getTags (), tag);
+
+            }
+
+            //сохраняем тег в БД
+            directoryRepo.save (tag);
+
+        });
+    }
+
+    // связываем директории, для этого в связанные директории
+    // добавляем другие теги даного продукта
+    private void linkingDirectories (Set<LinkedDirectory> tagsFromDb, LinkedDirectory tag) {
+        // связываем директории, для этого в связанные директории
+        // добавляем другие теги даного продукта
+        tagsFromDb.forEach (relatedDirectory -> {
+            if (
+                    tag != relatedDirectory
+                            && (
+                            relatedDirectory.getDirectoryType ()
+                                    .equals (DirectoryType.PARAMETER.toString ())
+                                    ||
+                                    relatedDirectory.getDirectoryType ()
+                                            .equals (DirectoryType.BRAND.toString ()))
+            ) {
+
+                //плюс сета в том что не будет повторений
+                tag.addRelatedDirectory (relatedDirectory);
+                tag.addRelatedDirectoryId (relatedDirectory.getId ());
+
+            }
+        });
+    }
+
 
     public void deleteProduct (Long id) {
         productRepo.findById (id).ifPresent (
@@ -340,26 +378,9 @@ public class ProductService {
                                 tag.getDirectoryType ().equals (DirectoryType.PARAMETER.toString ())
                                         || tag.getDirectoryType ().equals (DirectoryType.BRAND.toString ())
                         ){
-                            //добавляем в тег свзязаные с продуктом  НОВЫЕ теги newtags
-                            newtags.forEach (relatedDirectory -> {
-
-                                if(
-                                        tag!=relatedDirectory
-                                                && (
-                                                relatedDirectory.getDirectoryType ()
-                                                        .equals (DirectoryType.PARAMETER.toString ())
-                                                        ||
-                                                        relatedDirectory.getDirectoryType ()
-                                                                .equals (DirectoryType.BRAND.toString ()))
-                                ){
-
-                                    //плюс сета в том что не будет повторений
-                                    tag.addRelatedDirectory (relatedDirectory);
-                                    tag.addRelatedDirectoryId (relatedDirectory.getId ());
-
-                                }
-
-                            });
+                            // связываем директории, для этого в связанные директории
+                            // добавляем другие теги даного продукта
+                            linkingDirectories (newtags, tag);
 
                             //добавляем в тег свзязаные с продуктом  НОВЫЕ теги oldNeededTags
                             oldNeededTags.forEach (relatedDirectory -> {
@@ -469,7 +490,6 @@ public class ProductService {
         //нужно обработать ответ если вдруг небыло такого продукта
         return null;
     }
-
 
     //убираем у oldNeededTags связи с ненужными tagsToDeleteFromProduct тегами
     private void dislinkOldNeededTagsWithDontUsedTagsToDeleteFromProduct (Set<LinkedDirectory> tagsToDeleteFromProduct, Set<LinkedDirectory> oldNeededTags) {

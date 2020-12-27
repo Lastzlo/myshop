@@ -65,6 +65,7 @@ public class LinkedDirectoryService {
 
             //проверка что отец CATEGORY_LIST
             if(fatherDirectoryType.equals (DirectoryType.CATEGORY_LIST.toString ())){
+
                 child.setDirectoryType (DirectoryType.CATEGORY.toString ());
                 child = directoryRepo.save (child);
 
@@ -78,7 +79,6 @@ public class LinkedDirectoryService {
 
                 //добавляем в него дочернюю директорию Параметры
                 LinkedDirectory parameterList = new LinkedDirectory (
-
                         DirectoryType.PARAMETER_LIST.toString ()
                 );
                 parameterList.setFather (child);
@@ -90,13 +90,11 @@ public class LinkedDirectoryService {
 
             //проверка что отец BRAND_LIST
             if(fatherDirectoryType.equals (DirectoryType.BRAND_LIST.toString ())){
-
                 child.setDirectoryType (DirectoryType.BRAND.toString ());
             }
 
             //проверка что отец PARAMETER_LIST
             if(fatherDirectoryType.equals (DirectoryType.PARAMETER_LIST.toString ())){
-
                 child.setDirectoryType (DirectoryType.PARAMETER.toString ());
             }
 

@@ -53,6 +53,7 @@ public class ProductController {
 //        return generalService.saveProduct(product);
 //    }
 
+    //принимает FormData который состоит из Файлов и JSON
     @PostMapping
     @JsonView(Views.FullMessage.class)
     private Product create(
