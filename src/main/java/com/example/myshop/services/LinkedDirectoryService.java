@@ -7,8 +7,6 @@ import com.example.myshop.repos.LinkedDirectoryRepo;
 import com.example.myshop.repos.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,20 +15,27 @@ import java.util.Set;
 @Service
 public class LinkedDirectoryService {
 
+    //репозиторий товаров
     @Autowired
     private ProductRepo productRepo;
+    //репозиторий связанных директорий
     @Autowired
     private LinkedDirectoryRepo directoryRepo;
 
+    //метод возвращает директорию самого высшего уровня DirectoryType.CATEGORY_LIST
     public LinkedDirectory getCore () {
         LinkedDirectory directory = directoryRepo.findByDirectoryType (DirectoryType.CATEGORY_LIST.toString ());
+        //если директория не найдена то создаеться
         if (directory==null){
-            directory = new LinkedDirectory ("Категории", DirectoryType.CATEGORY_LIST.toString ());
+            //создает директорию
+            directory = new LinkedDirectory (DirectoryType.CATEGORY_LIST.toString ());
+
             directory = directoryRepo.save (directory);
         }
         return directory;
     }
 
+    //метод возращает список товаров привязаных к директории
     public Set<Product> getProductsByLinkedDirectoryId(String id){
         Optional<LinkedDirectory> optionalLinkedDirectory = directoryRepo.findById (Long.valueOf (id));
         if (optionalLinkedDirectory.isPresent ()){
@@ -39,13 +44,13 @@ public class LinkedDirectoryService {
 
     }
 
+    //метод возращает директорию по ее id
     public LinkedDirectory getOne (String id) {
         return directoryRepo.getOne(Long.valueOf(id));
     }
 
-    public LinkedDirectory create(
-            LinkedDirectory linkedDirectory
-    ){
+    //создает директорию,
+    public LinkedDirectory create(LinkedDirectory linkedDirectory){
         LinkedDirectory father = directoryRepo.getOne (linkedDirectory.getFather ().getId ());
 
         //устонавливаем контейнер для связанных дерикторий
@@ -65,7 +70,7 @@ public class LinkedDirectoryService {
 
                 //добавляем в него дочернюю директорию Бренды
                 LinkedDirectory brandList = new LinkedDirectory (
-                        "Бренды",
+
                         DirectoryType.BRAND_LIST.toString ()
                 );
                 brandList.setFather (child);
@@ -73,7 +78,7 @@ public class LinkedDirectoryService {
 
                 //добавляем в него дочернюю директорию Параметры
                 LinkedDirectory parameterList = new LinkedDirectory (
-                        "Параметры",
+
                         DirectoryType.PARAMETER_LIST.toString ()
                 );
                 parameterList.setFather (child);

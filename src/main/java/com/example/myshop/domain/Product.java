@@ -15,30 +15,25 @@ public class Product {
     @JsonView(Views.IdName.class)
     private Long id;
 
+    //название товара
     @JsonView(Views.IdName.class)
     private String productName;
 
-    //brand
-    // tag
-    // dicription
-    // price
-    // photos
-
+    //описание товара
     //PROBLEM! lengh only 255 charts
     @JsonView(Views.FullMessage.class)
     private String productDiscription;
 
+    //список фотографий товара
     @OneToMany
     @JsonView(Views.FullMessage.class)
     private Set<Photo> photos;
 
+    //временны сприсок, фотографии которые были удалены из товара
     @Transient
     private Set<Photo> photoToDelete;
 
-
-//    @JsonView(Views.FullMessage.class)
-//    private String filename;
-
+    //список директорий привязаных к даному товару
     @ManyToMany
     @JsonView(Views.FullMessage.class)
     private Set<LinkedDirectory> tags;
@@ -46,6 +41,7 @@ public class Product {
     @JsonView(Views.FullMessage.class)
     private String price;
 
+    //дата добавления товара
     @Column(updatable = false)  //колонка не обновляемая
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")   //чтобы Джейсон отшорматировал  дату и время по нашему патерну
     @JsonView(Views.FullMessage.class)
@@ -94,7 +90,6 @@ public class Product {
     public void deletePhoto(Photo photo){
         this.photos.remove (photo);
     }
-
 
     public Set<LinkedDirectory> getTags () {
         return tags;

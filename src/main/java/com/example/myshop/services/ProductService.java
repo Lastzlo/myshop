@@ -178,12 +178,11 @@ public class ProductService {
 
                                 //если количество привязаных товаров к тегу 0 то убираем связи тега с другими тегами
                                 if(tag.getProductsCount () == 0){
-                                    System.out.println ("tag не имеет привязаных продуктов, можно удалять связи с tag.getRelatedDirectories ()");
+//                                    System.out.println ("tag не имеет привязаных продуктов, можно удалять связи с tag.getRelatedDirectories ()");
 
                                     tag.getRelatedDirectories ().forEach (
                                             relatedDirectory -> {
-                                                System.out.println ("//удалили tag с relatedDirectory");
-                                                //удалили tag с relatedDirectory
+//                                                System.out.println ("//удалили tag с relatedDirectory");
                                                 relatedDirectory.getRelatedDirectories ().remove (tag);
                                                 relatedDirectory.getRelatedDirectoryIds ().remove (tag.getId ());
 
@@ -197,7 +196,7 @@ public class ProductService {
                                     tag.getRelatedDirectoryIds ().clear ();
 
                                 } else {
-                                    System.out.println ("tag имеет ("+tag.getProductsCount ()+") привязаных продуктов");
+//                                    System.out.println ("tag имеет ("+tag.getProductsCount ()+") привязаных продуктов");
 
                                     //создаем копию чтобы можно было удалять элементы из сета tag.getRelatedDirectories ()
                                     final Set<LinkedDirectory> tagRelatedDirectoriesCopy = new HashSet<> () {{
@@ -220,13 +219,13 @@ public class ProductService {
 
                                                 //встречаеться ли хоть один раз relatedDirectory в tag.getProducts ().product1.getTags
                                                 if(!isRelatedDirectoryInTagProductsTags){
-                                                    System.out.println ("!isRelatedDirectoryInTagProductsTags");
-                                                    System.out.println ("Нет, не встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
+//                                                    System.out.println ("!isRelatedDirectoryInTagProductsTags");
+//                                                    System.out.println ("Нет, не встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
 
-                                                    System.out.println ("relatedDirectory = "+relatedDirectory);
-                                                    System.out.println ("tag = "+tag);
+//                                                    System.out.println ("relatedDirectory = "+relatedDirectory);
+//                                                    System.out.println ("tag = "+tag);
 
-                                                    System.out.println ("//удаляем tag с relatedDirectory");
+//                                                    System.out.println ("//удаляем tag с relatedDirectory");
 
                                                     //удаляем tagToDelete с oldNeededTagId
                                                     relatedDirectory.getRelatedDirectories ().remove (tag);
@@ -235,13 +234,13 @@ public class ProductService {
                                                     //обновляем relatedDirectory в бд
                                                     directoryRepo.save (relatedDirectory);
 
-                                                    System.out.println ("//удаляем relatedDirectory с tag");
+//                                                    System.out.println ("//удаляем relatedDirectory с tag");
                                                     //удаляем oldNeededTagId с tagToDelete
                                                     tag.getRelatedDirectories ().remove (relatedDirectory);
                                                     tag.getRelatedDirectoryIds ().remove (relatedDirectory.getId ());
                                                 } else {
-                                                    System.out.println ("isRelatedDirectoryInTagProductsTags");
-                                                    System.out.println ("Да встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
+//                                                    System.out.println ("isRelatedDirectoryInTagProductsTags");
+//                                                    System.out.println ("Да встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
                                                 }
 
                                             }
@@ -476,21 +475,18 @@ public class ProductService {
     private void dislinkOldNeededTagsWithDontUsedTagsToDeleteFromProduct (Set<LinkedDirectory> tagsToDeleteFromProduct, Set<LinkedDirectory> oldNeededTags) {
         tagsToDeleteFromProduct.forEach (
                 tagToDelete->{
-
                     //если tagToDelete не имеет привязаных продуктов
                     if(tagToDelete.getProductsCount () == 0){
-                        System.out.println ("tagToDelete не имеет привязаных продуктов, можно удалялть связи с oldNeededTags");
+//                        System.out.println ("tagToDelete не имеет привязаных продуктов, можно удалялть связи с oldNeededTags");
 
                         oldNeededTags.forEach (
                                 oldNeededTag ->{
 
-                                    System.out.println ("//удалили tagToDelete с oldNeededTagId");
-                                    //удалили tagToDelete с oldNeededTagId
+//                                    System.out.println ("//удалили tagToDelete с oldNeededTagId");
                                     oldNeededTag.getRelatedDirectories ().remove (tagToDelete);
                                     oldNeededTag.getRelatedDirectoryIds ().remove (tagToDelete.getId ());
 
-                                    System.out.println ("//удалили oldNeededTagId с tagToDelete");
-                                    //удалили oldNeededTagId с tagToDelete
+//                                    System.out.println ("//удалили oldNeededTagId с tagToDelete");
                                     tagToDelete.getRelatedDirectories ().remove (oldNeededTag);
                                     tagToDelete.getRelatedDirectoryIds ().remove (oldNeededTag.getId ());
 
@@ -500,7 +496,7 @@ public class ProductService {
 
                     }
                     else {
-                        System.out.println ("tagToDelete имеет ("+tagToDelete.getProductsCount ()+") привязаных продуктов");
+//                        System.out.println ("tagToDelete имеет ("+tagToDelete.getProductsCount ()+") привязаных продуктов");
 
                         oldNeededTags.forEach (
                                 oldNeededTag ->{
@@ -519,25 +515,22 @@ public class ProductService {
 
                                     //встречаеться ли хоть один раз oldNeededTag в tagToDelete.getProducts.Product.getTags
                                     if(!isOldNeededTagInTagToDeleteProductsTags){
-                                        System.out.println ("!isOldNeededTagInTagToDeleteProductsTags");
-                                        System.out.println ("Нет, не встречаеться oldNeededTag в tagToDelete.getProducts.Product.getTags");
+//                                        System.out.println ("!isOldNeededTagInTagToDeleteProductsTags");
+//                                        System.out.println ("Нет, не встречаеться oldNeededTag в tagToDelete.getProducts.Product.getTags");
 
-                                        System.out.println ("oldNeededTag = "+oldNeededTag);
-                                        System.out.println ("tagToDelete = "+tagToDelete);
+//                                        System.out.println ("oldNeededTag = "+oldNeededTag);
+//                                        System.out.println ("tagToDelete = "+tagToDelete);
 
-                                        System.out.println ("//удалили tagToDelete с oldNeededTagId");
-
-                                        //удалили tagToDelete с oldNeededTagId
+//                                        System.out.println ("//удалили tagToDelete с oldNeededTagId");
                                         oldNeededTag.getRelatedDirectories ().remove (tagToDelete);
                                         oldNeededTag.getRelatedDirectoryIds ().remove (tagToDelete.getId ());
 
-                                        System.out.println ("//удалили oldNeededTagId с tagToDelete");
-                                        //удалили oldNeededTagId с tagToDelete
+//                                        System.out.println ("//удалили oldNeededTagId с tagToDelete");
                                         tagToDelete.getRelatedDirectories ().remove (oldNeededTag);
                                         tagToDelete.getRelatedDirectoryIds ().remove (oldNeededTag.getId ());
                                     } else {
-                                        System.out.println ("isOldNeededTagInTagToDeleteProductsTags");
-                                        System.out.println ("Да встречаеться oldNeededTag в tagToDelete.getProducts.Product.getTags");
+//                                        System.out.println ("isOldNeededTagInTagToDeleteProductsTags");
+//                                        System.out.println ("Да встречаеться oldNeededTag в tagToDelete.getProducts.Product.getTags");
                                     }
 
                                 }

@@ -1,8 +1,6 @@
 package com.example.myshop.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -16,37 +14,48 @@ public class LinkedDirectory {
     @JsonView(Views.IdName.class)
     private Long id;
 
+    //название директории
     @JsonView(Views.IdName.class)
     private String name;
 
+    //тип директории, от него зависит к какой групе относиться дериктория
     @JsonView(Views.Type.class)
     private String directoryType;
 
+
+
+    //подкатегории
     @OneToMany
     @JsonView(Views.OnlyChild.class)
     private Set<LinkedDirectory> children;
 
+    //список связаных с этой директорией директории,
+    //используеться в блоке фильтра результатов,
+    //в этот список попадают директории которые имеют другие товары
     @ManyToMany
-    private Set<LinkedDirectory>relatedDirectories;
+    private Set<LinkedDirectory> relatedDirectories;
 
-
-    //я знаю что данный сет частично повтрояет relatedDirectories, он сдела для того чтобы мы могли передать его в JSON и не столкнуться с рекурсией
+    //хранит список индентификаторов id сязаных директорий (relatedDirectories)
     @ElementCollection
     @CollectionTable(
             name = "directories_associated_with_this_directory",
             joinColumns = @JoinColumn(name = "directory_id")
     )
     @Column(name = "related_directory")
+    //передаеться в файле ответа JSON, вместо relatedDirectories, для того чтобы не столкнуться с рекурсией
     @JsonView(Views.FullLinkedDirectory.class)
     private Set<Long> relatedDirectoryIds = new HashSet<>();
 
+    //надкатегория, ссылка на директории высшую на один уровень
     @ManyToOne
     private LinkedDirectory father;
 
+    //продукты которые привязаные к даной директории
     @ManyToMany
     //@JsonView(Views.FullMessage.class)
     private Set<Product> products;
 
+    //хранит количество элементов списка products
     @JsonView(Views.FullLinkedDirectory.class)
     private Long productsCount;
 
@@ -54,11 +63,11 @@ public class LinkedDirectory {
     public LinkedDirectory () {
     }
 
-    public LinkedDirectory (String name, String directoryType) {
-        this.name = name;
+    //для создания категории с предустановленым именем и типом
+    public LinkedDirectory (String directoryType) {
+        this.name = directoryType;
         this.directoryType = directoryType;
         this.children = new HashSet<> ();
-
     }
 
     public Long getId () {
@@ -164,16 +173,4 @@ public class LinkedDirectory {
     public void setFather (LinkedDirectory father) {
         this.father = father;
     }
-
-    /*public Set<Product> getProducts () {
-        return products;
-    }
-
-    public void setProducts (Set<Product> products) {
-        this.products = products;
-    }*/
-
-    /*public void addProduct (Product product) {
-        this.getProducts ().add (product);
-    }*/
 }

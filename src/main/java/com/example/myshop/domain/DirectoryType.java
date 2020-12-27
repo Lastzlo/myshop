@@ -1,7 +1,7 @@
 package com.example.myshop.domain;
 
 public enum DirectoryType {
-    CATEGORY_LIST,
+    CATEGORY_LIST,      //директория высшего уровня, ядро
     CATEGORY,
     BRAND_LIST,
     BRAND,

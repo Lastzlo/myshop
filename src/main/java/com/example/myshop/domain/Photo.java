@@ -15,6 +15,7 @@ public class Photo {
     private Long id;
     @JsonView(Views.IdNameSrc.class)
     private String name;
+    //ссылка на файл
     @JsonView(Views.IdNameSrc.class)
     private String src;
 

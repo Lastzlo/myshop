@@ -21,9 +21,9 @@ import java.util.Set;
 @RequestMapping("directory")
 public class DirectoryController {
 
+    //использем LinkedDirectoryService
     @Autowired
     private LinkedDirectoryService directoryService;
-
 
 
     @GetMapping("getCore")
