@@ -129,7 +129,7 @@ public class LinkedDirectoryService {
                     //удаление тега из всех товаров
                     linkedDirectory.getProducts ().forEach (
                             product -> {
-                                product.deleteTag (linkedDirectory);
+                                product.deleteDirectory (linkedDirectory);
                                 productRepo.save (product);
                             }
                     );
@@ -166,7 +166,7 @@ public class LinkedDirectoryService {
                             //удаление тега из всех товаров
                             item.getProducts ().forEach (
                                     product -> {
-                                        product.deleteTag (item);
+                                        product.deleteDirectory (item);
                                         productRepo.save (product);
                                     }
                             );

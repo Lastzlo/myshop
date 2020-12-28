@@ -60,7 +60,7 @@ public class ProductController {
             @RequestPart(value = "files") Optional<MultipartFile[]> files,
             @RequestPart(value = "product") Product product
     ){
-        return productService.saveProductWithFile(product, files);
+        return productService.saveProduct(product, files);
     }
 
     @DeleteMapping("{id}")
@@ -83,7 +83,7 @@ public class ProductController {
             @RequestPart(value = "files") Optional<MultipartFile[]> files,
             @RequestPart(value = "product") Product product
     ){
-        return productService.updateProductWithFile(product, files);
+        return productService.updateProduct(product, files);
     }
 
 

@@ -46,7 +46,7 @@ public class ProductService {
     }
 
     //сохраняем товар с картинками
-    public Product saveProductWithFile (Product product, Optional<MultipartFile[]> files) {
+    public Product saveProduct (Product product, Optional<MultipartFile[]> files) {
         //сюда можно добавить проверку полей продукта
 
         //добавляем фото к товару
@@ -62,7 +62,7 @@ public class ProductService {
         final Product finalProduct = productRepo.save(product);
 
         //добавляем товар из бд к тегам(директориям)
-        addProductToTags (finalProduct);
+        addProductToDirectories (finalProduct);
 
         return finalProduct;
 
@@ -134,293 +134,92 @@ public class ProductService {
 
     //добавляем теги(директории) к товару
     private void addTegsToProduct (Product product) {
-        //проверяме пришли ли теги с товаром
-        if(product.getTags () != null){
-            //записываем спикос тегов которые пришли с товаром
-            Set<LinkedDirectory> tags = new HashSet<> (){{addAll (product.getTags ());}};
-            //очищаем список тегов
-            product.getTags ().clear ();
-            //проходим все теги которые пришли с товаром
-            tags.forEach (tag -> {
-                        //ести тег есть в бд
-                        this.directoryRepo.findById (tag.getId ()).ifPresent (
-                                tagFromDb -> {
-                                    //добавляем к тег товару
-                                    product.addTag (tagFromDb);
-                                }
-                        );
-                    }
-            );
-        }
-    }
-
-    //добавляем товар из бд к тегам(директориям)
-    private void addProductToTags (Product finalProduct) {
-        finalProduct.getTags ().forEach (tag -> {
-            //добавляем продукт
-            tag.addProduct (finalProduct);
-
-            //обновляем количество продуктов связных с тегом
-            tag.setProductsCount ((long) tag.getProducts ().size ());
-
-            //проверка что проверям что тип директории PARAMETER или BRAND
-            if(
-                    tag.getDirectoryType ().equals (DirectoryType.PARAMETER.toString ())
-                            || tag.getDirectoryType ().equals (DirectoryType.BRAND.toString ())
-            ){
-                // связываем директории, для этого в связанные директории
-                // добавляем другие теги даного продукта
-                linkingDirectories (finalProduct.getTags (), tag);
-
-            }
-
-            //сохраняем тег в БД
-            directoryRepo.save (tag);
-
-        });
-    }
-
-    // связываем директории, для этого в связанные директории
-    // добавляем другие теги даного продукта
-    private void linkingDirectories (Set<LinkedDirectory> tagsFromDb, LinkedDirectory tag) {
-        // связываем директории, для этого в связанные директории
-        // добавляем другие теги даного продукта
-        tagsFromDb.forEach (relatedDirectory -> {
-            if (
-                    tag != relatedDirectory
-                            && (
-                            relatedDirectory.getDirectoryType ()
-                                    .equals (DirectoryType.PARAMETER.toString ())
-                                    ||
-                                    relatedDirectory.getDirectoryType ()
-                                            .equals (DirectoryType.BRAND.toString ()))
-            ) {
-
-                //плюс сета в том что не будет повторений
-                tag.addRelatedDirectory (relatedDirectory);
-                tag.addRelatedDirectoryId (relatedDirectory.getId ());
-
-            }
-        });
-    }
-
-
-    public void deleteProduct (Long id) {
-        productRepo.findById (id).ifPresent (
-                product -> {
-                    product.getTags ().forEach (
-                            tag -> {
-                                //уменьшем количество привязаных товаров к тегу
-                                tag.deleteProduct (product);
-                                tag.setProductsCount ((long) tag.getProducts ().size ());
-
-                                //если количество привязаных товаров к тегу 0 то убираем связи тега с другими тегами
-                                if(tag.getProductsCount () == 0){
-//                                    System.out.println ("tag не имеет привязаных продуктов, можно удалять связи с tag.getRelatedDirectories ()");
-
-                                    tag.getRelatedDirectories ().forEach (
-                                            relatedDirectory -> {
-//                                                System.out.println ("//удалили tag с relatedDirectory");
-                                                relatedDirectory.getRelatedDirectories ().remove (tag);
-                                                relatedDirectory.getRelatedDirectoryIds ().remove (tag.getId ());
-
-                                                //обновляем relatedDirectory в бд
-                                                directoryRepo.save (relatedDirectory);
-                                            }
-                                    );
-
-                                    //очищаем tag.getRelatedDirectories ()
-                                    tag.getRelatedDirectories ().clear ();
-                                    tag.getRelatedDirectoryIds ().clear ();
-
-                                } else {
-//                                    System.out.println ("tag имеет ("+tag.getProductsCount ()+") привязаных продуктов");
-
-                                    //создаем копию чтобы можно было удалять элементы из сета tag.getRelatedDirectories ()
-                                    final Set<LinkedDirectory> tagRelatedDirectoriesCopy = new HashSet<> () {{
-                                        addAll (tag.getRelatedDirectories ());
-                                    }};
-
-                                    tagRelatedDirectoriesCopy.forEach (
-                                            relatedDirectory -> {
-                                                //встречаеться ли хоть один раз relatedDirectory в tag.getProducts ().product1.getTags
-                                                boolean isRelatedDirectoryInTagProductsTags = false;
-
-                                                for (Product product1: tag.getProducts ()
-                                                ) {
-                                                    if(product1.getTags ().contains (relatedDirectory)){
-                                                        isRelatedDirectoryInTagProductsTags = true;
-
-                                                        break;
-                                                    }
-                                                }
-
-                                                //встречаеться ли хоть один раз relatedDirectory в tag.getProducts ().product1.getTags
-                                                if(!isRelatedDirectoryInTagProductsTags){
-//                                                    System.out.println ("!isRelatedDirectoryInTagProductsTags");
-//                                                    System.out.println ("Нет, не встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
-
-//                                                    System.out.println ("relatedDirectory = "+relatedDirectory);
-//                                                    System.out.println ("tag = "+tag);
-
-//                                                    System.out.println ("//удаляем tag с relatedDirectory");
-
-                                                    //удаляем tagToDelete с oldNeededTagId
-                                                    relatedDirectory.getRelatedDirectories ().remove (tag);
-                                                    relatedDirectory.getRelatedDirectoryIds ().remove (tag.getId ());
-
-                                                    //обновляем relatedDirectory в бд
-                                                    directoryRepo.save (relatedDirectory);
-
-//                                                    System.out.println ("//удаляем relatedDirectory с tag");
-                                                    //удаляем oldNeededTagId с tagToDelete
-                                                    tag.getRelatedDirectories ().remove (relatedDirectory);
-                                                    tag.getRelatedDirectoryIds ().remove (relatedDirectory.getId ());
-                                                } else {
-//                                                    System.out.println ("isRelatedDirectoryInTagProductsTags");
-//                                                    System.out.println ("Да встречаеться relatedDirectory в tag.getProducts ().product1.getTags");
-                                                }
-
-                                            }
-                                    );
-
-                                }
-
-                                //обновляем tag в бд
-                                directoryRepo.save (tag);
+        //записываем спикос тегов которые пришли с товаром
+        Set<LinkedDirectory> directories = new HashSet<> (){{addAll (product.getDirectories ());}};
+        //очищаем список тегов
+        product.getDirectories ().clear ();
+        //проходим все теги которые пришли с товаром
+        directories.forEach (directory -> {
+                    //ести тег есть в бд
+                    this.directoryRepo.findById (directory.getId ()).ifPresent (
+                            directoryFromDb -> {
+                                //добавляем к тег товару
+                                product.addDirectory (directoryFromDb);
                             }
                     );
                 }
         );
 
-        //удаление с БД
-        productRepo.deleteById(id);
     }
 
-    public Product updateProductWithFile (Product product, Optional<MultipartFile[]> files) {
+    //добавляем товар из бд к тегам(директориям)
+    private void addProductToDirectories (Product finalProduct) {
+        finalProduct.getDirectories ().forEach (directory -> {
+            //добавляем продукт
+            directory.addProduct (finalProduct);
+
+            //обновляем количество продуктов связных с тегом
+            directory.setProductsCount ((long) directory.getProducts ().size ());
+
+            //проверка что проверям что тип директории PARAMETER или BRAND
+            if(
+                    directory.getDirectoryType ().equals (DirectoryType.PARAMETER.toString ())
+                            || directory.getDirectoryType ().equals (DirectoryType.BRAND.toString ())
+            ){
+                // связываем список директорий с деректорией
+                linkingDirectories (finalProduct.getDirectories (), directory);
+
+            }
+
+            //сохраняем тег в БД
+            directoryRepo.save (directory);
+
+        });
+    }
+
+    /**
+     * Связываем список директорий, с директорией
+     *
+     * @param inputDirectories список директорий
+     * @param directory директория
+     */
+    private void linkingDirectories (Set<LinkedDirectory> inputDirectories, LinkedDirectory directory) {
+        inputDirectories.forEach (inputDirectory -> {
+            //проверям что директория к которой хотим связать не такая же, а также ее тип PARAMETER или BRAND
+            if (
+                    directory != inputDirectory
+                            && (
+                            inputDirectory.getDirectoryType ()
+                                    .equals (DirectoryType.PARAMETER.toString ())
+                                    ||
+                                    inputDirectory.getDirectoryType ()
+                                            .equals (DirectoryType.BRAND.toString ()))
+            ) {
+
+                directory.addRelatedDirectory (inputDirectory);
+                directory.addRelatedDirectoryId (inputDirectory.getId ());
+
+            }
+        });
+    }
+
+    //обновляет информацию о товаре и картинки
+    public Product updateProduct (Product product, Optional<MultipartFile[]> files) {
+        //проверка что такой товар есть в бд
         Optional<Product> optionalProductFromDb = productRepo.findById (product.getId ());
 
         if(optionalProductFromDb.isPresent ()){
+            //товар из бд
             final Product productFromDb = optionalProductFromDb.get ();
 
-            BeanUtils.copyProperties (product, productFromDb, "id", "photos", "photoToDelete", "tags","creationDate");
+            BeanUtils.copyProperties (product, productFromDb, "id", "photos", "photoToDelete", "directories","creationDate");
 
-            //Работа с тегами
-            if(product.getTags () != null){
-
-                //Set<LinkedDirectory> oldtagsFromDb = productFromDb.getTags ();
-                Set<LinkedDirectory> oldtagsFromDb = new HashSet<> (){{
-                    addAll (productFromDb.getTags ());
-                }};
-
-                //received tags
-                Set<LinkedDirectory> recivedTags = new HashSet<>();
-                product.getTags ().forEach (tag -> {
-                            this.directoryRepo.findById (tag.getId ()).ifPresent (
-                                    tagFromDb -> recivedTags.add (tagFromDb)
-                            );
-                        }
-                );
-
-                //проверка что oldtagsFromDb и recivedTags равны
-                if(oldtagsFromDb.equals (recivedTags)){
-                    //если нет отличий то пропускаем
-                    System.out.println ("oldtagsFromDb.equals (recivedTags)");
-                }else {
-                    //находим теги которых нет в recivedTags
-                    //эти теги потом надо будет убрать из продукта
-                    final Set<LinkedDirectory> tagsToDeleteFromProduct = Sets.difference(oldtagsFromDb, recivedTags);
-
-                    System.out.println ("tagsToDeleteFromProduct:");
-
-                    tagsToDeleteFromProduct.forEach (
-                            tag-> {
-
-                                System.out.println ("tagId = "+tag.getId ()+" tagName = "+tag.getName ());
-
-                                //удаляем с товара лишние теги
-                                productFromDb.deleteTag (tag);
-
-                                //уменьшем количество привязаных товаров к тегу
-                                tag.deleteProduct (productFromDb);
-                                tag.setProductsCount ((long) tag.getProducts ().size ());
-
-                            }
-                    );
-
-                    //список актуальных, нужных тегов
-                    Set<LinkedDirectory> oldNeededTags = Sets.difference(oldtagsFromDb, tagsToDeleteFromProduct);
-
-                    //убираем у oldNeededTags связи с ненужными tagsToDeleteFromProduct тегами
-                    dislinkOldNeededTagsWithDontUsedTagsToDeleteFromProduct (tagsToDeleteFromProduct, oldNeededTags);
-
-                    //обновляем tagsToDeleteFromProduct в БД
-                    tagsToDeleteFromProduct.forEach (tag ->directoryRepo.save (tag));
+            //обновляем теги продукта
+            updateProductDirectories (product, productFromDb);
 
 
-                    //новые теги которые еще не имеют связей, не обработаные теги
-                    Set<LinkedDirectory> newtags = Sets.difference(recivedTags, oldNeededTags);
 
-                    //добавляем связи в новые теги newtags
-                    newtags.forEach (tag -> {
 
-                        //добавляем продукт
-                        tag.addProduct (productFromDb);
-
-                        //добавляем к товару тег
-                        productFromDb.addTag (tag);
-
-                        //обновляем количество продуктов связных с тегом
-                        tag.setProductsCount ((long) tag.getProducts ().size ());
-
-                        //проверка что DirectoryType of tag is PARAMETER or BRAND
-                        if(
-                                tag.getDirectoryType ().equals (DirectoryType.PARAMETER.toString ())
-                                        || tag.getDirectoryType ().equals (DirectoryType.BRAND.toString ())
-                        ){
-                            // связываем директории, для этого в связанные директории
-                            // добавляем другие теги даного продукта
-                            linkingDirectories (newtags, tag);
-
-                            //добавляем в тег свзязаные с продуктом  НОВЫЕ теги oldNeededTags
-                            oldNeededTags.forEach (relatedDirectory -> {
-
-                                if(
-                                        tag!=relatedDirectory
-                                                && (
-                                                relatedDirectory.getDirectoryType ()
-                                                        .equals (DirectoryType.PARAMETER.toString ())
-                                                        ||
-                                                        relatedDirectory.getDirectoryType ()
-                                                                .equals (DirectoryType.BRAND.toString ()))
-                                ){
-
-                                    //плюс сета в том что не будет повторений
-                                    tag.addRelatedDirectory (relatedDirectory);
-                                    tag.addRelatedDirectoryId (relatedDirectory.getId ());
-
-                                    //добавляем связь между oldNeededTag и tag
-                                    relatedDirectory.addRelatedDirectory (tag);
-                                    relatedDirectory.addRelatedDirectoryId (tag.getId ());
-
-                                }
-
-                            });
-
-                        }
-
-                        //сохраняем tag в БД
-                        directoryRepo.save (tag);
-
-                    });
-
-                    //обновляем oldNeededTags в БД
-                    oldNeededTags.forEach (tag ->directoryRepo.save (tag));
-
-                    System.out.println ("finish work with tag!");
-                }
-
-            }
 
             //удаление фото с продукта и потом с хранилища
             if(product.getPhotoToDelete () != null){
@@ -485,30 +284,135 @@ public class ProductService {
 
             //сохраняем продукт в бд
             return productRepo.save (productFromDb);
+        } else {
+            //нужно обработать ответ если вдруг небыло такого продукта
+            return null;
         }
-
-        //нужно обработать ответ если вдруг небыло такого продукта
-        return null;
     }
 
-    //убираем у oldNeededTags связи с ненужными tagsToDeleteFromProduct тегами
-    private void dislinkOldNeededTagsWithDontUsedTagsToDeleteFromProduct (Set<LinkedDirectory> tagsToDeleteFromProduct, Set<LinkedDirectory> oldNeededTags) {
-        tagsToDeleteFromProduct.forEach (
-                tagToDelete->{
-                    //если tagToDelete не имеет привязаных продуктов
-                    if(tagToDelete.getProductsCount () == 0){
-//                        System.out.println ("tagToDelete не имеет привязаных продуктов, можно удалялть связи с oldNeededTags");
 
-                        oldNeededTags.forEach (
-                                oldNeededTag ->{
+    /**
+     * Теги полученого товара устонавливем товару который хранился в бд
+     *
+     * @param product полученый товар
+     * @param productFromDb товар который хранился в бд
+     */
+    private void updateProductDirectories (Product product, Product productFromDb) {
 
-//                                    System.out.println ("//удалили tagToDelete с oldNeededTagId");
-                                    oldNeededTag.getRelatedDirectories ().remove (tagToDelete);
-                                    oldNeededTag.getRelatedDirectoryIds ().remove (tagToDelete.getId ());
+        //теги товара который записан в бд
+        Set<LinkedDirectory> olddirectorysFromDb = new HashSet<> (){{
+            addAll (productFromDb.getDirectories ());
+        }};
 
-//                                    System.out.println ("//удалили oldNeededTagId с tagToDelete");
-                                    tagToDelete.getRelatedDirectories ().remove (oldNeededTag);
-                                    tagToDelete.getRelatedDirectoryIds ().remove (oldNeededTag.getId ());
+        //теги полученого товара
+        Set<LinkedDirectory> recivedDirectories = new HashSet<>();
+        product.getDirectories ().forEach (directory -> {
+                    this.directoryRepo.findById (directory.getId ()).ifPresent (
+                            directoryFromDb -> recivedDirectories.add (directoryFromDb)
+                    );
+                }
+        );
+
+        //проверка что olddirectorysFromDb и recivedDirectories равны
+        if(olddirectorysFromDb.equals (recivedDirectories)){
+            //если нет отличий то пропускаем
+//            System.out.println ("olddirectorysFromDb.equals (recivedDirectories)");
+        }else {
+            //@param directorysToDeleteFromProduct это теги которых нет в recivedDirectories но есть в olddirectorysFromDb
+            final Set<LinkedDirectory> directorysToDeleteFromProduct = Sets.difference(olddirectorysFromDb, recivedDirectories);
+//            System.out.println ("directorysToDeleteFromProduct:");
+
+            //удаляем связь товара с тегами directorysToDeleteFromProduct
+            directorysToDeleteFromProduct.forEach (
+                    directory-> {
+//                        System.out.println ("directoryId = "+directory.getId ()+" directoryName = "+directory.getName ());
+
+                        //удаляем с товара лишние теги
+                        productFromDb.deleteDirectory (directory);
+
+                        //уменьшем количество привязаных товаров к тегу
+                        directory.deleteProduct (productFromDb);
+                        directory.setProductsCount ((long) directory.getProducts ().size ());
+
+                    }
+            );
+
+            //список актуальных, нужных тегов
+            Set<LinkedDirectory> oldNeededDirectories = Sets.difference(olddirectorysFromDb, directorysToDeleteFromProduct);
+
+            //убираем у oldNeededDirectories связи с ненужными directorysToDeleteFromProduct тегами
+            dislinkDirectories (directorysToDeleteFromProduct, oldNeededDirectories);
+
+            //обновляем directorysToDeleteFromProduct в БД
+            directorysToDeleteFromProduct.forEach (directory ->directoryRepo.save (directory));
+
+            //новые теги которые еще не имеют связей, не обработаные теги
+            Set<LinkedDirectory> newdirectorys = Sets.difference(recivedDirectories, oldNeededDirectories);
+
+            //добавляем связи в новых тегов newdirectorys с новыми newdirectorys, старыми тегами oldNeededDirectories, а также с продуктами
+            newdirectorys.forEach (directory -> {
+                //связываем только те директории у которых тип PARAMETER или BRAND
+                if(
+                        directory.getDirectoryType ().equals (DirectoryType.PARAMETER.toString ())
+                                || directory.getDirectoryType ().equals (DirectoryType.BRAND.toString ())
+                ){
+                    //связываем список старых новых тегов newdirectorys, с тегом newdirectorys
+                    linkingDirectories (newdirectorys, directory);
+
+                    //связываем список старых тегов oldNeededDirectories, с тегом newdirectorys
+                    linkingDirectories (oldNeededDirectories, directory);
+                }
+
+
+                //добавляем продукт
+                directory.addProduct (productFromDb);
+                //добавляем к товару тег
+                productFromDb.addDirectory (directory);
+                //обновляем количество продуктов связных с тегом
+                directory.setProductsCount ((long) directory.getProducts ().size ());
+
+
+                //обновляем directory в БД
+                directoryRepo.save (directory);
+            });
+
+            //добавляем связи в старыми тегов oldNeededDirectories с новыми тегами newdirectorys
+            oldNeededDirectories.forEach (directory -> {
+                //связываем список новых тегов newdirectorys, с тегом oldNeededDirectories
+                linkingDirectories (newdirectorys, directory);
+
+                //обновляем directory в БД
+                directoryRepo.save (directory);
+            });
+
+//            System.out.println ("finish work with directory!");
+        }
+
+    }
+
+    /**
+     * убираем у директорий oldNeededDirectories связи с директориями directorysToDeleteFromProduct
+     *
+     * @param directorysToDeleteFromProduct
+     * @param oldNeededDirectories
+     */
+    private void dislinkDirectories (Set<LinkedDirectory> directorysToDeleteFromProduct, Set<LinkedDirectory> oldNeededDirectories) {
+        directorysToDeleteFromProduct.forEach (
+                directoryToDelete->{
+                    //если directoryToDelete не имеет привязаных продуктов
+                    if(directoryToDelete.getProductsCount () == 0){
+//                        System.out.println ("directoryToDelete не имеет привязаных продуктов, можно удалялть связи с oldNeededDirectories");
+
+                        oldNeededDirectories.forEach (
+                                oldNeededDirectory ->{
+
+//                                    System.out.println ("//удалили directoryToDelete с oldNeededDirectoryId");
+                                    oldNeededDirectory.getRelatedDirectories ().remove (directoryToDelete);
+                                    oldNeededDirectory.getRelatedDirectoryIds ().remove (directoryToDelete.getId ());
+
+//                                    System.out.println ("//удалили oldNeededDirectoryId с directoryToDelete");
+                                    directoryToDelete.getRelatedDirectories ().remove (oldNeededDirectory);
+                                    directoryToDelete.getRelatedDirectoryIds ().remove (oldNeededDirectory.getId ());
 
                                 }
 
@@ -516,41 +420,41 @@ public class ProductService {
 
                     }
                     else {
-//                        System.out.println ("tagToDelete имеет ("+tagToDelete.getProductsCount ()+") привязаных продуктов");
+//                        System.out.println ("directoryToDelete имеет ("+directoryToDelete.getProductsCount ()+") привязаных продуктов");
 
-                        oldNeededTags.forEach (
-                                oldNeededTag ->{
-                                    //встречаеться ли хоть один раз oldNeededTag в tagToDelete.getProducts.Product.getTags
-                                    boolean isOldNeededTagInTagToDeleteProductsTags = false;
+                        oldNeededDirectories.forEach (
+                                oldNeededDirectory ->{
+                                    //встречаеться ли хоть один раз oldNeededDirectory в directoryToDelete.getProducts.Product.getDirectories
+                                    boolean isOldNeededDirectoryInDirectoryToDeleteProductsDirectories = false;
 
-                                    for (Product product1: tagToDelete.getProducts ()
+                                    for (Product product1: directoryToDelete.getProducts ()
                                     ) {
-                                        if(product1.getTags ().contains (oldNeededTag)){
-                                            isOldNeededTagInTagToDeleteProductsTags = true;
+                                        if(product1.getDirectories ().contains (oldNeededDirectory)){
+                                            isOldNeededDirectoryInDirectoryToDeleteProductsDirectories = true;
 
                                             break;
                                         }
 
                                     }
 
-                                    //встречаеться ли хоть один раз oldNeededTag в tagToDelete.getProducts.Product.getTags
-                                    if(!isOldNeededTagInTagToDeleteProductsTags){
-//                                        System.out.println ("!isOldNeededTagInTagToDeleteProductsTags");
-//                                        System.out.println ("Нет, не встречаеться oldNeededTag в tagToDelete.getProducts.Product.getTags");
+                                    //встречаеться ли хоть один раз oldNeededDirectory в directoryToDelete.getProducts.Product.getDirectories
+                                    if(!isOldNeededDirectoryInDirectoryToDeleteProductsDirectories){
+//                                        System.out.println ("!isOldNeededDirectoryInDirectoryToDeleteProductsDirectories");
+//                                        System.out.println ("Нет, не встречаеться oldNeededDirectory в directoryToDelete.getProducts.Product.getDirectories");
 
-//                                        System.out.println ("oldNeededTag = "+oldNeededTag);
-//                                        System.out.println ("tagToDelete = "+tagToDelete);
+//                                        System.out.println ("oldNeededDirectory = "+oldNeededDirectory);
+//                                        System.out.println ("directoryToDelete = "+directoryToDelete);
 
-//                                        System.out.println ("//удалили tagToDelete с oldNeededTagId");
-                                        oldNeededTag.getRelatedDirectories ().remove (tagToDelete);
-                                        oldNeededTag.getRelatedDirectoryIds ().remove (tagToDelete.getId ());
+//                                        System.out.println ("//удалили directoryToDelete с oldNeededDirectoryId");
+                                        oldNeededDirectory.getRelatedDirectories ().remove (directoryToDelete);
+                                        oldNeededDirectory.getRelatedDirectoryIds ().remove (directoryToDelete.getId ());
 
-//                                        System.out.println ("//удалили oldNeededTagId с tagToDelete");
-                                        tagToDelete.getRelatedDirectories ().remove (oldNeededTag);
-                                        tagToDelete.getRelatedDirectoryIds ().remove (oldNeededTag.getId ());
+//                                        System.out.println ("//удалили oldNeededDirectoryId с directoryToDelete");
+                                        directoryToDelete.getRelatedDirectories ().remove (oldNeededDirectory);
+                                        directoryToDelete.getRelatedDirectoryIds ().remove (oldNeededDirectory.getId ());
                                     } else {
-//                                        System.out.println ("isOldNeededTagInTagToDeleteProductsTags");
-//                                        System.out.println ("Да встречаеться oldNeededTag в tagToDelete.getProducts.Product.getTags");
+//                                        System.out.println ("isOldNeededDirectoryInDirectoryToDeleteProductsDirectories");
+//                                        System.out.println ("Да встречаеться oldNeededDirectory в directoryToDelete.getProducts.Product.getDirectories");
                                     }
 
                                 }
@@ -562,5 +466,105 @@ public class ProductService {
                 }
         );
     }
+
+    /**
+     * Удаляет товар с бд, и удаляет связи между тегами которые связывал данный товар
+     *
+     * @param id идентификатор товара в бд
+     */
+    public void deleteProduct (Long id) {
+        //удаляет связи между тегами которые связывал данный товар
+        productRepo.findById (id).ifPresent (
+                product -> {
+                    product.getDirectories ().forEach (
+                            directory -> {
+                                //удаляет связь тега с товаром
+                                directory.deleteProduct (product);
+                                //обновляем счетчик количества привязаных товаров к тегу
+                                directory.setProductsCount ((long) directory.getProducts ().size ());
+
+                                //если счетчик количества привязаных товаров к тегу == 0 то убираем связи тега с другими тегами
+                                if(directory.getProductsCount () == 0){
+//                                    System.out.println ("directory не имеет привязаных продуктов, можно удалять связи с directory.getRelatedDirectories ()");
+
+                                    directory.getRelatedDirectories ().forEach (
+                                            relatedDirectory -> {
+//                                                System.out.println ("//удалили directory с relatedDirectory");
+                                                relatedDirectory.getRelatedDirectories ().remove (directory);
+                                                relatedDirectory.getRelatedDirectoryIds ().remove (directory.getId ());
+
+                                                //обновляем relatedDirectory в бд
+                                                directoryRepo.save (relatedDirectory);
+                                            }
+                                    );
+
+                                    //очищаем directory.getRelatedDirectories ()
+                                    directory.getRelatedDirectories ().clear ();
+                                    directory.getRelatedDirectoryIds ().clear ();
+
+                                } else {
+//                                    System.out.println ("directory имеет ("+directory.getProductsCount ()+") привязаных продуктов");
+
+                                    //создаем копию чтобы можно было удалять элементы из сета directory.getRelatedDirectories ()
+                                    final Set<LinkedDirectory> directoryRelatedDirectoriesCopy = new HashSet<> () {{
+                                        addAll (directory.getRelatedDirectories ());
+                                    }};
+
+                                    directoryRelatedDirectoriesCopy.forEach (
+                                            relatedDirectory -> {
+                                                //встречаеться ли хоть один раз relatedDirectory в directory.getProducts ().product1.getDirectories
+                                                boolean isRelatedDirectoryInDirectoryProductsDirectories = false;
+
+                                                for (Product product1: directory.getProducts ()
+                                                ) {
+                                                    if(product1.getDirectories ().contains (relatedDirectory)){
+                                                        isRelatedDirectoryInDirectoryProductsDirectories = true;
+
+                                                        break;
+                                                    }
+                                                }
+
+                                                //встречаеться ли хоть один раз relatedDirectory в directory.getProducts ().product1.getDirectories
+                                                if(!isRelatedDirectoryInDirectoryProductsDirectories){
+//                                                    System.out.println ("!isRelatedDirectoryInDirectoryProductsDirectories");
+//                                                    System.out.println ("Нет, не встречаеться relatedDirectory в directory.getProducts ().product1.getDirectories");
+
+//                                                    System.out.println ("relatedDirectory = "+relatedDirectory);
+//                                                    System.out.println ("directory = "+directory);
+
+//                                                    System.out.println ("//удаляем directory с relatedDirectory");
+
+                                                    //удаляем directoryToDelete с oldNeededDirectoryId
+                                                    relatedDirectory.getRelatedDirectories ().remove (directory);
+                                                    relatedDirectory.getRelatedDirectoryIds ().remove (directory.getId ());
+
+                                                    //обновляем relatedDirectory в бд
+                                                    directoryRepo.save (relatedDirectory);
+
+//                                                    System.out.println ("//удаляем relatedDirectory с directory");
+                                                    //удаляем oldNeededDirectoryId с directoryToDelete
+                                                    directory.getRelatedDirectories ().remove (relatedDirectory);
+                                                    directory.getRelatedDirectoryIds ().remove (relatedDirectory.getId ());
+                                                } else {
+//                                                    System.out.println ("isRelatedDirectoryInDirectoryProductsDirectories");
+//                                                    System.out.println ("Да встречаеться relatedDirectory в directory.getProducts ().product1.getDirectories");
+                                                }
+
+                                            }
+                                    );
+
+                                }
+
+                                //обновляем directory в бд
+                                directoryRepo.save (directory);
+                            }
+                    );
+                }
+        );
+
+        //удалить товар с БД
+        productRepo.deleteById(id);
+    }
+
 
 }

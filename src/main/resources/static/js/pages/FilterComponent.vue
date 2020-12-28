@@ -18,8 +18,9 @@
                         class="pa-0"
                         cols="6"
                 >
-                    <filter-form2></filter-form2>
-                    <!--<v-col
+                    <!--<filter-form2></filter-form2>-->
+
+                    <v-col
                             class="pa-1 mb-5"
                             v-for="product in products"
                             :key="product.id"
@@ -69,19 +70,19 @@
                                     <v-card-subtitle
                                             v-text="product.productDiscription"
                                     >
-                                        iscription of product
+                                        Discription of product
                                     </v-card-subtitle>
                                     <v-card-text>
                                         <v-chip-group
                                                 column
                                         >
                                             <v-chip
-                                                    v-for="tag in product.tags"
-                                                    :key="tag.id"
-                                                    @click="openFilerPageByTag(tag)"
+                                                    v-for="directory in product.directories"
+                                                    :key="directory.id"
+                                                    @click="openFilerPageByDirectory(directory)"
                                                     small
                                             >
-                                                {{tag.name}}
+                                                {{directory.name}}
                                             </v-chip>
 
                                         </v-chip-group>
@@ -110,7 +111,7 @@
                                 </v-card>
                             </v-card>
                         </v-hover>
-                    </v-col>-->
+                    </v-col>
                 </v-col>
             </v-row>
         </v-container>
@@ -159,10 +160,10 @@
                 )
             },
             //переход на страницу связаную с даным тегом
-            openFilerPageByTag(tag){
-                console.log("openFilerPageByTag")
+            openFilerPageByDirectory(directory){
+                console.log("openFilerPageByDirectory")
                 //переход на страницу и обработана ошибка
-                this.$router.push({ path: `/filter/${tag.id}` }, () => {})
+                this.$router.push({ path: `/filter/${directory.id}` }, () => {})
             },
             //переход на странищу товара
             openProductPage(product){

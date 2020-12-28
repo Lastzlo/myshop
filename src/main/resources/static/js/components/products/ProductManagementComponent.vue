@@ -107,7 +107,7 @@
                                         cols="4"
                                 >
                                     #таблица заполнения тегов
-                                    <directory-list :tegsFromProduct="tegsFromProduct"/>
+                                    <directory-list :directoriesFromProduct="directoriesFromProduct"/>
 
                                 </v-col>
                             </v-row>
@@ -195,13 +195,13 @@
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
             products: [],
-            tegsFromProduct:[],
+            directoriesFromProduct:[],
             id: -1,
             editedItem: {
                 productName: '',
                 price: '',
                 productDiscription: '',
-                tags: [],
+                directories: [],
                 photos: [],
                 photoToDelete:[],
 
@@ -210,7 +210,7 @@
                 productName: '',
                 price: '',
                 productDiscription: '',
-                tags: [],
+                directories: [],
                 photos:[],
                 photoToDelete:[],
                 //price: '',
@@ -223,7 +223,7 @@
             photoToDelete:[],
         }),
         computed: {
-            ...mapState(['selectedTags']),
+            ...mapState(['selectedDirectories']),
             formTitle () {
                 return this.id === -1 ? 'New Item' : 'Edit Item'
             },
@@ -240,13 +240,13 @@
                     item => this.newPhotoToShow.push(window.URL.createObjectURL(item))
                 )
             },
-            selectedTags: function (newVal, oldVal) {
+            selectedDirectories: function (newVal, oldVal) {
                 //this.onAutorization = newVal
-                this.editedItem.tags = newVal;
+                this.editedItem.directories = newVal;
             },
         },
         methods: {
-            ...mapMutations(['setSelectedTags']),
+            ...mapMutations(['setSelectedDirectories']),
             deletePicture(photo){
                 const index = this.editedItemPhoto.findIndex(item => item === photo)
                 this.editedItemPhoto.splice(index, 1)
@@ -257,8 +257,8 @@
 
 
             },
-            // selectedTags(tags){
-            //     this.editedItem.tags = tags;
+            // selectedDirectories(directories){
+            //     this.editedItem.directories = directories;
             // },
             save () {
                 let product = this.editedItem
@@ -341,7 +341,7 @@
             },
             clearForm () {
                 this.photoToDelete = []
-                this.tegsFromProduct = []
+                this.directoriesFromProduct = []
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.id = -1
                 this.editedItemPhoto = []
@@ -349,7 +349,7 @@
 
                 // this.$nextTick(() => {
                 //     //очищает список отмеченых тегов
-                //     this.tegsFromProduct = []
+                //     this.directoriesFromProduct = []
                 //
                 //     this.editedItem = Object.assign({}, this.defaultItem)
                 //     this.id = -1
@@ -395,7 +395,7 @@
                 this.clearForm()
 
                 this.id = item.id
-                this.tegsFromProduct = item.tags
+                this.directoriesFromProduct = item.directories
 
                 this.editedItem = Object.assign({}, item)
 

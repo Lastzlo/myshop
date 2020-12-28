@@ -13,8 +13,8 @@ export default new Vuex.Store({
             //computed: mapState(['onAutorizationDrawer']),
         onCatalogDrawer: false,
         onAutorizationDrawer: false,
-        selectedTags: [],
-        tagsForFilterForm: [],
+        selectedDirectories: [],
+        directoriesForFilterForm: [],
     },
     getters:{
         //Иногда может потребоваться вычислять производное состояние на основе состояния хранилища, например, отфильтровать список и затем подсчитать количество элементо
@@ -32,14 +32,14 @@ export default new Vuex.Store({
         changeCatalogDrawerMutation(state){
             state.onCatalogDrawer = !state.onCatalogDrawer
         },
-        setSelectedTags(state, tags){
-            state.selectedTags = tags
+        setSelectedDirectories(state, directories){
+            state.selectedDirectories = directories
         },
-        setTagsForFilterForm(state, tags){
-            state.tagsForFilterForm = tags
+        setDirectoriesForFilterForm(state, directories){
+            state.directoriesForFilterForm = directories
         },
-        clearTagsForFilterForm(state){
-            state.tagsForFilterForm = []
+        clearDirectoriesForFilterForm(state){
+            state.directoriesForFilterForm = []
         }
     },
     actions: {

@@ -36,7 +36,7 @@ public class Product {
     //список директорий привязаных к даному товару
     @ManyToMany
     @JsonView(Views.FullMessage.class)
-    private Set<LinkedDirectory> tags;
+    private Set<LinkedDirectory> directories;
 
     @JsonView(Views.FullMessage.class)
     private String price;
@@ -91,20 +91,20 @@ public class Product {
         this.photos.remove (photo);
     }
 
-    public Set<LinkedDirectory> getTags () {
-        return tags;
+    public Set<LinkedDirectory> getDirectories () {
+        return directories;
     }
 
-    public void setTags (Set<LinkedDirectory> tags) {
-        this.tags = tags;
+    public void setDirectories (Set<LinkedDirectory> directories) {
+        this.directories = directories;
     }
 
-    public void addTag (LinkedDirectory tagFromDb) {
-        this.tags.add (tagFromDb);
+    public void addDirectory (LinkedDirectory directoryFromDb) {
+        this.directories.add (directoryFromDb);
     }
 
-    public void deleteTag (LinkedDirectory tagFromDb) {
-        this.tags.remove (tagFromDb);
+    public void deleteDirectory (LinkedDirectory directoryFromDb) {
+        this.directories.remove (directoryFromDb);
     }
 
     public String getPrice () {

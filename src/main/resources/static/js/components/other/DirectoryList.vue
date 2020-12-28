@@ -81,7 +81,7 @@
     export default {
         name: "DirectoryList",
         props:[
-            'tegsFromProduct',
+            'directoriesFromProduct',
         ],
         data: () => ({
             dialog: false,
@@ -113,16 +113,16 @@
             selection(newVal, oldVal) {
                 if(newVal!==oldVal){
 
-                    this.setSelectedTags(this.selection)
+                    this.setSelectedDirectories(this.selection)
                 }
             },
 
-            tegsFromProduct(newVal, oldVal){
+            directoriesFromProduct(newVal, oldVal){
                 this.selection = newVal;
             }
         },
         methods: {
-            ...mapMutations(['setSelectedTags']),
+            ...mapMutations(['setSelectedDirectories']),
             closeDialog () {
                 this.dialog = false
                 this.$nextTick(() => {

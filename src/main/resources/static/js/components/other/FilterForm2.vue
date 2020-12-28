@@ -189,7 +189,7 @@
             open: [],
 
             items: [],
-            oldLastTag: null,
+            oldLastDirectory: null,
             lastSelectedId: null,
             text: 'Hello, I\'m a snackbar',
 
@@ -203,49 +203,49 @@
 
         }),
         computed: {
-            ...mapState(['tagsForFilterForm']),
+            ...mapState(['directoriesForFilterForm']),
         },
         watch: {
             selection(newVal, oldVal) {
                 if(newVal!==oldVal){
-                    this.setTagsForFilterForm(this.selection)
+                    this.setDirectoriesForFilterForm(this.selection)
 
                     if(newVal.length>0){
 
                         //показать окно возле последнего элемента массива
-                        let lastTag = newVal[newVal.length-1]
-                        console.log("последний элемент массива это = "+lastTag.name)
+                        let lastDirectory = newVal[newVal.length-1]
+                        console.log("последний элемент массива это = "+lastDirectory.name)
 
-                        this.lastSelectedId = lastTag.id
+                        this.lastSelectedId = lastDirectory.id
 
-                        // if(this.oldLastTag !==null){
-                        //     this.closeOldLastTag(this.oldLastTag)
+                        // if(this.oldLastDirectory !==null){
+                        //     this.closeOldLastDirectory(this.oldLastDirectory)
                         // }
-                        // this.oldLastTag = lastTag
+                        // this.oldLastDirectory = lastDirectory
                         //
-                        // this.openLastTag(lastTag)
+                        // this.openLastDirectory(lastDirectory)
                     }
                 }
             },
             selection2(newVal, oldVal) {
                 if(newVal!==oldVal){
-                    //this.setTagsForFilterForm(this.selection)
+                    //this.setDirectoriesForFilterForm(this.selection)
 
                     if(newVal.length>0){
 
                         //показать окно возле последнего элемента массива
-                        let lastTag = newVal[newVal.length-1]
-                        console.log("последний элемент массива2 это = "+lastTag.name)
+                        let lastDirectory = newVal[newVal.length-1]
+                        console.log("последний элемент массива2 это = "+lastDirectory.name)
 
                         //установили this.lastSelectedId2
-                        this.lastSelectedId2 = lastTag.id
+                        this.lastSelectedId2 = lastDirectory.id
 
-                        // if(this.oldLastTag !==null){
-                        //     this.closeOldLastTag(this.oldLastTag)
+                        // if(this.oldLastDirectory !==null){
+                        //     this.closeOldLastDirectory(this.oldLastDirectory)
                         // }
-                        // this.oldLastTag = lastTag
+                        // this.oldLastDirectory = lastDirectory
                         //
-                        // this.openLastTag(lastTag)
+                        // this.openLastDirectory(lastDirectory)
                     }
                 }
             },
@@ -257,7 +257,7 @@
             }
         },
         methods: {
-            ...mapMutations(['setTagsForFilterForm']),
+            ...mapMutations(['setDirectoriesForFilterForm']),
             //раскрывает все папки
             openAll(items){
                 items.forEach(item => {
@@ -268,19 +268,19 @@
 
                 })
             },
-            openLastTag(lastTag){
-                console.log("openLastTag")
-                console.log("lastTag.name = "+lastTag.name)
-                lastTag.snackbarOpen = true
+            openLastDirectory(lastDirectory){
+                console.log("openLastDirectory")
+                console.log("lastDirectory.name = "+lastDirectory.name)
+                lastDirectory.snackbarOpen = true
             },
             snackbarClose(item){
                 console.log("snackbarClose ")
                 console.log("item.name = "+item.name)
                 item.snackbarOpen = false
             },
-            closeOldLastTag(oldLastTag){
-                console.log("closeOldLastTag")
-                console.log("oldLastTag.name = "+oldLastTag.name)
+            closeOldLastDirectory(oldLastDirectory){
+                console.log("closeOldLastDirectory")
+                console.log("oldLastDirectory.name = "+oldLastDirectory.name)
             },
             setItems(directoryId){
                 this.items = []

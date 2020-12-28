@@ -94,7 +94,7 @@
             open: [],
 
             items: [],
-            oldLastTag: null,
+            oldLastDirectory: null,
             text: 'Hello, I\'m a snackbar',
         }),
         computed: {
@@ -103,21 +103,21 @@
         watch: {
             selection(newVal, oldVal) {
                 if(newVal!==oldVal){
-                    this.setTagsForFilterForm(this.selection)
+                    this.setDirectorysForFilterForm(this.selection)
 
                     if(newVal.length>0){
 
                         //показать окно возле последнего элемента массива
-                        let lastTag = newVal[newVal.length-1]
-                        console.log("последний элемент массива это = "+lastTag.name)
+                        let lastDirectory = newVal[newVal.length-1]
+                        console.log("последний элемент массива это = "+lastdDrectory.name)
 
-                        if(this.oldLastTag !==null){
+                        if(this.oldLastDirectory !==null){
 
-                            this.closeOldLastTag(this.oldLastTag)
+                            this.closeOldLastDirectory(this.oldLastDirectory)
                         }
-                        this.oldLastTag = lastTag
+                        this.oldLastDirectory = lastDirectory
 
-                        this.openLastTag(lastTag)
+                        this.openLastDirectory(lastDirectory)
                     }
                 }
             },
@@ -129,7 +129,7 @@
             }
         },
         methods: {
-            ...mapMutations(['setTagsForFilterForm']),
+            ...mapMutations(['setDirectorysForFilterForm']),
             //раскрывает все папки
             openAll(items){
                 items.forEach(item => {
@@ -140,20 +140,20 @@
 
                 })
             },
-            openLastTag(lastTag){
-                console.log("openLastTag")
-                console.log("lastTag.name = "+lastTag.name)
-                lastTag.snackbarOpen = false
-                lastTag.snackbarOpen = true
+            openLastDirectory(lastDirectory){
+                console.log("openLastDirectory")
+                console.log("lastDirectory.name = "+lastDirectory.name)
+                lastDirectory.snackbarOpen = false
+                lastDirectory.snackbarOpen = true
             },
             snackbarClose(item){
                 console.log("snackbarClose ")
                 console.log("item.name = "+item.name)
                 item.snackbarOpen = false
             },
-            closeOldLastTag(oldLastTag){
-                console.log("closeOldLastTag")
-                console.log("oldLastTag.name = "+oldLastTag.name)
+            closeOldLastDirectory(oldLastDirectory){
+                console.log("closeOldLastDirectory")
+                console.log("oldLastDirectory.name = "+oldLastDirectory.name)
             },
             setItems(directoryId){
 

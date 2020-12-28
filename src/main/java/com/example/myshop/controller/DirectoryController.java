@@ -21,7 +21,6 @@ import java.util.Set;
 @RequestMapping("directory")
 public class DirectoryController {
 
-    //использем LinkedDirectoryService
     @Autowired
     private LinkedDirectoryService directoryService;
 
@@ -131,7 +130,7 @@ public class DirectoryController {
                     //удаление тега из всех товаров
                     linkedDirectory.getProducts ().forEach (
                             product -> {
-                                product.deleteTag (linkedDirectory);
+                                product.deleteDirectory (linkedDirectory);
                                 productRepo.save (product);
                             }
                     );
@@ -155,7 +154,7 @@ public class DirectoryController {
                             //удаление тега из всех товаров
                             item.getProducts ().forEach (
                                     product -> {
-                                        product.deleteTag (item);
+                                        product.deleteDirectory (item);
                                         productRepo.save (product);
                                     }
                             );

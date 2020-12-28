@@ -126,6 +126,12 @@ public class LinkedDirectory {
         this.relatedDirectories = relatedDirectories;
     }
 
+
+    /**
+     * Добавляет связаную директорию
+     *
+     * @param relatedDirectory связаная директория
+     */
     public void addRelatedDirectory(LinkedDirectory relatedDirectory){
         this.relatedDirectories.add (relatedDirectory);
     }
@@ -142,6 +148,11 @@ public class LinkedDirectory {
         this.relatedDirectoryIds = relatedDirectoryIds;
     }
 
+    /**
+     * Добавляет id связаной директории
+     *
+     * @param relatedDirectoryId id связаной директории
+     */
     public void addRelatedDirectoryId(Long relatedDirectoryId){
         this.relatedDirectoryIds.add (relatedDirectoryId);
     }
