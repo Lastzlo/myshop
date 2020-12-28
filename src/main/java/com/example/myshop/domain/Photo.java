@@ -11,12 +11,12 @@ import javax.persistence.Id;
 public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.IdNameSrc.class)
+    @JsonView(Views.FullMessage.class)
     private Long id;
-    @JsonView(Views.IdNameSrc.class)
+    @JsonView(Views.FullMessage.class)
     private String name;
     //ссылка на файл
-    @JsonView(Views.IdNameSrc.class)
+    @JsonView(Views.FullMessage.class)
     private String src;
 
     public Photo () {
